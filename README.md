@@ -3,6 +3,10 @@ BETA : Adidas bot that support splash pages(and hmac)<br />
 Please note that this is only a BETA<br />
 This program uses a headless browser named PhantomJS to stay on the splash page/login on Adidas and so reduce RAM usage<br />
 
+# How to install
+Just like Solemartyr's PHP script, setup Wamp, go to your hosts file and add this line : "127.0.0.1	dev.adidas.com", then go to your /www/ folder and put the 'sitekey.php' file in it.This is needed for captcha solving.<br />
+Compile the application or if you can't just run '3s_atc.exe' located in the /Release/ folder<br />
+
 # How to use
 Go to settings and select a locale <br />
 Fill in the fields, put a sitekey(check 'captcha')/client id(check 'client id')/duplicate(check 'duplicate')/cookies only if the add-to-cart process needs one<br />
