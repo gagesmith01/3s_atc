@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _3s_atc
+{
+    [Serializable()]
+    public class C_Proxy
+    {
+        public string address { get; set; }
+        public bool auth { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string hmac { get; set; }
+        public string sitekey { get; set; }
+        public List<C_Cookie> cookies;
+        public DateTime? hmac_expiration { get; set; }
+
+        public C_Proxy()
+        {
+            this.cookies = new List<C_Cookie>();
+        }
+    }
+}
