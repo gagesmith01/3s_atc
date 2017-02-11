@@ -13,6 +13,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.PhantomJS;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Events;
+using OpenQA.Selenium.Support.UI;
 
 namespace _3s_atc
 {
@@ -214,11 +215,24 @@ namespace _3s_atc
             return cartNoSplash(profile, cell, proxy);
         }
 
+        public bool LoggedIn(IWebDriver _driver, int timeout)
+        {
+            try
+            {
+                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
+                wait.Until(x => x.Manage().Cookies.GetCookieNamed("username") != null && x.Url.Contains("MyAccount-Show"));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public bool ElementDisplayed(IWebDriver _driver, By by, int timeout)
         {
             try
             {
-                var wait = new OpenQA.Selenium.Support.UI.WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
+                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
                 var myElement = wait.Until(x => x.FindElement(by));
                 return myElement.Displayed;
             }
@@ -228,13 +242,11 @@ namespace _3s_atc
             }
         }
 
-        public bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
+        public IWebDriver createNewJSDriver(C_Proxy proxy=null)
         {
             IWebDriver _driver;
             var driverService = PhantomJSDriverService.CreateDefaultService();
             driverService.HideCommandPromptWindow = true;
-
-            cell.Value = "Logging in...";
 
             if (proxy != null)
             {
@@ -247,14 +259,26 @@ namespace _3s_atc
             }
 
             _driver = new PhantomJSDriver(driverService);
-            _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] +"/loadsignin");
 
-            if(ElementDisplayed(_driver, By.Id("username"), 40))
+            return _driver;
+        }
+
+        public bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
+        {
+            cell.Value = "Connecting to login page...";
+            IWebDriver _driver = profile._driver;
+
+            _driver = createNewJSDriver(proxy);
+            _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account");
+
+            if (ElementDisplayed(_driver, By.Id("username"), 40))
             {
-                _driver.FindElement(By.Id("username")).SendKeys(profile.Email);
-                _driver.FindElement(By.Id("password")).SendKeys(profile.Password);
-                _driver.FindElement(By.ClassName("ffCheckbox")).Click();
-                _driver.FindElement(By.Id("signinSubmit")).Click();
+                //executing javascript is much faster than sending keys
+                ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('username').value='{0}'", profile.Email));
+                ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('password').value='{0}'", profile.Password));
+                ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('rememberme').click()");
+                ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('signinSubmit').click()");
+                cell.Value = "Logging in...";
             }
             else
             {
@@ -264,15 +288,17 @@ namespace _3s_atc
                 return false;
             }
 
-            if (ElementDisplayed(_driver, By.ClassName("accountwelcome"), 60))
+
+            if (LoggedIn(_driver, 60))
             {
+                System.Threading.Thread.Sleep(1500);
+                cell.Value = "Logged in!";
                 profile.loggedin = true;
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
                 {
                     if (cookie.Domain.Contains("adidas"))
                         profile.Cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
-                } 
-                cell.Value = "Logged in!";
+                }
                 _driver.Quit();
                 return true;
             }
@@ -327,7 +353,7 @@ namespace _3s_atc
             {
                 profile.Sitekey = proxy.sitekey; profile.captcha = true;
             }
-            
+
             if (Login(profile, cell, proxy))
             {
                 if (profile.captcha && !String.IsNullOrWhiteSpace(profile.Sitekey))

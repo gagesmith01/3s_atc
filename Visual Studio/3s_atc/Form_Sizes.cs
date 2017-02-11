@@ -21,7 +21,14 @@ namespace _3s_atc
             if (sizes_list == null)
                 sizes = new List<double>();
             else
+            {
                 sizes = new List<double>(sizes_list);
+                foreach(double size in sizes)
+                {
+                    int index = comboBox1.FindString(String.Format("US {0}", size.ToString("0.#").Replace(',', '.')));
+                    listBox1.Items.Add(comboBox1.Items[index].ToString());
+                }
+            }
 
             button2.Text = char.ConvertFromUtf32(0x2191);
             button3.Text = char.ConvertFromUtf32(0x2193);

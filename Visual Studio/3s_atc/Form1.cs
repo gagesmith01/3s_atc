@@ -86,7 +86,7 @@ namespace _3s_atc
             duplicate = (checkBox_1_Duplicate.Checked) ? textBox_1_Duplicate.Text : null;
             splash_url = (checkBox_1_Splashpage.Checked) ? textBox_1_Splashurl.Text : null;
 
-            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = this.Sizes, Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splash = checkBox_1_Splashpage.Checked, loggedin = false });
+            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = this.Sizes, Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splash = checkBox_1_Splashpage.Checked, loggedin = false, running = false });
             string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), sitekey, clientid, duplicate, richTextBox_1_Cookies.Text, splash_url, "" };
             dataGridView1.Rows.Add(row);
             helpers.SaveProfiles();
@@ -96,7 +96,7 @@ namespace _3s_atc
 
         private void button_1_SelectSizes_Click(object sender, EventArgs e)
         {
-            Form_Sizes form_sizes = new Form_Sizes();
+            Form_Sizes form_sizes = new Form_Sizes(Sizes);
             form_sizes.ShowDialog();
 
             Sizes = new List<double>(form_sizes.sizes);
@@ -193,10 +193,13 @@ namespace _3s_atc
                 DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
                 if (String.IsNullOrWhiteSpace(row.Cells[8].Value.ToString()) || row.Cells[8].Value.ToString().Contains("Error") || row.Cells[8].Style.ForeColor == Color.Red)
                 {
-                    if (profile.splash)
-                        cart(profile, row.Cells[8], dataGridView2.Rows);
-                    else
-                        cart(profile, row.Cells[8]);
+                    if (!profile.running)
+                    {
+                        if (profile.splash)
+                            cart(profile, row.Cells[8], dataGridView2.Rows);
+                        else
+                            cart(profile, row.Cells[8]);
+                    }
                 }
             }
         }

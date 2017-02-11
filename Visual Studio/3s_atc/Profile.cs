@@ -24,6 +24,8 @@ namespace _3s_atc
         public bool duplicate { set; get; }
         public bool splash { set; get; }
         public bool loggedin { set; get; }
+        public OpenQA.Selenium.IWebDriver _driver { get; set; }
+        public bool running { set; get; }
 
         public Profile()
         {
