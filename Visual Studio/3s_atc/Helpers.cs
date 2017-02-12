@@ -220,7 +220,7 @@ namespace _3s_atc
             try
             {
                 var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
-                wait.Until(x => x.Manage().Cookies.GetCookieNamed("username") != null && x.Url.Contains("MyAccount-Show"));
+                wait.Until(x => x.Manage().Cookies.GetCookieNamed("username") != null && x.Url.ToLower().Contains("myaccount-show"));
                 return true;
             }
             catch
@@ -291,8 +291,9 @@ namespace _3s_atc
 
             if (LoggedIn(_driver, 60))
             {
-                System.Threading.Thread.Sleep(1500);
                 cell.Value = "Logged in!";
+                System.Threading.Thread.Sleep(1500);
+
                 profile.loggedin = true;
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
                 {
@@ -326,11 +327,10 @@ namespace _3s_atc
             {
                 foreach(double size in sizes)
                 {
-                    double size_d = 0;
                     string s = inventory[entry.Key]["size"];
                     int stock = Convert.ToInt32(inventory[entry.Key]["stockcount"]);
                     
-                    if (getEUSize(size).Replace(" ", String.Empty) == s.Replace(" ", String.Empty) && stock > 0  || (Double.TryParse(s, out size_d) && size_d == size) && stock > 0)
+                    if (getEUSize(size).Replace(" ", String.Empty) == s.Replace(" ", String.Empty) && stock > 0  || s == size.ToString("0.#").Replace(',', '.') && stock > 0)
                             return entry.Key;
                 }
             }
