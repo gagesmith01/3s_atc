@@ -125,6 +125,36 @@ namespace _3s_atc
             return pageContent;
         }
 
+        private string getDuplicate(string source, string ogurl)
+        {
+            string[] lines = source.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            string script_line = lines.FirstOrDefault(s => s.Contains("application.js"));
+
+            if (script_line != null)
+            {
+                script_line = script_line.Split('"')[1];
+
+                if (!script_line.Contains("adidas."))
+                    script_line = ogurl + "/" + script_line;
+                else if (script_line.StartsWith("//"))
+                    script_line = "http://" + script_line.Remove(0, 2);
+
+                string js = webRequest(script_line);
+
+                if (js != null)
+                {
+                    string[] js_source = js.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    js = js_source.FirstOrDefault(s => s.Contains("$('#flashproductform').append"));
+
+                    string duplicate = js.Split('"')[5];
+                    return duplicate;
+                }
+            }
+
+            return null;
+
+        }
         void proxyRun(Profile profile, C_Proxy proxy, int i, DataGridViewRowCollection rows)
         {
             var driverService = PhantomJSDriverService.CreateDefaultService();
@@ -136,30 +166,34 @@ namespace _3s_atc
             driverService.Proxy = proxy.address;
             //driverService.ProxyType = "http";
 
-            rows[i].Cells[6].Value = "Setting up...";
+            rows[i].Cells[7].Value = "Setting up...";
 
             IWebDriver _driver;
             _driver = new PhantomJSDriver(driverService);
             _driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 40))
+            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 60))
             {
-                rows[i].Cells[6].Value = "On splash page...";
+                rows[i].Cells[7].Value = "On splash page...";
 
                 while (_driver.FindElements(By.Id("captcha")).Count <= 0)
                     System.Threading.Thread.Sleep(1000);
 
-                rows[i].Cells[6].Value = "Splash page passed!";
-                rows[i].Cells[6].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
+                rows[i].Cells[7].Value = "Splash page passed!";
+                rows[i].Cells[7].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
                 string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
                 proxy.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
                 proxy.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                rows[i].Cells[4].Value = proxy.hmac;
+                rows[i].Cells[3].Value = proxy.hmac;
                 proxy.sitekey = _driver.FindElement(By.Id("captcha")).GetAttribute("data-sitekey");
-                rows[i].Cells[5].Value = proxy.sitekey;
+                rows[i].Cells[4].Value = proxy.sitekey;
+                proxy.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                rows[i].Cells[5].Value = proxy.clientid;
+                proxy.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                rows[i].Cells[6].Value = proxy.duplicate;
 
-                rows[i].Cells[6].Value = "HMAC and Sitekey retrieved!";
+                rows[i].Cells[7].Value = "HMAC and Sitekey retrieved!";
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
                 {
                     if (cookie.Domain.Contains("adidas"))
@@ -169,17 +203,17 @@ namespace _3s_atc
                 passedSplash.Add(proxy);
 
                 if(proxy.auth)
-                    File.AppendAllText("hmacs.txt", String.Format("Proxy --- Address : {0} --- Username: {1} --- Password: {2} / Cookie --- Name: {3} --- Value : {4} / Sitekey: {5}", proxy.address, proxy.username, proxy.password, cookie_name, proxy.hmac, proxy.sitekey) + Environment.NewLine);
+                    File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} --- Username: {1} --- Password: {2} / Cookie --- Name: {3} --- Value : {4} / Sitekey: {5} / Client ID : {6} / Duplicate : {7}", proxy.address, proxy.username, proxy.password, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
                 else
-                    File.AppendAllText("hmacs.txt", String.Format("Proxy --- Address : {0} / Cookie --- Name: {1} --- Value : {2} / Sitekey: {3}", proxy.address, cookie_name, proxy.hmac, proxy.sitekey) + Environment.NewLine);
+                    File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} / Cookie --- Name: {1} --- Value : {2} / Sitekey: {3} / Client ID : {4} / Duplicate : {5}", proxy.address, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
                 
                 File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), _driver.PageSource);
                 _driver.Quit();
             }
             else
             {
-                rows[i].Cells[6].Value = "Error!";
-                rows[i].Cells[6].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                rows[i].Cells[7].Value = "Error!";
+                rows[i].Cells[7].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
 
                 _driver.Quit();
             }
@@ -365,6 +399,8 @@ namespace _3s_atc
             if (proxy != null)
             {
                 profile.Sitekey = proxy.sitekey; profile.captcha = true;
+                profile.ClientID = proxy.clientid; profile.clientid = true;
+                profile.Duplicate = proxy.duplicate; profile.duplicate = true;
             }
 
             if (Login(profile, cell, proxy))

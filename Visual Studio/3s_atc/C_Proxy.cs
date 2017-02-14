@@ -15,6 +15,8 @@ namespace _3s_atc
         public string password { get; set; }
         public string hmac { get; set; }
         public string sitekey { get; set; }
+        public string clientid { get; set; }
+        public string duplicate { get; set; }
         public List<C_Cookie> cookies;
         public DateTime? hmac_expiration { get; set; }
 
