@@ -326,7 +326,7 @@ namespace _3s_atc
             if (LoggedIn(_driver, 60))
             {
                 cell.Value = "Logged in!";
-                System.Threading.Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(500);
 
                 profile.loggedin = true;
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
@@ -376,7 +376,9 @@ namespace _3s_atc
                     }
                     else
                     {
-                        if (getEUSize(size).Replace(" ", String.Empty) == s.Replace(" ", String.Empty) && stock > 0 || s == size.ToString("0.#").Replace(',', '.') && stock > 0)
+                        if (getEUSize(size).Replace(" ", String.Empty) == s.Replace(" ", String.Empty) && stock > 0)
+                            return entry.Key;
+                        else if(s == size.ToString("0.#").Replace(',', '.') && stock > 0)
                             return entry.Key;
                     }
                 }
