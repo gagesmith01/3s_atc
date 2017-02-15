@@ -9,9 +9,9 @@ using System.Web;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Diagnostics;
 using OpenQA.Selenium;
 using OpenQA.Selenium.PhantomJS;
-using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.UI;
 
@@ -42,27 +42,74 @@ namespace _3s_atc
                 process.Kill();
         }
 
+        public string ReadCookie(string hostName, string cookieName, ref string value)
+        {
+            var dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Google\Chrome\User Data\Default\Cookies";
+            if (!System.IO.File.Exists(dbPath)) return null;
+
+            var connectionString = "Data Source=" + dbPath + ";pooling=false";
+
+            using (var conn = new System.Data.SQLite.SQLiteConnection(connectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                var prm = cmd.CreateParameter();
+                prm.ParameterName = "hostName";
+                prm.Value = hostName;
+
+                var prmm = cmd.CreateParameter();
+                prmm.ParameterName = "cookieName";
+                prmm.Value = cookieName;
+
+                cmd.Parameters.Add(prm);
+                cmd.Parameters.Add(prmm);
+
+                cmd.CommandText = "SELECT encrypted_value FROM cookies WHERE host_key = @hostName AND name = @cookieName";
+
+                conn.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var encryptedData = (byte[])reader[0];
+                        var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedData, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                        var plainText = Encoding.ASCII.GetString(decodedData);
+                        value = plainText;
+
+                        reader.Close();
+
+                        cmd.CommandText = "DELETE FROM cookies WHERE host_key = @hostName and name = @cookieName";
+                        cmd.ExecuteNonQuery();
+
+                        return plainText;
+                    }
+                }
+                conn.Close();
+            }
+
+            return null;
+        }
+
         public void getCaptcha(Profile profile)
         {
-            var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
+            if (String.IsNullOrEmpty(Properties.Settings.Default.chrome_path))
+            {
+                MessageBox.Show("chrome.exe not found, update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+            ProcessStartInfo process = new ProcessStartInfo();
+            process.FileName = Properties.Settings.Default.chrome_path;
+            process.Arguments = "http://dev.adidas.com/sitekey.php?key=" + profile.Sitekey;
+            Process.Start(process);
 
-            IWebDriver _driver;
-            _driver = new ChromeDriver(driverService);
-            Size browser_size = _driver.Manage().Window.Size;
 
-            if (browser_size.Height == 708 && browser_size.Width == 1050)
-                _driver.Manage().Window.Size = new Size(511, 708);
+            string captcha_response = null;
 
-            _driver.Navigate().GoToUrl("http://dev.adidas.com/sitekey.php?key=" + profile.Sitekey);
-
-            while (_driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Name == "g-recaptcha-response") == null)
+            while (String.IsNullOrEmpty(ReadCookie("dev.adidas.com", "g-recaptcha-response", ref captcha_response)))
                 System.Threading.Thread.Sleep(1000);
 
-            OpenQA.Selenium.Cookie cookie = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Name == "g-recaptcha-response");
-            captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = cookie.Value });
-
-            _driver.Quit();
+            captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = captcha_response });
         }
 
         private string webRequestPost(Profile profile, string url, Dictionary<string, string> post, C_Proxy proxy=null)

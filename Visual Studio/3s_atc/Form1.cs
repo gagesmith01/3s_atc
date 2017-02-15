@@ -297,5 +297,24 @@ namespace _3s_atc
             helpers.proxylist.RemoveAt(index);
             helpers.SaveProxyList();
         }
+
+        private void button_3_Browse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            if(!String.IsNullOrEmpty(Properties.Settings.Default.chrome_path))
+                openFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(Properties.Settings.Default.chrome_path);
+            else
+                openFileDialog1.InitialDirectory = "c:\\";
+
+            openFileDialog1.Filter = "Applications (*.exe)|*.exe";
+            openFileDialog1.Multiselect = false;
+            
+            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Properties.Settings.Default.chrome_path = openFileDialog1.FileName;
+                Properties.Settings.Default.Save();
+            }
+        }
     }
 }

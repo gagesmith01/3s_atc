@@ -74,15 +74,21 @@
             this.panel_Tools = new System.Windows.Forms.Panel();
             this.label_2_Inventory = new System.Windows.Forms.Label();
             this.button_2_Check = new System.Windows.Forms.Button();
-            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.label_2_Captcha = new System.Windows.Forms.Label();
             this.webBrowser_2 = new System.Windows.Forms.WebBrowser();
             this.panel_Settings = new System.Windows.Forms.Panel();
-            this.checkBox_3_captchachrome = new System.Windows.Forms.CheckBox();
             this.label_3_Settings = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_3_Password = new System.Windows.Forms.TextBox();
             this.textBox_3_Username = new System.Windows.Forms.TextBox();
@@ -95,14 +101,10 @@
             this.button_3_Update = new System.Windows.Forms.Button();
             this.comboBox_3_Website = new System.Windows.Forms.ComboBox();
             this.label_3_Website = new System.Windows.Forms.Label();
-            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.checkBox_3_captchachrome = new System.Windows.Forms.CheckBox();
+            this.textBox_2_PID = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.button_3_Browse = new System.Windows.Forms.Button();
             this.panel_Home.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -537,15 +539,6 @@
             this.button_2_Check.UseVisualStyleBackColor = true;
             this.button_2_Check.Click += new System.EventHandler(this.button_2_Check_Click);
             // 
-            // textBox_2_PID
-            // 
-            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
-            this.textBox_2_PID.Name = "textBox_2_PID";
-            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
-            this.textBox_2_PID.TabIndex = 7;
-            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
-            // 
             // label_2_PID
             // 
             this.label_2_PID.AutoSize = true;
@@ -583,6 +576,8 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.button_3_Browse);
+            this.panel_Settings.Controls.Add(this.label3);
             this.panel_Settings.Controls.Add(this.checkBox_3_captchachrome);
             this.panel_Settings.Controls.Add(this.label_3_Settings);
             this.panel_Settings.Controls.Add(this.dataGridView2);
@@ -604,19 +599,6 @@
             this.panel_Settings.Size = new System.Drawing.Size(980, 457);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
-            // 
-            // checkBox_3_captchachrome
-            // 
-            this.checkBox_3_captchachrome.AutoSize = true;
-            this.checkBox_3_captchachrome.Checked = global::_3s_atc.Properties.Settings.Default.chrome_captcha;
-            this.checkBox_3_captchachrome.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_3_captchachrome.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::_3s_atc.Properties.Settings.Default, "chrome_captcha", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.checkBox_3_captchachrome.Location = new System.Drawing.Point(483, 32);
-            this.checkBox_3_captchachrome.Name = "checkBox_3_captchachrome";
-            this.checkBox_3_captchachrome.Size = new System.Drawing.Size(165, 17);
-            this.checkBox_3_captchachrome.TabIndex = 19;
-            this.checkBox_3_captchachrome.Text = "Use chrome to solve captcha";
-            this.checkBox_3_captchachrome.UseVisualStyleBackColor = true;
             // 
             // label_3_Settings
             // 
@@ -648,6 +630,61 @@
             this.dataGridView2.Size = new System.Drawing.Size(931, 305);
             this.dataGridView2.TabIndex = 17;
             this.dataGridView2.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_UserDeletedRow);
+            // 
+            // Address
+            // 
+            this.Address.HeaderText = "Address";
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            this.Address.Width = 140;
+            // 
+            // Authentication
+            // 
+            this.Authentication.HeaderText = "Authentication";
+            this.Authentication.Name = "Authentication";
+            this.Authentication.ReadOnly = true;
+            this.Authentication.Width = 65;
+            // 
+            // Username
+            // 
+            this.Username.HeaderText = "Username";
+            this.Username.Name = "Username";
+            this.Username.ReadOnly = true;
+            // 
+            // HMAC
+            // 
+            this.HMAC.HeaderText = "HMAC";
+            this.HMAC.Name = "HMAC";
+            this.HMAC.ReadOnly = true;
+            this.HMAC.Width = 140;
+            // 
+            // Siteky
+            // 
+            this.Siteky.HeaderText = "Sitekey";
+            this.Siteky.Name = "Siteky";
+            this.Siteky.ReadOnly = true;
+            this.Siteky.Width = 140;
+            // 
+            // clientid
+            // 
+            this.clientid.HeaderText = "Client ID";
+            this.clientid.Name = "clientid";
+            this.clientid.ReadOnly = true;
+            this.clientid.Width = 140;
+            // 
+            // p_duplicate
+            // 
+            this.p_duplicate.HeaderText = "Duplicate";
+            this.p_duplicate.Name = "p_duplicate";
+            this.p_duplicate.ReadOnly = true;
+            this.p_duplicate.Width = 75;
+            // 
+            // Statuss
+            // 
+            this.Statuss.HeaderText = "Status";
+            this.Statuss.Name = "Statuss";
+            this.Statuss.ReadOnly = true;
+            this.Statuss.Width = 150;
             // 
             // label2
             // 
@@ -729,7 +766,7 @@
             // 
             // button_3_Update
             // 
-            this.button_3_Update.Location = new System.Drawing.Point(670, 29);
+            this.button_3_Update.Location = new System.Drawing.Point(693, 29);
             this.button_3_Update.Name = "button_3_Update";
             this.button_3_Update.Size = new System.Drawing.Size(85, 23);
             this.button_3_Update.TabIndex = 5;
@@ -793,7 +830,7 @@
             "VE - latin-america.adidas.com",
             "VN - adidas.com.vn",
             "ZA - adidas.co.za"});
-            this.comboBox_3_Website.Location = new System.Drawing.Point(312, 30);
+            this.comboBox_3_Website.Location = new System.Drawing.Point(157, 30);
             this.comboBox_3_Website.Name = "comboBox_3_Website";
             this.comboBox_3_Website.Size = new System.Drawing.Size(144, 21);
             this.comboBox_3_Website.TabIndex = 1;
@@ -801,66 +838,52 @@
             // label_3_Website
             // 
             this.label_3_Website.AutoSize = true;
-            this.label_3_Website.Location = new System.Drawing.Point(257, 34);
+            this.label_3_Website.Location = new System.Drawing.Point(102, 34);
             this.label_3_Website.Name = "label_3_Website";
             this.label_3_Website.Size = new System.Drawing.Size(48, 13);
             this.label_3_Website.TabIndex = 0;
             this.label_3_Website.Text = "Locale : ";
             // 
-            // Address
+            // checkBox_3_captchachrome
             // 
-            this.Address.HeaderText = "Address";
-            this.Address.Name = "Address";
-            this.Address.ReadOnly = true;
-            this.Address.Width = 140;
+            this.checkBox_3_captchachrome.AutoSize = true;
+            this.checkBox_3_captchachrome.Checked = global::_3s_atc.Properties.Settings.Default.chrome_captcha;
+            this.checkBox_3_captchachrome.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_3_captchachrome.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::_3s_atc.Properties.Settings.Default, "chrome_captcha", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox_3_captchachrome.Location = new System.Drawing.Point(506, 32);
+            this.checkBox_3_captchachrome.Name = "checkBox_3_captchachrome";
+            this.checkBox_3_captchachrome.Size = new System.Drawing.Size(165, 17);
+            this.checkBox_3_captchachrome.TabIndex = 19;
+            this.checkBox_3_captchachrome.Text = "Use chrome to solve captcha";
+            this.checkBox_3_captchachrome.UseVisualStyleBackColor = true;
             // 
-            // Authentication
+            // textBox_2_PID
             // 
-            this.Authentication.HeaderText = "Authentication";
-            this.Authentication.Name = "Authentication";
-            this.Authentication.ReadOnly = true;
-            this.Authentication.Width = 65;
+            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
+            this.textBox_2_PID.Name = "textBox_2_PID";
+            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
+            this.textBox_2_PID.TabIndex = 7;
+            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
             // 
-            // Username
+            // label3
             // 
-            this.Username.HeaderText = "Username";
-            this.Username.Name = "Username";
-            this.Username.ReadOnly = true;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(322, 34);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(73, 13);
+            this.label3.TabIndex = 20;
+            this.label3.Text = "Chrome path :";
             // 
-            // HMAC
+            // button_3_Browse
             // 
-            this.HMAC.HeaderText = "HMAC";
-            this.HMAC.Name = "HMAC";
-            this.HMAC.ReadOnly = true;
-            this.HMAC.Width = 140;
-            // 
-            // Siteky
-            // 
-            this.Siteky.HeaderText = "Sitekey";
-            this.Siteky.Name = "Siteky";
-            this.Siteky.ReadOnly = true;
-            this.Siteky.Width = 140;
-            // 
-            // clientid
-            // 
-            this.clientid.HeaderText = "Client ID";
-            this.clientid.Name = "clientid";
-            this.clientid.ReadOnly = true;
-            this.clientid.Width = 140;
-            // 
-            // p_duplicate
-            // 
-            this.p_duplicate.HeaderText = "Duplicate";
-            this.p_duplicate.Name = "p_duplicate";
-            this.p_duplicate.ReadOnly = true;
-            this.p_duplicate.Width = 75;
-            // 
-            // Statuss
-            // 
-            this.Statuss.HeaderText = "Status";
-            this.Statuss.Name = "Statuss";
-            this.Statuss.ReadOnly = true;
-            this.Statuss.Width = 150;
+            this.button_3_Browse.Location = new System.Drawing.Point(395, 29);
+            this.button_3_Browse.Name = "button_3_Browse";
+            this.button_3_Browse.Size = new System.Drawing.Size(75, 23);
+            this.button_3_Browse.TabIndex = 21;
+            this.button_3_Browse.Text = "Browse";
+            this.button_3_Browse.UseVisualStyleBackColor = true;
+            this.button_3_Browse.Click += new System.EventHandler(this.button_3_Browse_Click);
             // 
             // Form1
             // 
@@ -965,6 +988,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn clientid;
         private System.Windows.Forms.DataGridViewTextBoxColumn p_duplicate;
         private System.Windows.Forms.DataGridViewTextBoxColumn Statuss;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button_3_Browse;
     }
 }
 
