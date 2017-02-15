@@ -6,6 +6,8 @@
 	
 	if(isset($_POST['g-recaptcha-response']) && strlen($_POST['g-recaptcha-response'])>0) {
 		setcookie("g-recaptcha-response", $_POST['g-recaptcha-response'], time() + 120);
+		echo "solved captcha, please close your browser so the application can access to the recaptcha response.";
+		return;
 	}
 ?>
 <html>
