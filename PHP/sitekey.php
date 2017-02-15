@@ -10,10 +10,11 @@
 ?>
 <html>
   <head>
+  	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>reCAPTCHA</title>
-	 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	 <meta http-equiv="Content-Language" content="fr-FR">
-     <?php if($sitekey == null) { echo 'sitekey not found'; return; } else echo '<script src="https://www.google.com/recaptcha/api.js"></script>';?>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+     <?php if($sitekey == null) { echo 'sitekey not found'; return; } else echo '<script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>';?>
   </head>
   <body>
     <form action="<?php echo '?key='.$sitekey;?>" method="POST">
