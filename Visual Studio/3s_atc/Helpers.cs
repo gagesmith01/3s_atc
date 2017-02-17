@@ -22,8 +22,8 @@ namespace _3s_atc
         public List<Profile> profiles;
         public List<C_Captcha> captchas;
         public List<C_Proxy> proxylist;
-        public Dictionary<string, string> marketsList;
-        public List<C_Proxy> passedSplash;
+        private Dictionary<string, string> marketsList;
+        private List<C_Proxy> passedSplash;
         private bool proxy_running;
 
         public Helpers()
@@ -42,71 +42,45 @@ namespace _3s_atc
                 process.Kill();
         }
 
-        public string ReadCookie(string hostName, string cookieName, ref string value)
+        private bool ReadCookie(string hostName, string cookieName, ref string value)
         {
-            var dbPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Google\Chrome\User Data\Default\Cookies";
-            if (!System.IO.File.Exists(dbPath)) return null;
+            string path = Path.Combine(Properties.Settings.Default.www_path, "recaptcha_response.txt");
 
-            var connectionString = "Data Source=" + dbPath + ";pooling=false";
-
-            using (var conn = new System.Data.SQLite.SQLiteConnection(connectionString))
-            using (var cmd = conn.CreateCommand())
+            if (File.Exists(path))
             {
-                var prm = cmd.CreateParameter();
-                prm.ParameterName = "hostName";
-                prm.Value = hostName;
+                string[] lines = File.ReadAllLines(path);
+                File.Delete(path);
 
-                var prmm = cmd.CreateParameter();
-                prmm.ParameterName = "cookieName";
-                prmm.Value = cookieName;
-
-                cmd.Parameters.Add(prm);
-                cmd.Parameters.Add(prmm);
-
-                cmd.CommandText = "SELECT encrypted_value FROM cookies WHERE host_key = @hostName AND name = @cookieName";
-
-                conn.Open();
-
-                using (var reader = cmd.ExecuteReader())
+                if (lines.Length > 0)
                 {
-                    while (reader.Read())
+                    int expire_time = Convert.ToInt32(lines[0]);
+                    int time = Convert.ToInt32(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+
+                    if (expire_time > time && captchas.FirstOrDefault(s => s.response == lines[1]) == null)
                     {
-                        var encryptedData = (byte[])reader[0];
-                        var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedData, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
-                        var plainText = Encoding.ASCII.GetString(decodedData);
-                        value = plainText;
-
-                        reader.Close();
-
-                        cmd.CommandText = "DELETE FROM cookies WHERE host_key = @hostName and name = @cookieName";
-                        cmd.ExecuteNonQuery();
-
-                        return plainText;
+                        value = lines[1];
+                        return true;
                     }
                 }
-                conn.Close();
             }
 
-            return null;
+            return false;
         }
 
         public void getCaptcha(Profile profile)
         {
-            if (String.IsNullOrEmpty(Properties.Settings.Default.chrome_path))
+            if (String.IsNullOrEmpty(Properties.Settings.Default.www_path))
             {
-                MessageBox.Show("chrome.exe not found, update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("www/htdocs folder not found, update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            
-            ProcessStartInfo process = new ProcessStartInfo();
-            process.FileName = Properties.Settings.Default.chrome_path;
-            process.Arguments = "http://dev.adidas.com/sitekey.php?key=" + profile.Sitekey;
-            Process.Start(process);
+
+            Process.Start("http://dev.adidas.com/sitekey.php?key=" + profile.Sitekey);
 
 
             string captcha_response = null;
 
-            while (String.IsNullOrEmpty(ReadCookie("dev.adidas.com", "g-recaptcha-response", ref captcha_response)))
+            while (!ReadCookie("dev.adidas.com", "g-recaptcha-response", ref captcha_response))
                 System.Threading.Thread.Sleep(1000);
 
             captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = captcha_response });
@@ -423,14 +397,13 @@ namespace _3s_atc
                     }
                     else
                     {
-                        if (getEUSize(size).Replace(" ", String.Empty) == s.Replace(" ", String.Empty) && stock > 0)
+                        if (getEUSize(size) == s && stock > 0)
                             return entry.Key;
                         else if(s == size.ToString("0.#").Replace(',', '.') && stock > 0)
                             return entry.Key;
                     }
                 }
             }
-
             return null;
         }
         private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null)

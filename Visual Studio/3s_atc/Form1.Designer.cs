@@ -74,11 +74,12 @@
             this.panel_Tools = new System.Windows.Forms.Panel();
             this.label_2_Inventory = new System.Windows.Forms.Label();
             this.button_2_Check = new System.Windows.Forms.Button();
+            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
-            this.label_2_Captcha = new System.Windows.Forms.Label();
-            this.webBrowser_2 = new System.Windows.Forms.WebBrowser();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.button_3_Browse = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.label_3_Settings = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -101,10 +102,6 @@
             this.button_3_Update = new System.Windows.Forms.Button();
             this.comboBox_3_Website = new System.Windows.Forms.ComboBox();
             this.label_3_Website = new System.Windows.Forms.Label();
-            this.checkBox_3_captchachrome = new System.Windows.Forms.CheckBox();
-            this.textBox_2_PID = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button_3_Browse = new System.Windows.Forms.Button();
             this.panel_Home.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -511,8 +508,6 @@
             this.panel_Tools.Controls.Add(this.textBox_2_PID);
             this.panel_Tools.Controls.Add(this.label_2_PID);
             this.panel_Tools.Controls.Add(this.listBox_2_Inventory);
-            this.panel_Tools.Controls.Add(this.label_2_Captcha);
-            this.panel_Tools.Controls.Add(this.webBrowser_2);
             this.panel_Tools.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel_Tools.Location = new System.Drawing.Point(0, 24);
             this.panel_Tools.Name = "panel_Tools";
@@ -539,6 +534,15 @@
             this.button_2_Check.UseVisualStyleBackColor = true;
             this.button_2_Check.Click += new System.EventHandler(this.button_2_Check_Click);
             // 
+            // textBox_2_PID
+            // 
+            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
+            this.textBox_2_PID.Name = "textBox_2_PID";
+            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
+            this.textBox_2_PID.TabIndex = 7;
+            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
+            // 
             // label_2_PID
             // 
             this.label_2_PID.AutoSize = true;
@@ -556,29 +560,10 @@
             this.listBox_2_Inventory.Size = new System.Drawing.Size(308, 368);
             this.listBox_2_Inventory.TabIndex = 5;
             // 
-            // label_2_Captcha
-            // 
-            this.label_2_Captcha.AutoSize = true;
-            this.label_2_Captcha.Location = new System.Drawing.Point(222, 11);
-            this.label_2_Captcha.Name = "label_2_Captcha";
-            this.label_2_Captcha.Size = new System.Drawing.Size(47, 13);
-            this.label_2_Captcha.TabIndex = 4;
-            this.label_2_Captcha.Text = "Captcha";
-            // 
-            // webBrowser_2
-            // 
-            this.webBrowser_2.Location = new System.Drawing.Point(5, 46);
-            this.webBrowser_2.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser_2.Name = "webBrowser_2";
-            this.webBrowser_2.Size = new System.Drawing.Size(564, 399);
-            this.webBrowser_2.TabIndex = 0;
-            this.webBrowser_2.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser_2_DocumentCompleted);
-            // 
             // panel_Settings
             // 
             this.panel_Settings.Controls.Add(this.button_3_Browse);
             this.panel_Settings.Controls.Add(this.label3);
-            this.panel_Settings.Controls.Add(this.checkBox_3_captchachrome);
             this.panel_Settings.Controls.Add(this.label_3_Settings);
             this.panel_Settings.Controls.Add(this.dataGridView2);
             this.panel_Settings.Controls.Add(this.label2);
@@ -599,6 +584,25 @@
             this.panel_Settings.Size = new System.Drawing.Size(980, 457);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
+            // 
+            // button_3_Browse
+            // 
+            this.button_3_Browse.Location = new System.Drawing.Point(580, 29);
+            this.button_3_Browse.Name = "button_3_Browse";
+            this.button_3_Browse.Size = new System.Drawing.Size(75, 23);
+            this.button_3_Browse.TabIndex = 21;
+            this.button_3_Browse.Text = "Browse";
+            this.button_3_Browse.UseVisualStyleBackColor = true;
+            this.button_3_Browse.Click += new System.EventHandler(this.button_3_Browse_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(451, 34);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(128, 13);
+            this.label3.TabIndex = 20;
+            this.label3.Text = "/www/ or /htdocs/ path :";
             // 
             // label_3_Settings
             // 
@@ -766,7 +770,7 @@
             // 
             // button_3_Update
             // 
-            this.button_3_Update.Location = new System.Drawing.Point(693, 29);
+            this.button_3_Update.Location = new System.Drawing.Point(727, 29);
             this.button_3_Update.Name = "button_3_Update";
             this.button_3_Update.Size = new System.Drawing.Size(85, 23);
             this.button_3_Update.TabIndex = 5;
@@ -830,7 +834,7 @@
             "VE - latin-america.adidas.com",
             "VN - adidas.com.vn",
             "ZA - adidas.co.za"});
-            this.comboBox_3_Website.Location = new System.Drawing.Point(157, 30);
+            this.comboBox_3_Website.Location = new System.Drawing.Point(283, 30);
             this.comboBox_3_Website.Name = "comboBox_3_Website";
             this.comboBox_3_Website.Size = new System.Drawing.Size(144, 21);
             this.comboBox_3_Website.TabIndex = 1;
@@ -838,52 +842,11 @@
             // label_3_Website
             // 
             this.label_3_Website.AutoSize = true;
-            this.label_3_Website.Location = new System.Drawing.Point(102, 34);
+            this.label_3_Website.Location = new System.Drawing.Point(228, 34);
             this.label_3_Website.Name = "label_3_Website";
             this.label_3_Website.Size = new System.Drawing.Size(48, 13);
             this.label_3_Website.TabIndex = 0;
             this.label_3_Website.Text = "Locale : ";
-            // 
-            // checkBox_3_captchachrome
-            // 
-            this.checkBox_3_captchachrome.AutoSize = true;
-            this.checkBox_3_captchachrome.Checked = global::_3s_atc.Properties.Settings.Default.chrome_captcha;
-            this.checkBox_3_captchachrome.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_3_captchachrome.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::_3s_atc.Properties.Settings.Default, "chrome_captcha", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.checkBox_3_captchachrome.Location = new System.Drawing.Point(506, 32);
-            this.checkBox_3_captchachrome.Name = "checkBox_3_captchachrome";
-            this.checkBox_3_captchachrome.Size = new System.Drawing.Size(165, 17);
-            this.checkBox_3_captchachrome.TabIndex = 19;
-            this.checkBox_3_captchachrome.Text = "Use chrome to solve captcha";
-            this.checkBox_3_captchachrome.UseVisualStyleBackColor = true;
-            // 
-            // textBox_2_PID
-            // 
-            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
-            this.textBox_2_PID.Name = "textBox_2_PID";
-            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
-            this.textBox_2_PID.TabIndex = 7;
-            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(322, 34);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 13);
-            this.label3.TabIndex = 20;
-            this.label3.Text = "Chrome path :";
-            // 
-            // button_3_Browse
-            // 
-            this.button_3_Browse.Location = new System.Drawing.Point(395, 29);
-            this.button_3_Browse.Name = "button_3_Browse";
-            this.button_3_Browse.Size = new System.Drawing.Size(75, 23);
-            this.button_3_Browse.TabIndex = 21;
-            this.button_3_Browse.Text = "Browse";
-            this.button_3_Browse.UseVisualStyleBackColor = true;
-            this.button_3_Browse.Click += new System.EventHandler(this.button_3_Browse_Click);
             // 
             // Form1
             // 
@@ -957,8 +920,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn status;
         private System.Windows.Forms.Label label_1_Logs;
         private System.Windows.Forms.Panel panel_Tools;
-        private System.Windows.Forms.WebBrowser webBrowser_2;
-        private System.Windows.Forms.Label label_2_Captcha;
         private System.Windows.Forms.Button button_2_Check;
         private System.Windows.Forms.TextBox textBox_2_PID;
         private System.Windows.Forms.Label label_2_PID;
@@ -979,7 +940,6 @@
         private System.Windows.Forms.Label label_3_Username;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Label label_3_Settings;
-        private System.Windows.Forms.CheckBox checkBox_3_captchachrome;
         private System.Windows.Forms.DataGridViewTextBoxColumn Address;
         private System.Windows.Forms.DataGridViewTextBoxColumn Authentication;
         private System.Windows.Forms.DataGridViewTextBoxColumn Username;

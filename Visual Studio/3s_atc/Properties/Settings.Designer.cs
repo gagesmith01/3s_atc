@@ -85,25 +85,13 @@ namespace _3s_atc.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool chrome_captcha {
-            get {
-                return ((bool)(this["chrome_captcha"]));
-            }
-            set {
-                this["chrome_captcha"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string chrome_path {
+        public string www_path {
             get {
-                return ((string)(this["chrome_path"]));
+                return ((string)(this["www_path"]));
             }
             set {
-                this["chrome_path"] = value;
+                this["www_path"] = value;
             }
         }
     }

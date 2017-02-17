@@ -17,10 +17,7 @@
     <Setting Name="pid" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="chrome_captcha" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="chrome_path" Type="System.String" Scope="User">
+    <Setting Name="www_path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

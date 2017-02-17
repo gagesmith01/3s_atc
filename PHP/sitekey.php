@@ -5,9 +5,11 @@
 		$sitekey = $_GET['key'];
 	
 	if(isset($_POST['g-recaptcha-response']) && strlen($_POST['g-recaptcha-response'])>0) {
-		setcookie("g-recaptcha-response", $_POST['g-recaptcha-response'], time() + 120);
-		echo "solved captcha, please close your browser so the application can access to the recaptcha response.";
-		return;
+		$expire_time = time() + 120;
+		setcookie("g-recaptcha-response", $_POST['g-recaptcha-response'], $expire_time);
+		$file = fopen('recaptcha_response.txt', 'w');
+		fwrite($file, $expire_time. "\n" . $_POST['g-recaptcha-response']);
+		fclose($file);
 	}
 ?>
 <html>
@@ -15,7 +17,6 @@
   	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>reCAPTCHA</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
      <?php if($sitekey == null) { echo 'sitekey not found'; return; } else echo '<script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>';?>
   </head>
   <body>

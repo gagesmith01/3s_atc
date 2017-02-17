@@ -157,14 +157,7 @@ namespace _3s_atc
 
         private void captcha_Click(Object sender, System.EventArgs e)
         {
-            int captchaRow = currentMouseOverRow;
-            if (Properties.Settings.Default.chrome_captcha)
-                Task.Run(() => helpers.getCaptcha(helpers.profiles[currentMouseOverRow]));
-            else
-            {
-                panel_Home.Visible = false; panel_Tools.Visible = true; panel_Settings.Visible = false;
-                webBrowser_2.Url = new Uri(String.Format("http://dev.adidas.com/sitekey.php?key={0}", helpers.profiles[captchaRow].Sitekey));
-            }
+            Task.Run(() => helpers.getCaptcha(helpers.profiles[currentMouseOverRow]));
         }
         private async Task cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
         {
@@ -219,22 +212,6 @@ namespace _3s_atc
             panel_Home.Visible = false; panel_Tools.Visible = false; panel_Settings.Visible = true;
         }
 
-        private void webBrowser_2_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-
-            if (webBrowser_2.Url != new Uri("about:blank"))
-            {
-
-                string recaptcha_response = helpers.getCookie("g-recaptcha-response", webBrowser_2.Document.Cookie.Split(';'));
-
-                if (!String.IsNullOrWhiteSpace(recaptcha_response))
-                {
-                    Profile profile = helpers.profiles[captchaRow];
-                    helpers.captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = recaptcha_response });
-                }
-            }
-        }
-
         private async Task getInventory()
         {
             listBox_2_Inventory.Items.Add(String.Format("Getting inventory for product '{0}' ...", Properties.Settings.Default.pid));
@@ -269,8 +246,6 @@ namespace _3s_atc
                 Properties.Settings.Default.code = split[0];
             }
 
-            Properties.Settings.Default.chrome_captcha = checkBox_3_captchachrome.Checked;
-
             Properties.Settings.Default.Save();
         }
 
@@ -300,19 +275,16 @@ namespace _3s_atc
 
         private void button_3_Browse_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
 
-            if(!String.IsNullOrEmpty(Properties.Settings.Default.chrome_path))
-                openFileDialog1.InitialDirectory = System.IO.Path.GetDirectoryName(Properties.Settings.Default.chrome_path);
+            if (!String.IsNullOrEmpty(Properties.Settings.Default.www_path))
+                dialog.SelectedPath = Properties.Settings.Default.www_path;
             else
-                openFileDialog1.InitialDirectory = "c:\\";
-
-            openFileDialog1.Filter = "Applications (*.exe)|*.exe";
-            openFileDialog1.Multiselect = false;
+                dialog.SelectedPath = "c:\\";
             
-            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            if(dialog.ShowDialog() == DialogResult.OK)
             {
-                Properties.Settings.Default.chrome_path = openFileDialog1.FileName;
+                Properties.Settings.Default.www_path = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
             }
         }
