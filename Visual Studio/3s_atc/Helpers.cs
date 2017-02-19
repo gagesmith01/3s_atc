@@ -197,7 +197,7 @@ namespace _3s_atc
             {
                 rows[i].Cells[7].Value = "On splash page...";
 
-                while (_driver.FindElements(By.Id("captcha")).Count <= 0)
+                while (_driver.FindElements(By.Id("captcha")).Count == 0)
                     System.Threading.Thread.Sleep(1000);
 
                 rows[i].Cells[7].Value = "Splash page passed!";
@@ -321,9 +321,8 @@ namespace _3s_atc
         public bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
         {
             cell.Value = "Connecting to login page...";
-            IWebDriver _driver = profile._driver;
 
-            _driver = createNewJSDriver(proxy);
+            IWebDriver _driver = createNewJSDriver(proxy);
             _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account");
 
             if (ElementDisplayed(_driver, By.Id("username"), 40))

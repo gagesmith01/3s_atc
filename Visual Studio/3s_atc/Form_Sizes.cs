@@ -104,7 +104,10 @@ namespace _3s_atc
             if (listBox1.SelectedIndex != -1)
             {
                 for (int i = listBox1.SelectedItems.Count - 1; i >= 0; i--)
+                {
                     listBox1.Items.Remove(listBox1.SelectedItems[i]);
+                    sizes.RemoveAt(i);
+                }
             }
         }
     }

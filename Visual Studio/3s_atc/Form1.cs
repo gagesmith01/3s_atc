@@ -15,7 +15,6 @@ namespace _3s_atc
         public Helpers helpers;
         private List<double> Sizes;
         private int currentMouseOverRow;
-        private int captchaRow;
 
         public Form1()
         {
@@ -86,17 +85,31 @@ namespace _3s_atc
             duplicate = (checkBox_1_Duplicate.Checked) ? textBox_1_Duplicate.Text : null;
             splash_url = (checkBox_1_Splashpage.Checked) ? textBox_1_Splashurl.Text : null;
 
-            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = this.Sizes, Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splash = checkBox_1_Splashpage.Checked, loggedin = false, running = false });
             string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), sitekey, clientid, duplicate, richTextBox_1_Cookies.Text, splash_url, "" };
-            dataGridView1.Rows.Add(row);
+            int rowindex = dataGridView1.Rows.Add(row);
+            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = this.Sizes, Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splash = checkBox_1_Splashpage.Checked, loggedin = false, running = false, index = rowindex });
+
             helpers.SaveProfiles();
 
             Sizes.Clear();
         }
 
+        private void updateRows(Profile profile)
+        {
+            DataGridViewRow row = dataGridView1.Rows[profile.index];
+            row.Cells[0].Value = profile.Email;
+            row.Cells[1].Value = profile.ProductID;
+            row.Cells[2].Value = string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray());
+            row.Cells[3].Value = profile.Sitekey;
+            row.Cells[4].Value = profile.ClientID;
+            row.Cells[5].Value = profile.Duplicate;
+            row.Cells[6].Value = string.Join(";", profile.ExtraCookies.Select(m => m.Key + "=" + m.Value).ToArray());
+            row.Cells[7].Value = profile.SplashUrl;
+        }
         private void button_1_SelectSizes_Click(object sender, EventArgs e)
         {
             Form_Sizes form_sizes = new Form_Sizes(Sizes);
+            form_sizes.StartPosition = FormStartPosition.CenterParent;
             form_sizes.ShowDialog();
 
             Sizes = new List<double>(form_sizes.sizes);
@@ -111,17 +124,25 @@ namespace _3s_atc
 
         private void dataGridView1_MouseClick(object sender, MouseEventArgs e)
         {
-            currentMouseOverRow = dataGridView1.HitTest(e.X, e.Y).RowIndex;
-
-            if (e.Button == MouseButtons.Right && currentMouseOverRow >= 0)
+            try
             {
-                ContextMenu m = new ContextMenu();
-                m.MenuItems.Add(new MenuItem("Show", show_Click));
+                currentMouseOverRow = dataGridView1.HitTest(e.X, e.Y).RowIndex;
 
-                if(!String.IsNullOrWhiteSpace(helpers.profiles[currentMouseOverRow].Sitekey) && helpers.profiles[currentMouseOverRow].captcha)
-                    m.MenuItems.Add(new MenuItem("Solve captcha", captcha_Click));
+                if (e.Button == MouseButtons.Right && currentMouseOverRow >= 0 && currentMouseOverRow <= dataGridView1.Rows.Count)
+                {
+                    ContextMenu m = new ContextMenu();
+                    m.MenuItems.Add(new MenuItem("Show", show_Click));
+                    m.MenuItems.Add(new MenuItem("Edit profile", edit_Click));
 
-                m.Show(dataGridView1, new Point(e.X, e.Y));
+                    if (!String.IsNullOrWhiteSpace(helpers.profiles[currentMouseOverRow].Sitekey) && helpers.profiles[currentMouseOverRow].captcha)
+                        m.MenuItems.Add(new MenuItem("Solve captcha", captcha_Click));
+
+                    m.Show(dataGridView1, new Point(e.X, e.Y));
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
         }
 
@@ -155,6 +176,15 @@ namespace _3s_atc
             MessageBox.Show(str);
         }
 
+        private void edit_Click(Object sender, System.EventArgs e)
+        {
+            Profile profile = helpers.profiles[currentMouseOverRow];
+            Form_Edit form_edit = new Form_Edit(profile, this.helpers);
+            form_edit.StartPosition = FormStartPosition.CenterParent;
+            form_edit.ShowDialog();
+
+            updateRows(profile);
+        }
         private void captcha_Click(Object sender, System.EventArgs e)
         {
             Task.Run(() => helpers.getCaptcha(helpers.profiles[currentMouseOverRow]));
