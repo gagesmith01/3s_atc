@@ -384,25 +384,22 @@ namespace _3s_atc
 
             foreach (KeyValuePair<string, Dictionary<string, string>> entry in inventory)
             {
-                foreach(double size in sizes)
-                {
-                    string s = inventory[entry.Key]["size"];
-                    int stock = Convert.ToInt32(inventory[entry.Key]["stockcount"]);
+                string key = entry.Key;
+                string s = inventory[key]["size"];
+                int stock = Convert.ToInt32(inventory[key]["stockcount"]);
 
-                    if (Properties.Settings.Default.code == "GB")
-                    {
-                        if (s == getUKSize(size) && stock > 0)
-                            return entry.Key;
-                    }
-                    else
-                    {
-                        if (getEUSize(size) == s && stock > 0)
-                            return entry.Key;
-                        else if(s == size.ToString("0.#").Replace(',', '.') && stock > 0)
-                            return entry.Key;
-                    }
+                for (int i = 0; i < sizes.Count; i++)
+                {
+                    int index = i;
+                    if (sizes[index].ToString("0.#").Replace(',', '.') == s && stock > 0)
+                        return key;
+                    else if (Properties.Settings.Default.code == "GB" && getUKSize(sizes[index]) == s && stock > 0)
+                        return key;
+                    else if (getEUSize(sizes[index]) == s && stock > 0)
+                        return key;
                 }
             }
+
             return null;
         }
         private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null)
