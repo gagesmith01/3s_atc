@@ -397,6 +397,8 @@ namespace _3s_atc
                         return key;
                     else if (getEUSize(sizes[index]) == s && stock > 0)
                         return key;
+
+                    System.Threading.Thread.Sleep(500);
                 }
             }
 
@@ -503,11 +505,12 @@ namespace _3s_atc
 
             for (int i = 0; i < json["variations"]["variants"].Count; i++)
             {
-                string stylecode = json["variations"]["variants"][i]["id"];
+                int index = i;
+                string stylecode = json["variations"]["variants"][index]["id"];
                 products[stylecode] = new Dictionary<string, string>();
 
-                products[stylecode]["size"] = json["variations"]["variants"][i]["attributes"]["size"];
-                products[stylecode]["stockcount"] = Convert.ToInt32(json["variations"]["variants"][i]["ATS"]).ToString();
+                products[stylecode]["size"] = json["variations"]["variants"][index]["attributes"]["size"];
+                products[stylecode]["stockcount"] = Convert.ToInt32(json["variations"]["variants"][index]["ATS"]).ToString();
             }
 
             return products;
