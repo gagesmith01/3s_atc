@@ -78,18 +78,11 @@
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.checkBox_3_Bypass = new System.Windows.Forms.CheckBox();
             this.button_3_Browse = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label_3_Settings = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_3_Password = new System.Windows.Forms.TextBox();
             this.textBox_3_Username = new System.Windows.Forms.TextBox();
@@ -102,6 +95,15 @@
             this.button_3_Update = new System.Windows.Forms.Button();
             this.comboBox_3_Website = new System.Windows.Forms.ComboBox();
             this.label_3_Website = new System.Windows.Forms.Label();
+            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Refresh = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel_Home.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -562,6 +564,7 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.checkBox_3_Bypass);
             this.panel_Settings.Controls.Add(this.button_3_Browse);
             this.panel_Settings.Controls.Add(this.label3);
             this.panel_Settings.Controls.Add(this.label_3_Settings);
@@ -584,6 +587,16 @@
             this.panel_Settings.Size = new System.Drawing.Size(980, 457);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
+            // 
+            // checkBox_3_Bypass
+            // 
+            this.checkBox_3_Bypass.AutoSize = true;
+            this.checkBox_3_Bypass.Location = new System.Drawing.Point(746, 88);
+            this.checkBox_3_Bypass.Name = "checkBox_3_Bypass";
+            this.checkBox_3_Bypass.Size = new System.Drawing.Size(99, 17);
+            this.checkBox_3_Bypass.TabIndex = 22;
+            this.checkBox_3_Bypass.Text = "Refresh bypass";
+            this.checkBox_3_Bypass.UseVisualStyleBackColor = true;
             // 
             // button_3_Browse
             // 
@@ -619,6 +632,7 @@
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Address,
+            this.Refresh,
             this.Authentication,
             this.Username,
             this.HMAC,
@@ -626,74 +640,19 @@
             this.clientid,
             this.p_duplicate,
             this.Statuss});
-            this.dataGridView2.Location = new System.Drawing.Point(35, 140);
+            this.dataGridView2.Location = new System.Drawing.Point(5, 140);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(931, 305);
+            this.dataGridView2.Size = new System.Drawing.Size(969, 305);
             this.dataGridView2.TabIndex = 17;
             this.dataGridView2.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_UserDeletedRow);
-            // 
-            // Address
-            // 
-            this.Address.HeaderText = "Address";
-            this.Address.Name = "Address";
-            this.Address.ReadOnly = true;
-            this.Address.Width = 140;
-            // 
-            // Authentication
-            // 
-            this.Authentication.HeaderText = "Authentication";
-            this.Authentication.Name = "Authentication";
-            this.Authentication.ReadOnly = true;
-            this.Authentication.Width = 65;
-            // 
-            // Username
-            // 
-            this.Username.HeaderText = "Username";
-            this.Username.Name = "Username";
-            this.Username.ReadOnly = true;
-            // 
-            // HMAC
-            // 
-            this.HMAC.HeaderText = "HMAC";
-            this.HMAC.Name = "HMAC";
-            this.HMAC.ReadOnly = true;
-            this.HMAC.Width = 140;
-            // 
-            // Siteky
-            // 
-            this.Siteky.HeaderText = "Sitekey";
-            this.Siteky.Name = "Siteky";
-            this.Siteky.ReadOnly = true;
-            this.Siteky.Width = 140;
-            // 
-            // clientid
-            // 
-            this.clientid.HeaderText = "Client ID";
-            this.clientid.Name = "clientid";
-            this.clientid.ReadOnly = true;
-            this.clientid.Width = 140;
-            // 
-            // p_duplicate
-            // 
-            this.p_duplicate.HeaderText = "Duplicate";
-            this.p_duplicate.Name = "p_duplicate";
-            this.p_duplicate.ReadOnly = true;
-            this.p_duplicate.Width = 75;
-            // 
-            // Statuss
-            // 
-            this.Statuss.HeaderText = "Status";
-            this.Statuss.Name = "Statuss";
-            this.Statuss.ReadOnly = true;
-            this.Statuss.Width = 150;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(523, 114);
+            this.label2.Location = new System.Drawing.Point(439, 89);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 16;
@@ -701,7 +660,7 @@
             // 
             // textBox_3_Password
             // 
-            this.textBox_3_Password.Location = new System.Drawing.Point(588, 111);
+            this.textBox_3_Password.Location = new System.Drawing.Point(504, 86);
             this.textBox_3_Password.Name = "textBox_3_Password";
             this.textBox_3_Password.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Password.TabIndex = 15;
@@ -709,7 +668,7 @@
             // 
             // textBox_3_Username
             // 
-            this.textBox_3_Username.Location = new System.Drawing.Point(375, 110);
+            this.textBox_3_Username.Location = new System.Drawing.Point(300, 86);
             this.textBox_3_Username.Name = "textBox_3_Username";
             this.textBox_3_Username.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Username.TabIndex = 14;
@@ -717,7 +676,7 @@
             // label_3_Username
             // 
             this.label_3_Username.AutoSize = true;
-            this.label_3_Username.Location = new System.Drawing.Point(309, 113);
+            this.label_3_Username.Location = new System.Drawing.Point(234, 89);
             this.label_3_Username.Name = "label_3_Username";
             this.label_3_Username.Size = new System.Drawing.Size(61, 13);
             this.label_3_Username.TabIndex = 13;
@@ -726,7 +685,7 @@
             // checkBox_3_Auth
             // 
             this.checkBox_3_Auth.AutoSize = true;
-            this.checkBox_3_Auth.Location = new System.Drawing.Point(739, 113);
+            this.checkBox_3_Auth.Location = new System.Drawing.Point(645, 88);
             this.checkBox_3_Auth.Name = "checkBox_3_Auth";
             this.checkBox_3_Auth.Size = new System.Drawing.Size(94, 17);
             this.checkBox_3_Auth.TabIndex = 12;
@@ -735,7 +694,7 @@
             // 
             // button_3_Add
             // 
-            this.button_3_Add.Location = new System.Drawing.Point(844, 109);
+            this.button_3_Add.Location = new System.Drawing.Point(852, 83);
             this.button_3_Add.Name = "button_3_Add";
             this.button_3_Add.Size = new System.Drawing.Size(122, 25);
             this.button_3_Add.TabIndex = 10;
@@ -745,15 +704,15 @@
             // 
             // textBox_3_Address
             // 
-            this.textBox_3_Address.Location = new System.Drawing.Point(75, 109);
+            this.textBox_3_Address.Location = new System.Drawing.Point(58, 85);
             this.textBox_3_Address.Name = "textBox_3_Address";
-            this.textBox_3_Address.Size = new System.Drawing.Size(210, 20);
+            this.textBox_3_Address.Size = new System.Drawing.Size(173, 20);
             this.textBox_3_Address.TabIndex = 9;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(19, 113);
+            this.label1.Location = new System.Drawing.Point(2, 89);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 8;
@@ -762,7 +721,7 @@
             // label_3_ProxyList
             // 
             this.label_3_ProxyList.AutoSize = true;
-            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 89);
+            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 65);
             this.label_3_ProxyList.Name = "label_3_ProxyList";
             this.label_3_ProxyList.Size = new System.Drawing.Size(54, 13);
             this.label_3_ProxyList.TabIndex = 7;
@@ -847,6 +806,68 @@
             this.label_3_Website.Size = new System.Drawing.Size(48, 13);
             this.label_3_Website.TabIndex = 0;
             this.label_3_Website.Text = "Locale : ";
+            // 
+            // Address
+            // 
+            this.Address.HeaderText = "Address";
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            this.Address.Width = 140;
+            // 
+            // Refresh
+            // 
+            this.Refresh.HeaderText = "Refresh method";
+            this.Refresh.Name = "Refresh";
+            this.Refresh.ReadOnly = true;
+            this.Refresh.Width = 65;
+            // 
+            // Authentication
+            // 
+            this.Authentication.HeaderText = "Authentication";
+            this.Authentication.Name = "Authentication";
+            this.Authentication.ReadOnly = true;
+            this.Authentication.Width = 65;
+            // 
+            // Username
+            // 
+            this.Username.HeaderText = "Username";
+            this.Username.Name = "Username";
+            this.Username.ReadOnly = true;
+            // 
+            // HMAC
+            // 
+            this.HMAC.HeaderText = "HMAC";
+            this.HMAC.Name = "HMAC";
+            this.HMAC.ReadOnly = true;
+            this.HMAC.Width = 140;
+            // 
+            // Siteky
+            // 
+            this.Siteky.HeaderText = "Sitekey";
+            this.Siteky.Name = "Siteky";
+            this.Siteky.ReadOnly = true;
+            this.Siteky.Width = 140;
+            // 
+            // clientid
+            // 
+            this.clientid.HeaderText = "Client ID";
+            this.clientid.Name = "clientid";
+            this.clientid.ReadOnly = true;
+            this.clientid.Width = 140;
+            // 
+            // p_duplicate
+            // 
+            this.p_duplicate.HeaderText = "Duplicate";
+            this.p_duplicate.Name = "p_duplicate";
+            this.p_duplicate.ReadOnly = true;
+            this.p_duplicate.Width = 75;
+            // 
+            // Statuss
+            // 
+            this.Statuss.HeaderText = "Status";
+            this.Statuss.Name = "Statuss";
+            this.Statuss.ReadOnly = true;
+            this.Statuss.Width = 130;
             // 
             // Form1
             // 
@@ -940,7 +961,11 @@
         private System.Windows.Forms.Label label_3_Username;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Label label_3_Settings;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button button_3_Browse;
+        private System.Windows.Forms.CheckBox checkBox_3_Bypass;
         private System.Windows.Forms.DataGridViewTextBoxColumn Address;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Refresh;
         private System.Windows.Forms.DataGridViewTextBoxColumn Authentication;
         private System.Windows.Forms.DataGridViewTextBoxColumn Username;
         private System.Windows.Forms.DataGridViewTextBoxColumn HMAC;
@@ -948,8 +973,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn clientid;
         private System.Windows.Forms.DataGridViewTextBoxColumn p_duplicate;
         private System.Windows.Forms.DataGridViewTextBoxColumn Statuss;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button_3_Browse;
     }
 }
 

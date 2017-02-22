@@ -35,7 +35,7 @@ namespace _3s_atc
                 dataGridView1.Rows.Add(new string[] { profile.Email, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), profile.Sitekey, profile.ClientID, profile.Duplicate, string.Join(";", profile.ExtraCookies.Select(kv => kv.Key + "=" + kv.Value).ToArray()), profile.SplashUrl, "" });
 
             foreach(C_Proxy proxy in helpers.proxylist)
-                dataGridView2.Rows.Add(new string[] { proxy.address, proxy.auth.ToString(), proxy.username, proxy.password, null, null, null });
+                dataGridView2.Rows.Add(new string[] { proxy.address, proxy.refresh.ToString(), proxy.auth.ToString(), proxy.username, null, null, null, null });
 
             for (int i = 0; i < comboBox_3_Website.Items.Count; i++)
             {
@@ -289,9 +289,9 @@ namespace _3s_atc
                 MessageBox.Show("Proxy already in list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;}
 
-            helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, hmac = null, sitekey = null, auth = checkBox_3_Auth.Checked });
+            helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, hmac = null, sitekey = null, auth = checkBox_3_Auth.Checked, refresh = checkBox_3_Bypass.Checked });
 
-            dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, textBox_3_Password.Text, null, null, null});
+            dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Bypass.Checked.ToString(), checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, null, null, null, null});
 
             helpers.SaveProxyList();
         }

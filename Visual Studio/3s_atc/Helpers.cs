@@ -176,45 +176,71 @@ namespace _3s_atc
             return null;
 
         }
+
+        public void WaitForPageLoad(IWebDriver _driver, int timeout) 
+        {
+            string state = string.Empty;
+            try 
+            {
+                WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
+
+                wait.Until(d => {
+                    try { state = ((IJavaScriptExecutor) _driver).ExecuteScript(@"return document.readyState").ToString(); }
+                    catch (InvalidOperationException) { } 
+                    catch (NoSuchWindowException) { _driver.SwitchTo().Window(_driver.WindowHandles.Last()); }
+                    return (state.Equals("complete", StringComparison.InvariantCultureIgnoreCase));		
+                });
+            } 
+            catch 
+            {
+                throw;
+            }
+        }
+        private void refreshDriver(IWebDriver _driver)
+        {
+            System.Threading.Thread.Sleep(5000);
+            if (_driver.FindElements(By.Id("captcha")).Count == 0)
+            {
+                _driver.Manage().Cookies.DeleteAllCookies();
+                _driver.Navigate().Refresh();
+                WaitForPageLoad(_driver, 60);
+            }
+        }
         void proxyRun(Profile profile, C_Proxy proxy, int i, DataGridViewRowCollection rows)
         {
-            var driverService = PhantomJSDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-
-            if (proxy.auth)
-                driverService.ProxyAuthentication = String.Format("{0}:{1}", proxy.username, proxy.password);
-
-            driverService.Proxy = proxy.address;
-            //driverService.ProxyType = "http";
-
-            rows[i].Cells[7].Value = "Setting up...";
+            rows[i].Cells[8].Value = "Setting up...";
 
             IWebDriver _driver;
-            _driver = new PhantomJSDriver(driverService);
+            _driver = createNewJSDriver(proxy);
             _driver.Navigate().GoToUrl(profile.SplashUrl);
 
             if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 60))
             {
-                rows[i].Cells[7].Value = "On splash page...";
+                rows[i].Cells[8].Value = "On splash page...";
 
                 while (_driver.FindElements(By.Id("captcha")).Count == 0)
-                    System.Threading.Thread.Sleep(1000);
+                {
+                    if (proxy.refresh)
+                        refreshDriver(_driver);
+                    else
+                        System.Threading.Thread.Sleep(1000);
+                }
 
-                rows[i].Cells[7].Value = "Splash page passed!";
-                rows[i].Cells[7].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
+                rows[i].Cells[8].Value = "Splash page passed!";
+                rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
                 string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
                 proxy.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
                 proxy.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                rows[i].Cells[3].Value = proxy.hmac;
+                rows[i].Cells[4].Value = proxy.hmac;
                 proxy.sitekey = _driver.FindElement(By.Id("captcha")).GetAttribute("data-sitekey");
-                rows[i].Cells[4].Value = proxy.sitekey;
+                rows[i].Cells[5].Value = proxy.sitekey;
                 proxy.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
-                rows[i].Cells[5].Value = proxy.clientid;
+                rows[i].Cells[6].Value = proxy.clientid;
                 proxy.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
-                rows[i].Cells[6].Value = proxy.duplicate;
+                rows[i].Cells[7].Value = proxy.duplicate;
 
-                rows[i].Cells[7].Value = "HMAC and Sitekey retrieved!";
+                rows[i].Cells[8].Value = "HMAC and Sitekey retrieved!";
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
                 {
                     if (cookie.Domain.Contains("adidas"))
@@ -233,8 +259,8 @@ namespace _3s_atc
             }
             else
             {
-                rows[i].Cells[7].Value = "Error!";
-                rows[i].Cells[7].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                rows[i].Cells[8].Value = "Error!";
+                rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
 
                 _driver.Quit();
             }
@@ -309,11 +335,14 @@ namespace _3s_atc
                     driverService.ProxyAuthentication = String.Format("{0}:{1}", proxy.username, proxy.password);
 
                 driverService.Proxy = proxy.address;
-                driverService.ProxyType = "http";
+                //driverService.ProxyType = "http";
                 driverService.IgnoreSslErrors = true;
             }
 
-            _driver = new PhantomJSDriver(driverService);
+            var driverOptions = new PhantomJSOptions();
+            driverOptions.AddAdditionalCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+
+            _driver = new PhantomJSDriver(driverService, driverOptions);
 
             return _driver;
         }
