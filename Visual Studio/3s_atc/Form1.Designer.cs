@@ -83,6 +83,15 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label_3_Settings = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Refresh = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_3_Password = new System.Windows.Forms.TextBox();
             this.textBox_3_Username = new System.Windows.Forms.TextBox();
@@ -95,15 +104,7 @@
             this.button_3_Update = new System.Windows.Forms.Button();
             this.comboBox_3_Website = new System.Windows.Forms.ComboBox();
             this.label_3_Website = new System.Windows.Forms.Label();
-            this.Address = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Refresh = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Authentication = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Username = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.HMAC = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Siteky = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.clientid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.p_duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Statuss = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel_Home.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -564,6 +565,7 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.label4);
             this.panel_Settings.Controls.Add(this.checkBox_3_Bypass);
             this.panel_Settings.Controls.Add(this.button_3_Browse);
             this.panel_Settings.Controls.Add(this.label3);
@@ -648,6 +650,69 @@
             this.dataGridView2.Size = new System.Drawing.Size(969, 305);
             this.dataGridView2.TabIndex = 17;
             this.dataGridView2.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_UserDeletedRow);
+            this.dataGridView2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView2_MouseClick);
+            // 
+            // Address
+            // 
+            this.Address.HeaderText = "Address";
+            this.Address.Name = "Address";
+            this.Address.ReadOnly = true;
+            this.Address.Width = 140;
+            // 
+            // Refresh
+            // 
+            this.Refresh.HeaderText = "Refresh method";
+            this.Refresh.Name = "Refresh";
+            this.Refresh.ReadOnly = true;
+            this.Refresh.Width = 65;
+            // 
+            // Authentication
+            // 
+            this.Authentication.HeaderText = "Authentication";
+            this.Authentication.Name = "Authentication";
+            this.Authentication.ReadOnly = true;
+            this.Authentication.Width = 65;
+            // 
+            // Username
+            // 
+            this.Username.HeaderText = "Username";
+            this.Username.Name = "Username";
+            this.Username.ReadOnly = true;
+            // 
+            // HMAC
+            // 
+            this.HMAC.HeaderText = "HMAC";
+            this.HMAC.Name = "HMAC";
+            this.HMAC.ReadOnly = true;
+            this.HMAC.Width = 140;
+            // 
+            // Siteky
+            // 
+            this.Siteky.HeaderText = "Sitekey";
+            this.Siteky.Name = "Siteky";
+            this.Siteky.ReadOnly = true;
+            this.Siteky.Width = 140;
+            // 
+            // clientid
+            // 
+            this.clientid.HeaderText = "Client ID";
+            this.clientid.Name = "clientid";
+            this.clientid.ReadOnly = true;
+            this.clientid.Width = 140;
+            // 
+            // p_duplicate
+            // 
+            this.p_duplicate.HeaderText = "Duplicate";
+            this.p_duplicate.Name = "p_duplicate";
+            this.p_duplicate.ReadOnly = true;
+            this.p_duplicate.Width = 75;
+            // 
+            // Statuss
+            // 
+            this.Statuss.HeaderText = "Status";
+            this.Statuss.Name = "Statuss";
+            this.Statuss.ReadOnly = true;
+            this.Statuss.Width = 130;
             // 
             // label2
             // 
@@ -807,67 +872,14 @@
             this.label_3_Website.TabIndex = 0;
             this.label_3_Website.Text = "Locale : ";
             // 
-            // Address
+            // label4
             // 
-            this.Address.HeaderText = "Address";
-            this.Address.Name = "Address";
-            this.Address.ReadOnly = true;
-            this.Address.Width = 140;
-            // 
-            // Refresh
-            // 
-            this.Refresh.HeaderText = "Refresh method";
-            this.Refresh.Name = "Refresh";
-            this.Refresh.ReadOnly = true;
-            this.Refresh.Width = 65;
-            // 
-            // Authentication
-            // 
-            this.Authentication.HeaderText = "Authentication";
-            this.Authentication.Name = "Authentication";
-            this.Authentication.ReadOnly = true;
-            this.Authentication.Width = 65;
-            // 
-            // Username
-            // 
-            this.Username.HeaderText = "Username";
-            this.Username.Name = "Username";
-            this.Username.ReadOnly = true;
-            // 
-            // HMAC
-            // 
-            this.HMAC.HeaderText = "HMAC";
-            this.HMAC.Name = "HMAC";
-            this.HMAC.ReadOnly = true;
-            this.HMAC.Width = 140;
-            // 
-            // Siteky
-            // 
-            this.Siteky.HeaderText = "Sitekey";
-            this.Siteky.Name = "Siteky";
-            this.Siteky.ReadOnly = true;
-            this.Siteky.Width = 140;
-            // 
-            // clientid
-            // 
-            this.clientid.HeaderText = "Client ID";
-            this.clientid.Name = "clientid";
-            this.clientid.ReadOnly = true;
-            this.clientid.Width = 140;
-            // 
-            // p_duplicate
-            // 
-            this.p_duplicate.HeaderText = "Duplicate";
-            this.p_duplicate.Name = "p_duplicate";
-            this.p_duplicate.ReadOnly = true;
-            this.p_duplicate.Width = 75;
-            // 
-            // Statuss
-            // 
-            this.Statuss.HeaderText = "Status";
-            this.Statuss.Name = "Statuss";
-            this.Statuss.ReadOnly = true;
-            this.Statuss.Width = 130;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(118, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(36, 13);
+            this.label4.TabIndex = 23;
+            this.label4.Text = "ip:port";
             // 
             // Form1
             // 
@@ -973,6 +985,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn clientid;
         private System.Windows.Forms.DataGridViewTextBoxColumn p_duplicate;
         private System.Windows.Forms.DataGridViewTextBoxColumn Statuss;
+        private System.Windows.Forms.Label label4;
     }
 }
 

@@ -332,10 +332,14 @@ namespace _3s_atc
             if (proxy != null)
             {
                 if (proxy.auth)
+                {
+                    driverService.ProxyType = "socks5";
                     driverService.ProxyAuthentication = String.Format("{0}:{1}", proxy.username, proxy.password);
+                }
+                else
+                    driverService.ProxyType = "http";
 
                 driverService.Proxy = proxy.address;
-                //driverService.ProxyType = "http";
                 driverService.IgnoreSslErrors = true;
             }
 
@@ -562,7 +566,7 @@ namespace _3s_atc
             for(int i = 0; i < json["data"][0]["variants"].Count; i++)
             {
                 int index = i;
-                string id = json["data"][0]["variants"][i]["product_id"];
+                string id = json["data"][0]["variants"][index]["product_id"];
 
                 products[id] = new Dictionary<string, string>();
 

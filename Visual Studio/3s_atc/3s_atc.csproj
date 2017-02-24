@@ -87,6 +87,12 @@
     <Compile Include="Form_Edit.Designer.cs">
       <DependentUpon>Form_Edit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_ProxyEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_ProxyEdit.Designer.cs">
+      <DependentUpon>Form_ProxyEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Sizes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,9 @@
     <EmbeddedResource Include="Form_Edit.resx">
       <DependentUpon>Form_Edit.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_ProxyEdit.resx">
+      <DependentUpon>Form_ProxyEdit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Sizes.resx">
       <DependentUpon>Form_Sizes.cs</DependentUpon>

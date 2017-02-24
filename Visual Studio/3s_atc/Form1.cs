@@ -15,6 +15,7 @@ namespace _3s_atc
         public Helpers helpers;
         private List<double> Sizes;
         private int currentMouseOverRow;
+        private int currentMouseOverRow2;
 
         public Form1()
         {
@@ -287,7 +288,7 @@ namespace _3s_atc
                 MessageBox.Show("Proxy address is empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return; }
 
-            if(helpers.proxylist.FindIndex(x => x.address == textBox_3_Address.Text && x.auth == checkBox_3_Auth.Checked && x.username == textBox_3_Username.Text && x.password == textBox_3_Password.Text) != -1) {
+            if(helpers.proxylist.FindIndex(x => x.address == textBox_3_Address.Text && x.auth == checkBox_3_Auth.Checked) != -1) {
                 MessageBox.Show("Proxy already in list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;}
 
@@ -319,6 +320,46 @@ namespace _3s_atc
                 Properties.Settings.Default.www_path = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void dataGridView2_MouseClick(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                currentMouseOverRow2 = dataGridView2.HitTest(e.X, e.Y).RowIndex;
+
+                if (e.Button == MouseButtons.Right && currentMouseOverRow2 >= 0 && currentMouseOverRow2 <= dataGridView2.Rows.Count)
+                {
+                    ContextMenu m = new ContextMenu();
+
+                    m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
+                    m.Show(dataGridView2, new Point(e.X, e.Y));
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private void editProxy_Click(Object sender, System.EventArgs e)
+        {
+            int index = currentMouseOverRow2;
+            C_Proxy proxy = helpers.proxylist[index];
+            Form_ProxyEdit form_proxyedit = new Form_ProxyEdit(proxy, this.helpers);
+            form_proxyedit.StartPosition = FormStartPosition.CenterParent;
+            form_proxyedit.ShowDialog();
+
+            updateProxyRows(proxy, index);
+        }
+
+        private void updateProxyRows(C_Proxy proxy, int index)
+        {
+            DataGridViewRow row = dataGridView2.Rows[index];
+            row.Cells[0].Value = proxy.address;
+            row.Cells[1].Value = proxy.refresh.ToString();
+            row.Cells[2].Value = proxy.auth.ToString();
+            row.Cells[3].Value = proxy.username;
         }
     }
 }
