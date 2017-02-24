@@ -98,7 +98,7 @@ namespace _3s_atc
 
             HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
             webRequest.Method = "POST";
-            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
             
             if (proxy != null)
             {
@@ -117,14 +117,14 @@ namespace _3s_atc
 
             CookieContainer cookies = new CookieContainer();
 
+            foreach (C_Cookie cookie in profile.Cookies)
+                cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
+
             if(proxy != null)
             {
                 foreach (C_Cookie cookie in proxy.cookies)
                     cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
             }
-
-            foreach (C_Cookie cookie in profile.Cookies)
-                cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
 
             webRequest.CookieContainer = cookies;
 
@@ -133,7 +133,7 @@ namespace _3s_atc
             requestStream.Close();
 
             HttpWebResponse myHttpWebResponse = (HttpWebResponse)webRequest.GetResponse();
-
+            
             Stream responseStream = myHttpWebResponse.GetResponseStream();
             StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
 
@@ -214,7 +214,7 @@ namespace _3s_atc
             _driver = createNewJSDriver(proxy);
             _driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 60))
+            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 120))
             {
                 rows[i].Cells[8].Value = "On splash page...";
 
@@ -354,7 +354,7 @@ namespace _3s_atc
             IWebDriver _driver = createNewJSDriver(proxy);
             _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account");
 
-            if (ElementDisplayed(_driver, By.Id("username"), 40))
+            if (ElementDisplayed(_driver, By.Id("username"), 120))
             {
                 //executing javascript is much faster than sending keys
                 ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('username').value='{0}'", profile.Email));
@@ -372,7 +372,7 @@ namespace _3s_atc
             }
 
 
-            if (LoggedIn(_driver, 60))
+            if (LoggedIn(_driver, 90))
             {
                 cell.Value = "Logged in!";
                 System.Threading.Thread.Sleep(500);
@@ -407,28 +407,39 @@ namespace _3s_atc
         {
             return (size - 0.5).ToString("0.#").Replace(',', '.');
         }
-        private string getFirstAvailableSize(List<double> sizes, string pid)
+        private string getFirstAvailableSize(List<double> sizes, string pid, string cid, bool forceCID)
         {
-            Dictionary<string, Dictionary<string, string>> inventory = getInventory(pid);
+            Dictionary<string, Dictionary<string, string>> inventory;
 
-            foreach (KeyValuePair<string, Dictionary<string, string>> entry in inventory)
+            /*if(forceCID)
+                inventory = getClientInventory(pid, cid);
+            else*/
+                inventory = getInventory(pid, cid);
+
+            if (inventory == null) return null;
+
+            for (int i = 0; i < sizes.Count; i++)
             {
-                string key = entry.Key;
-                string s = inventory[key]["size"];
-                int stock = Convert.ToInt32(inventory[key]["stockcount"]);
-
-                for (int i = 0; i < sizes.Count; i++)
+                int index = i;
+                    
+                if(Properties.Settings.Default.code == "GB")
                 {
-                    int index = i;
-                    if (sizes[index].ToString("0.#").Replace(',', '.') == s && stock > 0)
-                        return key;
-                    else if (Properties.Settings.Default.code == "GB" && getUKSize(sizes[index]) == s && stock > 0)
-                        return key;
-                    else if (getEUSize(sizes[index]) == s && stock > 0)
-                        return key;
-
-                    System.Threading.Thread.Sleep(500);
+                    KeyValuePair<string, Dictionary<string, string>> entry_uk = inventory.FirstOrDefault(s => inventory[s.Key]["size"] == getUKSize(sizes[index]) && Convert.ToInt32(inventory[s.Key]["stockcount"]) > 0);
+                    if(entry_uk.Key != null)
+                        return entry_uk.Key;
                 }
+                else
+                {
+                    KeyValuePair<string, Dictionary<string, string>> entry_us = inventory.FirstOrDefault(s => inventory[s.Key]["size"] == sizes[index].ToString("0.#").Replace(',', '.') && Convert.ToInt32(inventory[s.Key]["stockcount"]) > 0);
+                    KeyValuePair<string, Dictionary<string, string>> entry_eu = inventory.FirstOrDefault(s => inventory[s.Key]["size"] == getEUSize(sizes[index]) && Convert.ToInt32(inventory[s.Key]["stockcount"]) > 0);
+
+                    if(entry_us.Key != null)
+                        return entry_us.Key;
+                    else if(entry_eu.Key != null)
+                        return entry_eu.Key;
+                }
+
+                System.Threading.Thread.Sleep(100);
             }
 
             return null;
@@ -474,7 +485,8 @@ namespace _3s_atc
                 cell.Value = "Checking sizes...";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID);
+                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, profile.splash);
+
                 if (size == null)
                     return "No sizes available";
 
@@ -496,20 +508,24 @@ namespace _3s_atc
 
         public static string webRequest(string url)
         {
-            HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
             webRequest.Method = "GET";
             webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+            webRequest.ContentType = "application/json; charset=utf-8";
+            webRequest.Timeout = 30000;
 
-            HttpWebResponse myHttpWebResponse = (HttpWebResponse)webRequest.GetResponse();
+            string pageContent = string.Empty;
 
-            Stream responseStream = myHttpWebResponse.GetResponseStream();
-            StreamReader myStreamReader = new StreamReader(responseStream, Encoding.Default);
-
-            string pageContent = myStreamReader.ReadToEnd();
-
-            myStreamReader.Close();
-            responseStream.Close();
-            myHttpWebResponse.Close();
+            using (var response = (HttpWebResponse)webRequest.GetResponse())
+            {
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var streamReader = new StreamReader(responseStream, Encoding.UTF8))
+                    {
+                        pageContent = streamReader.ReadToEnd();
+                    }
+                }
+            }
 
             return pageContent;
         }
@@ -522,14 +538,92 @@ namespace _3s_atc
             return dict;
         }
 
-        public Dictionary<string, Dictionary<string, string>> getInventory(string pid)
+        private Dictionary<string, Dictionary<string, string>> getClientInventory(string pid, string clientID)
+        {
+            Dictionary<string, Dictionary<string, string>> products = new Dictionary<string, Dictionary<string, string>>();
+            string responseString = string.Empty;
+            string locale = Properties.Settings.Default.code;
+            string url;
+
+            if (locale == "US" || locale == "CA" || locale == "MX")
+                url = String.Format("http://production-us-adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, pid, clientID);
+            else if (locale == "PT")
+                url = String.Format("http://production-store-adidasgroup.demandware.net/s/adidas-MLT/dw/shop/v15_6/products/({0})?client_id={1}&expand=availability,variations,prices", pid, clientID);
+            else
+                url = String.Format("http://production.store.adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, pid, clientID);
+            
+            using(var client = new TimedWebClient())
+            {
+                client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                responseString = client.DownloadString(url);
+            }
+
+            Dictionary<string, dynamic> json = json_decode(responseString);
+            for(int i = 0; i < json["data"][0]["variants"].Count; i++)
+            {
+                int index = i;
+                string id = json["data"][0]["variants"][i]["product_id"];
+
+                products[id] = new Dictionary<string, string>();
+
+                using (var client = new TimedWebClient())
+                {
+                    client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                    responseString = client.DownloadString(url.Replace(pid, id));
+                }
+
+                json = json_decode(responseString);
+
+                products[id]["size"] = json["data"][0]["c_sizeSearchValue"];
+                products[id]["stockcount"] = Convert.ToInt32(json["data"][0]["inventory"]["ats"]).ToString();
+            }
+
+            return products;
+        }
+        public Dictionary<string, Dictionary<string, string>> getInventory(string pid, string clientID)
         {
             string url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, marketsList[Properties.Settings.Default.code], pid);
 
-            string responseString = webRequest(url);
+            string responseString = string.Empty;
+
+            try
+            {
+                using (var client = new TimedWebClient())
+                {
+                    client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                    responseString = client.DownloadString(url);
+                }
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    {
+                        if (String.IsNullOrEmpty(clientID))
+                        {
+                            MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return null;
+                        }
+                        else
+                            return getClientInventory(pid, clientID);
+                    }
+                }
+            }
+
+            if(responseString.Contains("<html"))
+            {
+                if (String.IsNullOrEmpty(clientID))
+                {
+                    MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                else
+                    return getClientInventory(pid, clientID);
+            }
 
             Dictionary<string, Dictionary<string, string>> products = new Dictionary<string, Dictionary<string, string>>();
-
             Dictionary<string, dynamic> json = json_decode(responseString);
 
             for (int i = 0; i < json["variations"]["variants"].Count; i++)

@@ -194,6 +194,8 @@ namespace _3s_atc
             addLog(String.Format("{0} : started process for product '{1}'", profile.Email, profile.ProductID), Color.Empty);
             addLog(String.Format("{0} : logging in...", profile.Email, profile.ProductID), Color.Empty);
 
+            cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
+
             string result = await Task.Run(() =>  helpers.cart(profile, cell, rows));
             if (result.Contains("SUCCESS"))
             {
@@ -245,7 +247,7 @@ namespace _3s_atc
         private async Task getInventory()
         {
             listBox_2_Inventory.Items.Add(String.Format("Getting inventory for product '{0}' ...", Properties.Settings.Default.pid));
-            Dictionary<string, Dictionary<string, string>> products = await Task.Run(() => helpers.getInventory(Properties.Settings.Default.pid));
+            Dictionary<string, Dictionary<string, string>> products = await Task.Run(() => helpers.getInventory(Properties.Settings.Default.pid, null));
             listBox_2_Inventory.Items.Clear();
 
             foreach (KeyValuePair<string, Dictionary<string, string>> entry in products)
@@ -298,7 +300,7 @@ namespace _3s_atc
 
         private void dataGridView2_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
         {
-            int index = helpers.proxylist.FindIndex(x => x.address.Contains(e.Row.Cells[0].Value.ToString()) && x.auth.ToString().Contains(e.Row.Cells[1].Value.ToString()));
+            int index = helpers.proxylist.FindIndex(x => x.address.Contains(e.Row.Cells[0].Value.ToString()) && x.auth.ToString().Contains(e.Row.Cells[2].Value.ToString()));
             helpers.proxylist.RemoveAt(index);
             helpers.SaveProxyList();
         }
