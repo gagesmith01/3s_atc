@@ -415,10 +415,11 @@ namespace _3s_atc
         {
             Dictionary<string, Dictionary<string, string>> inventory;
 
-            /*if(forceCID)
+            if(forceCID)
                 inventory = getClientInventory(pid, cid);
-            else*/
+            else
                 inventory = getInventory(pid, cid);
+
 
             if (inventory == null) return null;
 
@@ -556,7 +557,7 @@ namespace _3s_atc
             else
                 url = String.Format("http://production.store.adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, pid, clientID);
             
-            using(var client = new TimedWebClient())
+            using(var client = new WebClient())
             {
                 client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
                 responseString = client.DownloadString(url);
@@ -570,7 +571,7 @@ namespace _3s_atc
 
                 products[id] = new Dictionary<string, string>();
 
-                using (var client = new TimedWebClient())
+                using (var client = new WebClient())
                 {
                     client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
                     responseString = client.DownloadString(url.Replace(pid, id));
@@ -590,21 +591,19 @@ namespace _3s_atc
 
             string responseString = string.Empty;
 
-            try
+            using (var client = new TimedWebClient())
             {
-                using (var client = new TimedWebClient())
+                try
                 {
-                    client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                    client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
                     responseString = client.DownloadString(url);
                 }
-            }
-            catch (WebException ex)
-            {
-                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                catch (WebException ex)
                 {
-                    var resp = (HttpWebResponse)ex.Response;
-                    if (resp.StatusCode == HttpStatusCode.NotFound) // HTTP 404
+                    if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null || ex.Status == WebExceptionStatus.Timeout)
                     {
+                        var resp = (HttpWebResponse)ex.Response;
                         if (String.IsNullOrEmpty(clientID))
                         {
                             MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
