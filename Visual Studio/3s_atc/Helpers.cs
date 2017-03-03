@@ -25,6 +25,7 @@ namespace _3s_atc
         private Dictionary<string, string> marketsList;
         private List<C_Proxy> passedSplash;
         private bool proxy_running;
+        public List<string> loggingin_emails;
 
         public Helpers()
         {
@@ -32,6 +33,8 @@ namespace _3s_atc
             profiles = new List<Profile>(); 
             captchas = new List<C_Captcha>(); 
             proxylist = new List<C_Proxy>(); passedSplash = new List<C_Proxy>();
+            loggingin_emails = new List<string>();
+
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
@@ -83,7 +86,7 @@ namespace _3s_atc
             while (!ReadCookie("dev.adidas.com", "g-recaptcha-response", ref captcha_response))
                 System.Threading.Thread.Sleep(1000);
 
-            captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = captcha_response });
+            captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = captcha_response, profileID = profile.index });
         }
 
         private string webRequestPost(Profile profile, string url, Dictionary<string, string> post, C_Proxy proxy=null)
@@ -100,6 +103,11 @@ namespace _3s_atc
             webRequest.Method = "POST";
             webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
             
+            if(profile.splash)
+                webRequest.Referer = profile.SplashUrl;
+            else
+                webRequest.Referer = String.Format("http://www.{0}/", Properties.Settings.Default.locale);
+
             if (proxy != null)
             {
                 WebProxy webproxy = new WebProxy(proxy.address);
@@ -117,7 +125,14 @@ namespace _3s_atc
 
             CookieContainer cookies = new CookieContainer();
 
-            foreach (C_Cookie cookie in profile.Cookies)
+            List<C_Cookie> c_cookies;
+
+            if (profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) != null)
+                c_cookies = profiles.FirstOrDefault(x => x.Email == profile.Email).Cookies;
+            else
+                c_cookies = profile.Cookies;
+
+            foreach (C_Cookie cookie in c_cookies)
                 cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
 
             if(proxy != null)
@@ -350,9 +365,33 @@ namespace _3s_atc
 
             return _driver;
         }
-
-        public bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
+        
+        public bool login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
         {
+            if (!cell.Value.ToString().ToLower().Contains("login") && !profile.loggedin)
+            {
+                cell.Value = "Logging in...";
+
+                while (loggingin_emails.Find(x => x == profile.Email) != null && profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) == null)
+                    System.Threading.Thread.Sleep(1000);
+
+                return Login(profile, cell, proxy);
+            }
+
+            return false;
+        }
+        private bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
+        {
+            if (profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) != null)
+            {
+                System.Threading.Thread.Sleep(100);
+                cell.Value = "Logged in!";
+                profile.loggedin = true;
+                return true;
+            }
+            else
+                loggingin_emails.Add(profile.Email);
+
             cell.Value = "Connecting to login page...";
 
             IWebDriver _driver = createNewJSDriver(proxy);
@@ -387,6 +426,10 @@ namespace _3s_atc
                     if (cookie.Domain.Contains("adidas"))
                         profile.Cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
                 }
+
+                if(profiles.FirstOrDefault(x => x.Email == profile.Email && !x.loggedin) == null)
+                    loggingin_emails.Remove(profile.Email);
+
                 _driver.Quit();
                 return true;
             }
@@ -449,6 +492,7 @@ namespace _3s_atc
 
             return null;
         }
+
         private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null)
         {
             Dictionary<string, string> post = new Dictionary<string, string>();
@@ -468,7 +512,10 @@ namespace _3s_atc
                 profile.Duplicate = proxy.duplicate; profile.duplicate = true;
             }
 
-            if (Login(profile, cell, proxy))
+            if (!profile.loggedin)
+                Task.Run(() => login(profile, cell, proxy));
+
+            if (profile.loggedin)
             {
                 if (profile.captcha && !String.IsNullOrWhiteSpace(profile.Sitekey))
                 {
@@ -478,7 +525,7 @@ namespace _3s_atc
                     while (captchas.FirstOrDefault(s => s.sitekey.Contains(profile.Sitekey) && s.expiration > DateTime.Now) == null)
                             System.Threading.Thread.Sleep(1000);
 
-                    C_Captcha captcha = captchas.FirstOrDefault(s => s.sitekey.Contains(profile.Sitekey) && s.expiration > DateTime.Now);
+                    C_Captcha captcha = captchas.FirstOrDefault(s => s.sitekey.Contains(profile.Sitekey) && s.expiration > DateTime.Now && s.profileID == profile.index && !String.IsNullOrEmpty(s.response));
                     post.Add("g-recaptcha-response", captcha.response);
 
                     if (profile.duplicate && !String.IsNullOrWhiteSpace(profile.Duplicate))
@@ -557,7 +604,7 @@ namespace _3s_atc
             else
                 url = String.Format("http://production.store.adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, pid, clientID);
             
-            using(var client = new WebClient())
+            using(var client = new TimedWebClient())
             {
                 client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
                 responseString = client.DownloadString(url);
@@ -571,7 +618,7 @@ namespace _3s_atc
 
                 products[id] = new Dictionary<string, string>();
 
-                using (var client = new WebClient())
+                using (var client = new TimedWebClient())
                 {
                     client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
                     responseString = client.DownloadString(url.Replace(pid, id));
@@ -585,7 +632,7 @@ namespace _3s_atc
 
             return products;
         }
-        public Dictionary<string, Dictionary<string, string>> getInventory(string pid, string clientID)
+        public Dictionary<string, Dictionary<string, string>> getInventory(string pid, string clientID, string splash_url=null)
         {
             string url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, marketsList[Properties.Settings.Default.code], pid);
 
@@ -597,6 +644,12 @@ namespace _3s_atc
                 {
                     client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
                     client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+
+                    if (!String.IsNullOrEmpty(splash_url))
+                        client.Headers[HttpRequestHeader.Referer] = splash_url;
+                    else
+                        client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale);
+
                     responseString = client.DownloadString(url);
                 }
                 catch (WebException ex)
@@ -606,7 +659,7 @@ namespace _3s_atc
                         var resp = (HttpWebResponse)ex.Response;
                         if (String.IsNullOrEmpty(clientID))
                         {
-                            MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(String.Format("WebRequest error({0}): Could not get variant stock for product {1}, please specify a valid client ID to get client stock and try again.", resp.StatusCode, pid), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return null;
                         }
                         else

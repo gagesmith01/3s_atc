@@ -26,22 +26,27 @@ namespace _3s_atc
             helpers = new Helpers();
             Sizes = new List<double>();
 
-            if(Properties.Settings.Default.profiles.Length > 0)
+            if (Properties.Settings.Default.profiles.Length > 0)
                 helpers.profiles = helpers.LoadProfiles();
 
             if (Properties.Settings.Default.proxylist.Length > 0)
                 helpers.proxylist = helpers.LoadProxyList();
 
-            foreach(Profile profile in helpers.profiles)
+            foreach (Profile profile in helpers.profiles)
+            {
                 dataGridView1.Rows.Add(new string[] { profile.Email, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), profile.Sitekey, profile.ClientID, profile.Duplicate, string.Join(";", profile.ExtraCookies.Select(kv => kv.Key + "=" + kv.Value).ToArray()), profile.SplashUrl, "" });
+                profile.loggedin = false;
+            }
 
-            foreach(C_Proxy proxy in helpers.proxylist)
+            foreach (C_Proxy proxy in helpers.proxylist)
                 dataGridView2.Rows.Add(new string[] { proxy.address, proxy.refresh.ToString(), proxy.auth.ToString(), proxy.username, null, null, null, null });
 
             for (int i = 0; i < comboBox_3_Website.Items.Count; i++)
             {
-                if (comboBox_3_Website.GetItemText(comboBox_3_Website.Items[i]) == string.Format("{0} - {1}", Properties.Settings.Default.code, Properties.Settings.Default.locale)){
-                    comboBox_3_Website.SelectedItem = comboBox_3_Website.Items[i]; break;}
+                if (comboBox_3_Website.GetItemText(comboBox_3_Website.Items[i]) == string.Format("{0} - {1}", Properties.Settings.Default.code, Properties.Settings.Default.locale))
+                {
+                    comboBox_3_Website.SelectedItem = comboBox_3_Website.Items[i]; break;
+                }
             }
         }
 
@@ -61,25 +66,35 @@ namespace _3s_atc
         {
             string sitekey, clientid, duplicate, splash_url;
 
-            if (String.IsNullOrWhiteSpace(Properties.Settings.Default.locale) || String.IsNullOrWhiteSpace(Properties.Settings.Default.code)) {
+            if (String.IsNullOrWhiteSpace(Properties.Settings.Default.locale) || String.IsNullOrWhiteSpace(Properties.Settings.Default.code))
+            {
                 MessageBox.Show("Please choose a locale in the 'Settings' tab.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;}
+                return;
+            }
 
-            if(String.IsNullOrWhiteSpace(textBox_1_Email.Text) || String.IsNullOrWhiteSpace(textBox_1_Password.Text) || String.IsNullOrWhiteSpace(textBox_1_PID.Text)) {
+            if (String.IsNullOrWhiteSpace(textBox_1_Email.Text) || String.IsNullOrWhiteSpace(textBox_1_Password.Text) || String.IsNullOrWhiteSpace(textBox_1_PID.Text))
+            {
                 MessageBox.Show("Email, password or product ID empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;}
+                return;
+            }
 
-            if (String.IsNullOrWhiteSpace(textBox_1_Sitekey.Text) && checkBox_1_Captcha.Checked || String.IsNullOrWhiteSpace(textBox_1_ClientID.Text) && checkBox_1_ClientID.Checked || String.IsNullOrWhiteSpace(textBox_1_Duplicate.Text) && checkBox_1_Duplicate.Checked || String.IsNullOrWhiteSpace(textBox_1_Splashurl.Text) && checkBox_1_Splashpage.Checked) {
+            if (String.IsNullOrWhiteSpace(textBox_1_Sitekey.Text) && checkBox_1_Captcha.Checked || String.IsNullOrWhiteSpace(textBox_1_ClientID.Text) && checkBox_1_ClientID.Checked || String.IsNullOrWhiteSpace(textBox_1_Duplicate.Text) && checkBox_1_Duplicate.Checked || String.IsNullOrWhiteSpace(textBox_1_Splashurl.Text) && checkBox_1_Splashpage.Checked)
+            {
                 MessageBox.Show("Captcha/Duplicate/Splash page checked but fields are empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;}
+                return;
+            }
 
-            if(Sizes.Count <= 0) {
+            if (Sizes.Count <= 0)
+            {
                 MessageBox.Show("Select at least one size to continue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;}
+                return;
+            }
 
-            if (helpers.profiles.FindIndex(x => x.Email == textBox_1_Email.Text && x.ProductID == textBox_1_PID.Text) != -1) {
+            if (helpers.profiles.FindIndex(x => x.Email == textBox_1_Email.Text && x.ProductID == textBox_1_PID.Text) != -1)
+            {
                 MessageBox.Show(String.Format("E-mail already in use for product ID '{0}'.", textBox_1_PID.Text), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return; }
+                return;
+            }
 
             sitekey = (checkBox_1_Captcha.Checked) ? textBox_1_Sitekey.Text : null;
             clientid = (checkBox_1_ClientID.Checked) ? textBox_1_ClientID.Text : null;
@@ -141,7 +156,7 @@ namespace _3s_atc
                     m.Show(dataGridView1, new Point(e.X, e.Y));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -153,25 +168,25 @@ namespace _3s_atc
 
             foreach (var field in helpers.profiles[currentMouseOverRow].GetType().GetProperties())
             {
-               var value = field.GetValue(helpers.profiles[currentMouseOverRow]);
-               if (value != null)
-               {
-                   if (value is List<C_Cookie>)
-                       continue;
+                var value = field.GetValue(helpers.profiles[currentMouseOverRow]);
+                if (value != null)
+                {
+                    if (value is List<C_Cookie>)
+                        continue;
 
-                   if (value is Dictionary<string, string>)
-                   {
-                       Dictionary<string, string> v = field.GetValue(helpers.profiles[currentMouseOverRow], null) as Dictionary<string, string>;
-                       str = str + field.Name + ": " + string.Join(",", v) + " | ";
-                   }
-                   else if (value is List<double>)
-                   {
-                       List<double> v = field.GetValue(helpers.profiles[currentMouseOverRow], null) as List<double>;
-                       str = str + field.Name + ": " + string.Join("/", v.Select(d => d.ToString()) ) + " | ";
-                   }
-                   else
-                       str = str + field.Name + ": " + value + " | ";
-               }
+                    if (value is Dictionary<string, string>)
+                    {
+                        Dictionary<string, string> v = field.GetValue(helpers.profiles[currentMouseOverRow], null) as Dictionary<string, string>;
+                        str = str + field.Name + ": " + string.Join(",", v) + " | ";
+                    }
+                    else if (value is List<double>)
+                    {
+                        List<double> v = field.GetValue(helpers.profiles[currentMouseOverRow], null) as List<double>;
+                        str = str + field.Name + ": " + string.Join("/", v.Select(d => d.ToString())) + " | ";
+                    }
+                    else
+                        str = str + field.Name + ": " + value + " | ";
+                }
             }
 
             MessageBox.Show(str);
@@ -197,7 +212,7 @@ namespace _3s_atc
 
             cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-            string result = await Task.Run(() =>  helpers.cart(profile, cell, rows));
+            string result = await Task.Run(() => helpers.cart(profile, cell, rows));
             if (result.Contains("SUCCESS"))
             {
                 addLog(String.Format("{0} : product '{1}' in your cart!", profile.Email, profile.ProductID), Color.Green);
@@ -213,11 +228,11 @@ namespace _3s_atc
         }
         private void button_1_Run_Click(object sender, EventArgs e)
         {
-            for(int i = 0; i < helpers.profiles.Count; i++)
+            for (int i = 0; i < helpers.profiles.Count; i++)
             {
                 Profile profile = helpers.profiles[i];
                 DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
-                if (String.IsNullOrWhiteSpace(row.Cells[8].Value.ToString()) || row.Cells[8].Value.ToString().Contains("Error") || row.Cells[8].Style.ForeColor == Color.Red)
+                if (String.IsNullOrWhiteSpace(row.Cells[8].Value.ToString()) || row.Cells[8].Value.ToString().Contains("Error") || row.Cells[8].Style.ForeColor == Color.Red || row.Cells[8].Value == "Logged in!" && profile.loggedin)
                 {
                     if (!profile.running)
                     {
@@ -227,6 +242,8 @@ namespace _3s_atc
                             cart(profile, row.Cells[8]);
                     }
                 }
+
+                System.Threading.Thread.Sleep(250);
             }
         }
 
@@ -284,17 +301,21 @@ namespace _3s_atc
 
         private void button_3_Add_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrWhiteSpace(textBox_3_Address.Text)) {
+            if (String.IsNullOrWhiteSpace(textBox_3_Address.Text))
+            {
                 MessageBox.Show("Proxy address is empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return; }
+                return;
+            }
 
-            if(helpers.proxylist.FindIndex(x => x.address == textBox_3_Address.Text && x.auth == checkBox_3_Auth.Checked) != -1) {
+            if (helpers.proxylist.FindIndex(x => x.address == textBox_3_Address.Text && x.auth == checkBox_3_Auth.Checked) != -1)
+            {
                 MessageBox.Show("Proxy already in list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;}
+                return;
+            }
 
             helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, hmac = null, sitekey = null, auth = checkBox_3_Auth.Checked, refresh = checkBox_3_Bypass.Checked });
 
-            dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Bypass.Checked.ToString(), checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, null, null, null, null});
+            dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Bypass.Checked.ToString(), checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, null, null, null, null });
 
             helpers.SaveProxyList();
         }
@@ -314,8 +335,8 @@ namespace _3s_atc
                 dialog.SelectedPath = Properties.Settings.Default.www_path;
             else
                 dialog.SelectedPath = "c:\\";
-            
-            if(dialog.ShowDialog() == DialogResult.OK)
+
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 Properties.Settings.Default.www_path = dialog.SelectedPath;
                 Properties.Settings.Default.Save();
@@ -360,6 +381,22 @@ namespace _3s_atc
             row.Cells[1].Value = proxy.refresh.ToString();
             row.Cells[2].Value = proxy.auth.ToString();
             row.Cells[3].Value = proxy.username;
+        }
+
+        private void button_1_Login_Click(object sender, EventArgs e)
+        {
+            Task.Run(() =>
+            {
+                for (int i = 0; i < helpers.profiles.Count; i++)
+                {
+                    int index = i;
+                    Profile profile = helpers.profiles[index];
+                    DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
+
+                    Task.Run(() => helpers.login(profile, row.Cells[8], null));
+                    System.Threading.Thread.Sleep(500);
+                }
+            });
         }
     }
 }

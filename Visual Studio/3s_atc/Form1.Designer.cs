@@ -30,43 +30,6 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.panel_Home = new System.Windows.Forms.Panel();
-            this.label_1_Logs = new System.Windows.Forms.Label();
-            this.richTextBox_1_Logs = new System.Windows.Forms.RichTextBox();
-            this.button_1_Run = new System.Windows.Forms.Button();
-            this.button_1_AddProfile = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.email = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.sitekey = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cookies = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.splash_url = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.checkBox_1_Splashpage = new System.Windows.Forms.CheckBox();
-            this.textBox_1_Splashurl = new System.Windows.Forms.TextBox();
-            this.label_1_Splashurl = new System.Windows.Forms.Label();
-            this.button_1_SelectSizes = new System.Windows.Forms.Button();
-            this.label_1_Sizes = new System.Windows.Forms.Label();
-            this.textBox_1_PID = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.checkBox_1_Duplicate = new System.Windows.Forms.CheckBox();
-            this.checkBox_1_ClientID = new System.Windows.Forms.CheckBox();
-            this.checkBox_1_Captcha = new System.Windows.Forms.CheckBox();
-            this.label_1_Cookies = new System.Windows.Forms.Label();
-            this.richTextBox_1_Cookies = new System.Windows.Forms.RichTextBox();
-            this.textBox_1_Password = new System.Windows.Forms.TextBox();
-            this.label_1_Password = new System.Windows.Forms.Label();
-            this.textBox_1_Email = new System.Windows.Forms.TextBox();
-            this.label_1_Email = new System.Windows.Forms.Label();
-            this.textBox_1_Duplicate = new System.Windows.Forms.TextBox();
-            this.label_1_Duplicate = new System.Windows.Forms.Label();
-            this.textBox_1_ClientID = new System.Windows.Forms.TextBox();
-            this.label_1_ClientID = new System.Windows.Forms.Label();
-            this.textBox_1_Sitekey = new System.Windows.Forms.TextBox();
-            this.label_1_Sitekey = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,6 +41,7 @@
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
             this.checkBox_3_Bypass = new System.Windows.Forms.CheckBox();
             this.button_3_Browse = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -104,372 +68,51 @@
             this.button_3_Update = new System.Windows.Forms.Button();
             this.comboBox_3_Website = new System.Windows.Forms.ComboBox();
             this.label_3_Website = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.panel_Home.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.label_1_Sitekey = new System.Windows.Forms.Label();
+            this.textBox_1_Sitekey = new System.Windows.Forms.TextBox();
+            this.label_1_ClientID = new System.Windows.Forms.Label();
+            this.textBox_1_ClientID = new System.Windows.Forms.TextBox();
+            this.label_1_Duplicate = new System.Windows.Forms.Label();
+            this.textBox_1_Duplicate = new System.Windows.Forms.TextBox();
+            this.label_1_Email = new System.Windows.Forms.Label();
+            this.textBox_1_Email = new System.Windows.Forms.TextBox();
+            this.label_1_Password = new System.Windows.Forms.Label();
+            this.textBox_1_Password = new System.Windows.Forms.TextBox();
+            this.richTextBox_1_Cookies = new System.Windows.Forms.RichTextBox();
+            this.label_1_Cookies = new System.Windows.Forms.Label();
+            this.checkBox_1_Captcha = new System.Windows.Forms.CheckBox();
+            this.checkBox_1_ClientID = new System.Windows.Forms.CheckBox();
+            this.checkBox_1_Duplicate = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBox_1_PID = new System.Windows.Forms.TextBox();
+            this.label_1_Sizes = new System.Windows.Forms.Label();
+            this.button_1_SelectSizes = new System.Windows.Forms.Button();
+            this.label_1_Splashurl = new System.Windows.Forms.Label();
+            this.textBox_1_Splashurl = new System.Windows.Forms.TextBox();
+            this.checkBox_1_Splashpage = new System.Windows.Forms.CheckBox();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.email = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sitekey = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.duplicate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cookies = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.splash_url = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button_1_AddProfile = new System.Windows.Forms.Button();
+            this.richTextBox_1_Logs = new System.Windows.Forms.RichTextBox();
+            this.label_1_Logs = new System.Windows.Forms.Label();
+            this.panel_Home = new System.Windows.Forms.Panel();
+            this.button_1_Login = new System.Windows.Forms.Button();
+            this.button_1_Run = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel_Tools.SuspendLayout();
             this.panel_Settings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.panel_Home.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // panel_Home
-            // 
-            this.panel_Home.Controls.Add(this.label_1_Logs);
-            this.panel_Home.Controls.Add(this.richTextBox_1_Logs);
-            this.panel_Home.Controls.Add(this.button_1_Run);
-            this.panel_Home.Controls.Add(this.button_1_AddProfile);
-            this.panel_Home.Controls.Add(this.dataGridView1);
-            this.panel_Home.Controls.Add(this.checkBox_1_Splashpage);
-            this.panel_Home.Controls.Add(this.textBox_1_Splashurl);
-            this.panel_Home.Controls.Add(this.label_1_Splashurl);
-            this.panel_Home.Controls.Add(this.button_1_SelectSizes);
-            this.panel_Home.Controls.Add(this.label_1_Sizes);
-            this.panel_Home.Controls.Add(this.textBox_1_PID);
-            this.panel_Home.Controls.Add(this.label5);
-            this.panel_Home.Controls.Add(this.checkBox_1_Duplicate);
-            this.panel_Home.Controls.Add(this.checkBox_1_ClientID);
-            this.panel_Home.Controls.Add(this.checkBox_1_Captcha);
-            this.panel_Home.Controls.Add(this.label_1_Cookies);
-            this.panel_Home.Controls.Add(this.richTextBox_1_Cookies);
-            this.panel_Home.Controls.Add(this.textBox_1_Password);
-            this.panel_Home.Controls.Add(this.label_1_Password);
-            this.panel_Home.Controls.Add(this.textBox_1_Email);
-            this.panel_Home.Controls.Add(this.label_1_Email);
-            this.panel_Home.Controls.Add(this.textBox_1_Duplicate);
-            this.panel_Home.Controls.Add(this.label_1_Duplicate);
-            this.panel_Home.Controls.Add(this.textBox_1_ClientID);
-            this.panel_Home.Controls.Add(this.label_1_ClientID);
-            this.panel_Home.Controls.Add(this.textBox_1_Sitekey);
-            this.panel_Home.Controls.Add(this.label_1_Sitekey);
-            this.panel_Home.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel_Home.Location = new System.Drawing.Point(0, 24);
-            this.panel_Home.Name = "panel_Home";
-            this.panel_Home.Size = new System.Drawing.Size(980, 457);
-            this.panel_Home.TabIndex = 6;
-            // 
-            // label_1_Logs
-            // 
-            this.label_1_Logs.AutoSize = true;
-            this.label_1_Logs.Location = new System.Drawing.Point(89, 101);
-            this.label_1_Logs.Name = "label_1_Logs";
-            this.label_1_Logs.Size = new System.Drawing.Size(30, 13);
-            this.label_1_Logs.TabIndex = 29;
-            this.label_1_Logs.Text = "Logs";
-            // 
-            // richTextBox_1_Logs
-            // 
-            this.richTextBox_1_Logs.BackColor = System.Drawing.Color.White;
-            this.richTextBox_1_Logs.Location = new System.Drawing.Point(13, 118);
-            this.richTextBox_1_Logs.Name = "richTextBox_1_Logs";
-            this.richTextBox_1_Logs.ReadOnly = true;
-            this.richTextBox_1_Logs.Size = new System.Drawing.Size(178, 308);
-            this.richTextBox_1_Logs.TabIndex = 28;
-            this.richTextBox_1_Logs.Text = "";
-            // 
-            // button_1_Run
-            // 
-            this.button_1_Run.Location = new System.Drawing.Point(530, 430);
-            this.button_1_Run.Name = "button_1_Run";
-            this.button_1_Run.Size = new System.Drawing.Size(75, 23);
-            this.button_1_Run.TabIndex = 27;
-            this.button_1_Run.Text = "Run";
-            this.button_1_Run.UseVisualStyleBackColor = true;
-            this.button_1_Run.Click += new System.EventHandler(this.button_1_Run_Click);
-            // 
-            // button_1_AddProfile
-            // 
-            this.button_1_AddProfile.Location = new System.Drawing.Point(882, 87);
-            this.button_1_AddProfile.Name = "button_1_AddProfile";
-            this.button_1_AddProfile.Size = new System.Drawing.Size(75, 23);
-            this.button_1_AddProfile.TabIndex = 26;
-            this.button_1_AddProfile.Text = "Add profile";
-            this.button_1_AddProfile.UseVisualStyleBackColor = true;
-            this.button_1_AddProfile.Click += new System.EventHandler(this.button_1_AddProfile_Click);
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.email,
-            this.pid,
-            this.us_sizes,
-            this.sitekey,
-            this.cid,
-            this.duplicate,
-            this.cookies,
-            this.splash_url,
-            this.status});
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridView1.Location = new System.Drawing.Point(199, 118);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(769, 308);
-            this.dataGridView1.TabIndex = 25;
-            this.dataGridView1.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_UserDeletedRow);
-            this.dataGridView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseClick);
-            // 
-            // email
-            // 
-            this.email.FillWeight = 127.9188F;
-            this.email.HeaderText = "E-mail";
-            this.email.Name = "email";
-            this.email.ReadOnly = true;
-            // 
-            // pid
-            // 
-            this.pid.FillWeight = 63.59026F;
-            this.pid.HeaderText = "Product ID";
-            this.pid.Name = "pid";
-            this.pid.ReadOnly = true;
-            // 
-            // us_sizes
-            // 
-            this.us_sizes.FillWeight = 103.9019F;
-            this.us_sizes.HeaderText = "US Size(s)";
-            this.us_sizes.Name = "us_sizes";
-            this.us_sizes.ReadOnly = true;
-            // 
-            // sitekey
-            // 
-            this.sitekey.FillWeight = 103.9019F;
-            this.sitekey.HeaderText = "Sitekey";
-            this.sitekey.Name = "sitekey";
-            this.sitekey.ReadOnly = true;
-            // 
-            // cid
-            // 
-            this.cid.FillWeight = 103.9019F;
-            this.cid.HeaderText = "Client ID";
-            this.cid.Name = "cid";
-            this.cid.ReadOnly = true;
-            // 
-            // duplicate
-            // 
-            this.duplicate.FillWeight = 68.33079F;
-            this.duplicate.HeaderText = "Duplicate";
-            this.duplicate.Name = "duplicate";
-            this.duplicate.ReadOnly = true;
-            // 
-            // cookies
-            // 
-            this.cookies.FillWeight = 103.9019F;
-            this.cookies.HeaderText = "Cookies";
-            this.cookies.Name = "cookies";
-            this.cookies.ReadOnly = true;
-            // 
-            // splash_url
-            // 
-            this.splash_url.FillWeight = 103.9019F;
-            this.splash_url.HeaderText = "Splash url";
-            this.splash_url.Name = "splash_url";
-            this.splash_url.ReadOnly = true;
-            // 
-            // status
-            // 
-            this.status.FillWeight = 120.6505F;
-            this.status.HeaderText = "Status";
-            this.status.Name = "status";
-            this.status.ReadOnly = true;
-            // 
-            // checkBox_1_Splashpage
-            // 
-            this.checkBox_1_Splashpage.AutoSize = true;
-            this.checkBox_1_Splashpage.Location = new System.Drawing.Point(588, 88);
-            this.checkBox_1_Splashpage.Name = "checkBox_1_Splashpage";
-            this.checkBox_1_Splashpage.Size = new System.Drawing.Size(85, 17);
-            this.checkBox_1_Splashpage.TabIndex = 23;
-            this.checkBox_1_Splashpage.Text = "Splash page";
-            this.checkBox_1_Splashpage.UseVisualStyleBackColor = true;
-            // 
-            // textBox_1_Splashurl
-            // 
-            this.textBox_1_Splashurl.Location = new System.Drawing.Point(831, 53);
-            this.textBox_1_Splashurl.Name = "textBox_1_Splashurl";
-            this.textBox_1_Splashurl.Size = new System.Drawing.Size(125, 20);
-            this.textBox_1_Splashurl.TabIndex = 22;
-            // 
-            // label_1_Splashurl
-            // 
-            this.label_1_Splashurl.AutoSize = true;
-            this.label_1_Splashurl.Location = new System.Drawing.Point(774, 56);
-            this.label_1_Splashurl.Name = "label_1_Splashurl";
-            this.label_1_Splashurl.Size = new System.Drawing.Size(59, 13);
-            this.label_1_Splashurl.TabIndex = 21;
-            this.label_1_Splashurl.Text = "Splash url :";
-            // 
-            // button_1_SelectSizes
-            // 
-            this.button_1_SelectSizes.Location = new System.Drawing.Point(449, 51);
-            this.button_1_SelectSizes.Name = "button_1_SelectSizes";
-            this.button_1_SelectSizes.Size = new System.Drawing.Size(75, 23);
-            this.button_1_SelectSizes.TabIndex = 20;
-            this.button_1_SelectSizes.Text = "Select";
-            this.button_1_SelectSizes.UseVisualStyleBackColor = true;
-            this.button_1_SelectSizes.Click += new System.EventHandler(this.button_1_SelectSizes_Click);
-            // 
-            // label_1_Sizes
-            // 
-            this.label_1_Sizes.AutoSize = true;
-            this.label_1_Sizes.Location = new System.Drawing.Point(406, 56);
-            this.label_1_Sizes.Name = "label_1_Sizes";
-            this.label_1_Sizes.Size = new System.Drawing.Size(47, 13);
-            this.label_1_Sizes.TabIndex = 19;
-            this.label_1_Sizes.Text = "Size(s) : ";
-            // 
-            // textBox_1_PID
-            // 
-            this.textBox_1_PID.Location = new System.Drawing.Point(121, 11);
-            this.textBox_1_PID.Name = "textBox_1_PID";
-            this.textBox_1_PID.Size = new System.Drawing.Size(85, 20);
-            this.textBox_1_PID.TabIndex = 18;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(51, 14);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(64, 13);
-            this.label5.TabIndex = 17;
-            this.label5.Text = "Product ID :";
-            // 
-            // checkBox_1_Duplicate
-            // 
-            this.checkBox_1_Duplicate.AutoSize = true;
-            this.checkBox_1_Duplicate.Location = new System.Drawing.Point(483, 88);
-            this.checkBox_1_Duplicate.Name = "checkBox_1_Duplicate";
-            this.checkBox_1_Duplicate.Size = new System.Drawing.Size(71, 17);
-            this.checkBox_1_Duplicate.TabIndex = 16;
-            this.checkBox_1_Duplicate.Text = "Duplicate";
-            this.checkBox_1_Duplicate.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_1_ClientID
-            // 
-            this.checkBox_1_ClientID.AutoSize = true;
-            this.checkBox_1_ClientID.Location = new System.Drawing.Point(375, 88);
-            this.checkBox_1_ClientID.Name = "checkBox_1_ClientID";
-            this.checkBox_1_ClientID.Size = new System.Drawing.Size(66, 17);
-            this.checkBox_1_ClientID.TabIndex = 15;
-            this.checkBox_1_ClientID.Text = "Client ID";
-            this.checkBox_1_ClientID.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_1_Captcha
-            // 
-            this.checkBox_1_Captcha.AutoSize = true;
-            this.checkBox_1_Captcha.Location = new System.Drawing.Point(261, 88);
-            this.checkBox_1_Captcha.Name = "checkBox_1_Captcha";
-            this.checkBox_1_Captcha.Size = new System.Drawing.Size(66, 17);
-            this.checkBox_1_Captcha.TabIndex = 14;
-            this.checkBox_1_Captcha.Text = "Captcha";
-            this.checkBox_1_Captcha.UseVisualStyleBackColor = true;
-            // 
-            // label_1_Cookies
-            // 
-            this.label_1_Cookies.AutoSize = true;
-            this.label_1_Cookies.Location = new System.Drawing.Point(538, 56);
-            this.label_1_Cookies.Name = "label_1_Cookies";
-            this.label_1_Cookies.Size = new System.Drawing.Size(77, 13);
-            this.label_1_Cookies.TabIndex = 13;
-            this.label_1_Cookies.Text = "Extra cookies :";
-            // 
-            // richTextBox_1_Cookies
-            // 
-            this.richTextBox_1_Cookies.Location = new System.Drawing.Point(615, 46);
-            this.richTextBox_1_Cookies.Name = "richTextBox_1_Cookies";
-            this.richTextBox_1_Cookies.Size = new System.Drawing.Size(153, 34);
-            this.richTextBox_1_Cookies.TabIndex = 12;
-            this.richTextBox_1_Cookies.Text = "";
-            // 
-            // textBox_1_Password
-            // 
-            this.textBox_1_Password.Location = new System.Drawing.Point(256, 53);
-            this.textBox_1_Password.Name = "textBox_1_Password";
-            this.textBox_1_Password.Size = new System.Drawing.Size(133, 20);
-            this.textBox_1_Password.TabIndex = 9;
-            this.textBox_1_Password.UseSystemPasswordChar = true;
-            // 
-            // label_1_Password
-            // 
-            this.label_1_Password.AutoSize = true;
-            this.label_1_Password.Location = new System.Drawing.Point(196, 56);
-            this.label_1_Password.Name = "label_1_Password";
-            this.label_1_Password.Size = new System.Drawing.Size(59, 13);
-            this.label_1_Password.TabIndex = 8;
-            this.label_1_Password.Text = "Password :";
-            // 
-            // textBox_1_Email
-            // 
-            this.textBox_1_Email.Location = new System.Drawing.Point(45, 53);
-            this.textBox_1_Email.Name = "textBox_1_Email";
-            this.textBox_1_Email.Size = new System.Drawing.Size(133, 20);
-            this.textBox_1_Email.TabIndex = 7;
-            // 
-            // label_1_Email
-            // 
-            this.label_1_Email.AutoSize = true;
-            this.label_1_Email.Location = new System.Drawing.Point(2, 56);
-            this.label_1_Email.Name = "label_1_Email";
-            this.label_1_Email.Size = new System.Drawing.Size(41, 13);
-            this.label_1_Email.TabIndex = 6;
-            this.label_1_Email.Text = "E-mail :";
-            // 
-            // textBox_1_Duplicate
-            // 
-            this.textBox_1_Duplicate.Location = new System.Drawing.Point(777, 11);
-            this.textBox_1_Duplicate.Name = "textBox_1_Duplicate";
-            this.textBox_1_Duplicate.Size = new System.Drawing.Size(117, 20);
-            this.textBox_1_Duplicate.TabIndex = 5;
-            // 
-            // label_1_Duplicate
-            // 
-            this.label_1_Duplicate.AutoSize = true;
-            this.label_1_Duplicate.Location = new System.Drawing.Point(718, 14);
-            this.label_1_Duplicate.Name = "label_1_Duplicate";
-            this.label_1_Duplicate.Size = new System.Drawing.Size(58, 13);
-            this.label_1_Duplicate.TabIndex = 4;
-            this.label_1_Duplicate.Text = "Duplicate :";
-            // 
-            // textBox_1_ClientID
-            // 
-            this.textBox_1_ClientID.Location = new System.Drawing.Point(519, 11);
-            this.textBox_1_ClientID.Name = "textBox_1_ClientID";
-            this.textBox_1_ClientID.Size = new System.Drawing.Size(175, 20);
-            this.textBox_1_ClientID.TabIndex = 3;
-            // 
-            // label_1_ClientID
-            // 
-            this.label_1_ClientID.AutoSize = true;
-            this.label_1_ClientID.Location = new System.Drawing.Point(466, 14);
-            this.label_1_ClientID.Name = "label_1_ClientID";
-            this.label_1_ClientID.Size = new System.Drawing.Size(53, 13);
-            this.label_1_ClientID.TabIndex = 2;
-            this.label_1_ClientID.Text = "Client ID :";
-            // 
-            // textBox_1_Sitekey
-            // 
-            this.textBox_1_Sitekey.Location = new System.Drawing.Point(275, 11);
-            this.textBox_1_Sitekey.Name = "textBox_1_Sitekey";
-            this.textBox_1_Sitekey.Size = new System.Drawing.Size(175, 20);
-            this.textBox_1_Sitekey.TabIndex = 1;
-            // 
-            // label_1_Sitekey
-            // 
-            this.label_1_Sitekey.AutoSize = true;
-            this.label_1_Sitekey.Location = new System.Drawing.Point(225, 14);
-            this.label_1_Sitekey.Name = "label_1_Sitekey";
-            this.label_1_Sitekey.Size = new System.Drawing.Size(48, 13);
-            this.label_1_Sitekey.TabIndex = 0;
-            this.label_1_Sitekey.Text = "Sitekey :";
             // 
             // menuStrip1
             // 
@@ -589,6 +232,15 @@
             this.panel_Settings.Size = new System.Drawing.Size(980, 457);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(118, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(36, 13);
+            this.label4.TabIndex = 23;
+            this.label4.Text = "ip:port";
             // 
             // checkBox_3_Bypass
             // 
@@ -872,14 +524,374 @@
             this.label_3_Website.TabIndex = 0;
             this.label_3_Website.Text = "Locale : ";
             // 
-            // label4
+            // label_1_Sitekey
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(118, 71);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(36, 13);
-            this.label4.TabIndex = 23;
-            this.label4.Text = "ip:port";
+            this.label_1_Sitekey.AutoSize = true;
+            this.label_1_Sitekey.Location = new System.Drawing.Point(225, 14);
+            this.label_1_Sitekey.Name = "label_1_Sitekey";
+            this.label_1_Sitekey.Size = new System.Drawing.Size(48, 13);
+            this.label_1_Sitekey.TabIndex = 0;
+            this.label_1_Sitekey.Text = "Sitekey :";
+            // 
+            // textBox_1_Sitekey
+            // 
+            this.textBox_1_Sitekey.Location = new System.Drawing.Point(275, 11);
+            this.textBox_1_Sitekey.Name = "textBox_1_Sitekey";
+            this.textBox_1_Sitekey.Size = new System.Drawing.Size(175, 20);
+            this.textBox_1_Sitekey.TabIndex = 1;
+            // 
+            // label_1_ClientID
+            // 
+            this.label_1_ClientID.AutoSize = true;
+            this.label_1_ClientID.Location = new System.Drawing.Point(466, 14);
+            this.label_1_ClientID.Name = "label_1_ClientID";
+            this.label_1_ClientID.Size = new System.Drawing.Size(53, 13);
+            this.label_1_ClientID.TabIndex = 2;
+            this.label_1_ClientID.Text = "Client ID :";
+            // 
+            // textBox_1_ClientID
+            // 
+            this.textBox_1_ClientID.Location = new System.Drawing.Point(519, 11);
+            this.textBox_1_ClientID.Name = "textBox_1_ClientID";
+            this.textBox_1_ClientID.Size = new System.Drawing.Size(175, 20);
+            this.textBox_1_ClientID.TabIndex = 3;
+            // 
+            // label_1_Duplicate
+            // 
+            this.label_1_Duplicate.AutoSize = true;
+            this.label_1_Duplicate.Location = new System.Drawing.Point(718, 14);
+            this.label_1_Duplicate.Name = "label_1_Duplicate";
+            this.label_1_Duplicate.Size = new System.Drawing.Size(58, 13);
+            this.label_1_Duplicate.TabIndex = 4;
+            this.label_1_Duplicate.Text = "Duplicate :";
+            // 
+            // textBox_1_Duplicate
+            // 
+            this.textBox_1_Duplicate.Location = new System.Drawing.Point(777, 11);
+            this.textBox_1_Duplicate.Name = "textBox_1_Duplicate";
+            this.textBox_1_Duplicate.Size = new System.Drawing.Size(117, 20);
+            this.textBox_1_Duplicate.TabIndex = 5;
+            // 
+            // label_1_Email
+            // 
+            this.label_1_Email.AutoSize = true;
+            this.label_1_Email.Location = new System.Drawing.Point(2, 56);
+            this.label_1_Email.Name = "label_1_Email";
+            this.label_1_Email.Size = new System.Drawing.Size(41, 13);
+            this.label_1_Email.TabIndex = 6;
+            this.label_1_Email.Text = "E-mail :";
+            // 
+            // textBox_1_Email
+            // 
+            this.textBox_1_Email.Location = new System.Drawing.Point(45, 53);
+            this.textBox_1_Email.Name = "textBox_1_Email";
+            this.textBox_1_Email.Size = new System.Drawing.Size(133, 20);
+            this.textBox_1_Email.TabIndex = 7;
+            // 
+            // label_1_Password
+            // 
+            this.label_1_Password.AutoSize = true;
+            this.label_1_Password.Location = new System.Drawing.Point(196, 56);
+            this.label_1_Password.Name = "label_1_Password";
+            this.label_1_Password.Size = new System.Drawing.Size(59, 13);
+            this.label_1_Password.TabIndex = 8;
+            this.label_1_Password.Text = "Password :";
+            // 
+            // textBox_1_Password
+            // 
+            this.textBox_1_Password.Location = new System.Drawing.Point(256, 53);
+            this.textBox_1_Password.Name = "textBox_1_Password";
+            this.textBox_1_Password.Size = new System.Drawing.Size(133, 20);
+            this.textBox_1_Password.TabIndex = 9;
+            this.textBox_1_Password.UseSystemPasswordChar = true;
+            // 
+            // richTextBox_1_Cookies
+            // 
+            this.richTextBox_1_Cookies.Location = new System.Drawing.Point(615, 46);
+            this.richTextBox_1_Cookies.Name = "richTextBox_1_Cookies";
+            this.richTextBox_1_Cookies.Size = new System.Drawing.Size(153, 34);
+            this.richTextBox_1_Cookies.TabIndex = 12;
+            this.richTextBox_1_Cookies.Text = "";
+            // 
+            // label_1_Cookies
+            // 
+            this.label_1_Cookies.AutoSize = true;
+            this.label_1_Cookies.Location = new System.Drawing.Point(538, 56);
+            this.label_1_Cookies.Name = "label_1_Cookies";
+            this.label_1_Cookies.Size = new System.Drawing.Size(77, 13);
+            this.label_1_Cookies.TabIndex = 13;
+            this.label_1_Cookies.Text = "Extra cookies :";
+            // 
+            // checkBox_1_Captcha
+            // 
+            this.checkBox_1_Captcha.AutoSize = true;
+            this.checkBox_1_Captcha.Location = new System.Drawing.Point(261, 88);
+            this.checkBox_1_Captcha.Name = "checkBox_1_Captcha";
+            this.checkBox_1_Captcha.Size = new System.Drawing.Size(66, 17);
+            this.checkBox_1_Captcha.TabIndex = 14;
+            this.checkBox_1_Captcha.Text = "Captcha";
+            this.checkBox_1_Captcha.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_1_ClientID
+            // 
+            this.checkBox_1_ClientID.AutoSize = true;
+            this.checkBox_1_ClientID.Location = new System.Drawing.Point(375, 88);
+            this.checkBox_1_ClientID.Name = "checkBox_1_ClientID";
+            this.checkBox_1_ClientID.Size = new System.Drawing.Size(66, 17);
+            this.checkBox_1_ClientID.TabIndex = 15;
+            this.checkBox_1_ClientID.Text = "Client ID";
+            this.checkBox_1_ClientID.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_1_Duplicate
+            // 
+            this.checkBox_1_Duplicate.AutoSize = true;
+            this.checkBox_1_Duplicate.Location = new System.Drawing.Point(483, 88);
+            this.checkBox_1_Duplicate.Name = "checkBox_1_Duplicate";
+            this.checkBox_1_Duplicate.Size = new System.Drawing.Size(71, 17);
+            this.checkBox_1_Duplicate.TabIndex = 16;
+            this.checkBox_1_Duplicate.Text = "Duplicate";
+            this.checkBox_1_Duplicate.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(51, 14);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Product ID :";
+            // 
+            // textBox_1_PID
+            // 
+            this.textBox_1_PID.Location = new System.Drawing.Point(121, 11);
+            this.textBox_1_PID.Name = "textBox_1_PID";
+            this.textBox_1_PID.Size = new System.Drawing.Size(85, 20);
+            this.textBox_1_PID.TabIndex = 18;
+            // 
+            // label_1_Sizes
+            // 
+            this.label_1_Sizes.AutoSize = true;
+            this.label_1_Sizes.Location = new System.Drawing.Point(406, 56);
+            this.label_1_Sizes.Name = "label_1_Sizes";
+            this.label_1_Sizes.Size = new System.Drawing.Size(47, 13);
+            this.label_1_Sizes.TabIndex = 19;
+            this.label_1_Sizes.Text = "Size(s) : ";
+            // 
+            // button_1_SelectSizes
+            // 
+            this.button_1_SelectSizes.Location = new System.Drawing.Point(449, 51);
+            this.button_1_SelectSizes.Name = "button_1_SelectSizes";
+            this.button_1_SelectSizes.Size = new System.Drawing.Size(75, 23);
+            this.button_1_SelectSizes.TabIndex = 20;
+            this.button_1_SelectSizes.Text = "Select";
+            this.button_1_SelectSizes.UseVisualStyleBackColor = true;
+            this.button_1_SelectSizes.Click += new System.EventHandler(this.button_1_SelectSizes_Click);
+            // 
+            // label_1_Splashurl
+            // 
+            this.label_1_Splashurl.AutoSize = true;
+            this.label_1_Splashurl.Location = new System.Drawing.Point(774, 56);
+            this.label_1_Splashurl.Name = "label_1_Splashurl";
+            this.label_1_Splashurl.Size = new System.Drawing.Size(59, 13);
+            this.label_1_Splashurl.TabIndex = 21;
+            this.label_1_Splashurl.Text = "Splash url :";
+            // 
+            // textBox_1_Splashurl
+            // 
+            this.textBox_1_Splashurl.Location = new System.Drawing.Point(831, 53);
+            this.textBox_1_Splashurl.Name = "textBox_1_Splashurl";
+            this.textBox_1_Splashurl.Size = new System.Drawing.Size(125, 20);
+            this.textBox_1_Splashurl.TabIndex = 22;
+            // 
+            // checkBox_1_Splashpage
+            // 
+            this.checkBox_1_Splashpage.AutoSize = true;
+            this.checkBox_1_Splashpage.Location = new System.Drawing.Point(588, 88);
+            this.checkBox_1_Splashpage.Name = "checkBox_1_Splashpage";
+            this.checkBox_1_Splashpage.Size = new System.Drawing.Size(85, 17);
+            this.checkBox_1_Splashpage.TabIndex = 23;
+            this.checkBox_1_Splashpage.Text = "Splash page";
+            this.checkBox_1_Splashpage.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.email,
+            this.pid,
+            this.us_sizes,
+            this.sitekey,
+            this.cid,
+            this.duplicate,
+            this.cookies,
+            this.splash_url,
+            this.status});
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView1.Location = new System.Drawing.Point(199, 118);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(769, 308);
+            this.dataGridView1.TabIndex = 25;
+            this.dataGridView1.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_UserDeletedRow);
+            this.dataGridView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseClick);
+            // 
+            // email
+            // 
+            this.email.FillWeight = 127.9188F;
+            this.email.HeaderText = "E-mail";
+            this.email.Name = "email";
+            this.email.ReadOnly = true;
+            // 
+            // pid
+            // 
+            this.pid.FillWeight = 63.59026F;
+            this.pid.HeaderText = "Product ID";
+            this.pid.Name = "pid";
+            this.pid.ReadOnly = true;
+            // 
+            // us_sizes
+            // 
+            this.us_sizes.FillWeight = 103.9019F;
+            this.us_sizes.HeaderText = "US Size(s)";
+            this.us_sizes.Name = "us_sizes";
+            this.us_sizes.ReadOnly = true;
+            // 
+            // sitekey
+            // 
+            this.sitekey.FillWeight = 103.9019F;
+            this.sitekey.HeaderText = "Sitekey";
+            this.sitekey.Name = "sitekey";
+            this.sitekey.ReadOnly = true;
+            // 
+            // cid
+            // 
+            this.cid.FillWeight = 103.9019F;
+            this.cid.HeaderText = "Client ID";
+            this.cid.Name = "cid";
+            this.cid.ReadOnly = true;
+            // 
+            // duplicate
+            // 
+            this.duplicate.FillWeight = 68.33079F;
+            this.duplicate.HeaderText = "Duplicate";
+            this.duplicate.Name = "duplicate";
+            this.duplicate.ReadOnly = true;
+            // 
+            // cookies
+            // 
+            this.cookies.FillWeight = 103.9019F;
+            this.cookies.HeaderText = "Cookies";
+            this.cookies.Name = "cookies";
+            this.cookies.ReadOnly = true;
+            // 
+            // splash_url
+            // 
+            this.splash_url.FillWeight = 103.9019F;
+            this.splash_url.HeaderText = "Splash url";
+            this.splash_url.Name = "splash_url";
+            this.splash_url.ReadOnly = true;
+            // 
+            // status
+            // 
+            this.status.FillWeight = 120.6505F;
+            this.status.HeaderText = "Status";
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
+            // 
+            // button_1_AddProfile
+            // 
+            this.button_1_AddProfile.Location = new System.Drawing.Point(882, 87);
+            this.button_1_AddProfile.Name = "button_1_AddProfile";
+            this.button_1_AddProfile.Size = new System.Drawing.Size(75, 23);
+            this.button_1_AddProfile.TabIndex = 26;
+            this.button_1_AddProfile.Text = "Add profile";
+            this.button_1_AddProfile.UseVisualStyleBackColor = true;
+            this.button_1_AddProfile.Click += new System.EventHandler(this.button_1_AddProfile_Click);
+            // 
+            // richTextBox_1_Logs
+            // 
+            this.richTextBox_1_Logs.BackColor = System.Drawing.Color.White;
+            this.richTextBox_1_Logs.Location = new System.Drawing.Point(13, 118);
+            this.richTextBox_1_Logs.Name = "richTextBox_1_Logs";
+            this.richTextBox_1_Logs.ReadOnly = true;
+            this.richTextBox_1_Logs.Size = new System.Drawing.Size(178, 308);
+            this.richTextBox_1_Logs.TabIndex = 28;
+            this.richTextBox_1_Logs.Text = "";
+            // 
+            // label_1_Logs
+            // 
+            this.label_1_Logs.AutoSize = true;
+            this.label_1_Logs.Location = new System.Drawing.Point(89, 101);
+            this.label_1_Logs.Name = "label_1_Logs";
+            this.label_1_Logs.Size = new System.Drawing.Size(30, 13);
+            this.label_1_Logs.TabIndex = 29;
+            this.label_1_Logs.Text = "Logs";
+            // 
+            // panel_Home
+            // 
+            this.panel_Home.Controls.Add(this.button_1_Run);
+            this.panel_Home.Controls.Add(this.button_1_Login);
+            this.panel_Home.Controls.Add(this.label_1_Logs);
+            this.panel_Home.Controls.Add(this.richTextBox_1_Logs);
+            this.panel_Home.Controls.Add(this.button_1_AddProfile);
+            this.panel_Home.Controls.Add(this.dataGridView1);
+            this.panel_Home.Controls.Add(this.checkBox_1_Splashpage);
+            this.panel_Home.Controls.Add(this.textBox_1_Splashurl);
+            this.panel_Home.Controls.Add(this.label_1_Splashurl);
+            this.panel_Home.Controls.Add(this.button_1_SelectSizes);
+            this.panel_Home.Controls.Add(this.label_1_Sizes);
+            this.panel_Home.Controls.Add(this.textBox_1_PID);
+            this.panel_Home.Controls.Add(this.label5);
+            this.panel_Home.Controls.Add(this.checkBox_1_Duplicate);
+            this.panel_Home.Controls.Add(this.checkBox_1_ClientID);
+            this.panel_Home.Controls.Add(this.checkBox_1_Captcha);
+            this.panel_Home.Controls.Add(this.label_1_Cookies);
+            this.panel_Home.Controls.Add(this.richTextBox_1_Cookies);
+            this.panel_Home.Controls.Add(this.textBox_1_Password);
+            this.panel_Home.Controls.Add(this.label_1_Password);
+            this.panel_Home.Controls.Add(this.textBox_1_Email);
+            this.panel_Home.Controls.Add(this.label_1_Email);
+            this.panel_Home.Controls.Add(this.textBox_1_Duplicate);
+            this.panel_Home.Controls.Add(this.label_1_Duplicate);
+            this.panel_Home.Controls.Add(this.textBox_1_ClientID);
+            this.panel_Home.Controls.Add(this.label_1_ClientID);
+            this.panel_Home.Controls.Add(this.textBox_1_Sitekey);
+            this.panel_Home.Controls.Add(this.label_1_Sitekey);
+            this.panel_Home.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel_Home.Location = new System.Drawing.Point(0, 24);
+            this.panel_Home.Name = "panel_Home";
+            this.panel_Home.Size = new System.Drawing.Size(980, 457);
+            this.panel_Home.TabIndex = 6;
+            // 
+            // button_1_Login
+            // 
+            this.button_1_Login.Location = new System.Drawing.Point(501, 430);
+            this.button_1_Login.Name = "button_1_Login";
+            this.button_1_Login.Size = new System.Drawing.Size(75, 23);
+            this.button_1_Login.TabIndex = 24;
+            this.button_1_Login.Text = "Login ";
+            this.button_1_Login.UseVisualStyleBackColor = true;
+            this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
+            // 
+            // button_1_Run
+            // 
+            this.button_1_Run.Location = new System.Drawing.Point(614, 430);
+            this.button_1_Run.Name = "button_1_Run";
+            this.button_1_Run.Size = new System.Drawing.Size(75, 23);
+            this.button_1_Run.TabIndex = 27;
+            this.button_1_Run.Text = "Run";
+            this.button_1_Run.UseVisualStyleBackColor = true;
+            this.button_1_Run.Click += new System.EventHandler(this.button_1_Run_Click);
             // 
             // Form1
             // 
@@ -894,9 +906,6 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "3s_atc";
-            this.panel_Home.ResumeLayout(false);
-            this.panel_Home.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel_Tools.ResumeLayout(false);
@@ -904,6 +913,9 @@
             this.panel_Settings.ResumeLayout(false);
             this.panel_Settings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel_Home.ResumeLayout(false);
+            this.panel_Home.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -911,47 +923,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel_Home;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem inventoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem proxyToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBox_1_Duplicate;
-        private System.Windows.Forms.Label label_1_Duplicate;
-        private System.Windows.Forms.TextBox textBox_1_ClientID;
-        private System.Windows.Forms.Label label_1_ClientID;
-        private System.Windows.Forms.TextBox textBox_1_Sitekey;
-        private System.Windows.Forms.Label label_1_Sitekey;
-        private System.Windows.Forms.TextBox textBox_1_Password;
-        private System.Windows.Forms.Label label_1_Password;
-        private System.Windows.Forms.TextBox textBox_1_Email;
-        private System.Windows.Forms.Label label_1_Email;
-        private System.Windows.Forms.Label label_1_Cookies;
-        private System.Windows.Forms.RichTextBox richTextBox_1_Cookies;
-        private System.Windows.Forms.Button button_1_SelectSizes;
-        private System.Windows.Forms.Label label_1_Sizes;
-        private System.Windows.Forms.TextBox textBox_1_PID;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox checkBox_1_Duplicate;
-        private System.Windows.Forms.CheckBox checkBox_1_ClientID;
-        private System.Windows.Forms.CheckBox checkBox_1_Captcha;
-        private System.Windows.Forms.CheckBox checkBox_1_Splashpage;
-        private System.Windows.Forms.TextBox textBox_1_Splashurl;
-        private System.Windows.Forms.Label label_1_Splashurl;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button button_1_AddProfile;
-        private System.Windows.Forms.RichTextBox richTextBox_1_Logs;
-        private System.Windows.Forms.Button button_1_Run;
-        private System.Windows.Forms.DataGridViewTextBoxColumn email;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn us_sizes;
-        private System.Windows.Forms.DataGridViewTextBoxColumn sitekey;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn duplicate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn cookies;
-        private System.Windows.Forms.DataGridViewTextBoxColumn splash_url;
-        private System.Windows.Forms.DataGridViewTextBoxColumn status;
-        private System.Windows.Forms.Label label_1_Logs;
         private System.Windows.Forms.Panel panel_Tools;
         private System.Windows.Forms.Button button_2_Check;
         private System.Windows.Forms.TextBox textBox_2_PID;
@@ -986,6 +961,44 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn p_duplicate;
         private System.Windows.Forms.DataGridViewTextBoxColumn Statuss;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label_1_Sitekey;
+        private System.Windows.Forms.TextBox textBox_1_Sitekey;
+        private System.Windows.Forms.Label label_1_ClientID;
+        private System.Windows.Forms.TextBox textBox_1_ClientID;
+        private System.Windows.Forms.Label label_1_Duplicate;
+        private System.Windows.Forms.TextBox textBox_1_Duplicate;
+        private System.Windows.Forms.Label label_1_Email;
+        private System.Windows.Forms.TextBox textBox_1_Email;
+        private System.Windows.Forms.Label label_1_Password;
+        private System.Windows.Forms.TextBox textBox_1_Password;
+        private System.Windows.Forms.RichTextBox richTextBox_1_Cookies;
+        private System.Windows.Forms.Label label_1_Cookies;
+        private System.Windows.Forms.CheckBox checkBox_1_Captcha;
+        private System.Windows.Forms.CheckBox checkBox_1_ClientID;
+        private System.Windows.Forms.CheckBox checkBox_1_Duplicate;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox textBox_1_PID;
+        private System.Windows.Forms.Label label_1_Sizes;
+        private System.Windows.Forms.Button button_1_SelectSizes;
+        private System.Windows.Forms.Label label_1_Splashurl;
+        private System.Windows.Forms.TextBox textBox_1_Splashurl;
+        private System.Windows.Forms.CheckBox checkBox_1_Splashpage;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn email;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn us_sizes;
+        private System.Windows.Forms.DataGridViewTextBoxColumn sitekey;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn duplicate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn cookies;
+        private System.Windows.Forms.DataGridViewTextBoxColumn splash_url;
+        private System.Windows.Forms.DataGridViewTextBoxColumn status;
+        private System.Windows.Forms.Button button_1_AddProfile;
+        private System.Windows.Forms.RichTextBox richTextBox_1_Logs;
+        private System.Windows.Forms.Label label_1_Logs;
+        private System.Windows.Forms.Panel panel_Home;
+        private System.Windows.Forms.Button button_1_Run;
+        private System.Windows.Forms.Button button_1_Login;
     }
 }
 

@@ -12,6 +12,7 @@ namespace _3s_atc
         public string sitekey { get; set; }
         public string response { get; set; }
         public DateTime expiration { get; set; }
+        public int profileID { get; set; }
 
         public C_Captcha()
         {
