@@ -94,5 +94,29 @@ namespace _3s_atc.Properties {
                 this["www_path"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int sessions_count {
+            get {
+                return ((int)(this["sessions_count"]));
+            }
+            set {
+                this["sessions_count"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int r_sessions_count {
+            get {
+                return ((int)(this["r_sessions_count"]));
+            }
+            set {
+                this["r_sessions_count"] = value;
+            }
+        }
     }
 }

@@ -23,17 +23,18 @@ namespace _3s_atc
         public List<C_Captcha> captchas;
         public List<C_Proxy> proxylist;
         private Dictionary<string, string> marketsList;
-        private List<C_Proxy> passedSplash;
-        private bool proxy_running;
+        private bool proxy_running, sessions_running;
         public List<string> loggingin_emails;
+        private List<C_Session> sessionlist;
 
         public Helpers()
         {
             proxy_running = false;
             profiles = new List<Profile>(); 
             captchas = new List<C_Captcha>(); 
-            proxylist = new List<C_Proxy>(); passedSplash = new List<C_Proxy>();
+            proxylist = new List<C_Proxy>();
             loggingin_emails = new List<string>();
+            sessionlist = new List<C_Session>();
 
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
@@ -89,7 +90,7 @@ namespace _3s_atc
             captchas.Add(new C_Captcha { sitekey = profile.Sitekey, response = captcha_response, profileID = profile.index });
         }
 
-        private string webRequestPost(Profile profile, string url, Dictionary<string, string> post, C_Proxy proxy=null)
+        private string webRequestPost(Profile profile, string url, Dictionary<string, string> post, C_Proxy proxy=null, C_Session session=null)
         {
             string postData = "";
 
@@ -102,8 +103,8 @@ namespace _3s_atc
             HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
             webRequest.Method = "POST";
             webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
-            
-            if(profile.splash)
+
+            if (profile.splashmode > 0)
                 webRequest.Referer = profile.SplashUrl;
             else
                 webRequest.Referer = String.Format("http://www.{0}/", Properties.Settings.Default.locale);
@@ -138,6 +139,10 @@ namespace _3s_atc
             if(proxy != null)
             {
                 foreach (C_Cookie cookie in proxy.cookies)
+                    cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
+            } else if(session != null)
+            {
+                foreach (C_Cookie cookie in session.cookies)
                     cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
             }
 
@@ -213,7 +218,7 @@ namespace _3s_atc
         }
         private void refreshDriver(IWebDriver _driver)
         {
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(10000);
             if (_driver.FindElements(By.Id("captcha")).Count == 0)
             {
                 _driver.Manage().Cookies.DeleteAllCookies();
@@ -262,7 +267,7 @@ namespace _3s_atc
                         proxy.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
                 }
 
-                passedSplash.Add(proxy);
+                proxy.passed = true;
 
                 if(proxy.auth)
                     File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} --- Username: {1} --- Password: {2} / Cookie --- Name: {3} --- Value : {4} / Sitekey: {5} / Client ID : {6} / Duplicate : {7}", proxy.address, proxy.username, proxy.password, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
@@ -283,7 +288,7 @@ namespace _3s_atc
         void runProxyList(Profile profile,DataGridViewRowCollection rows)
         {
             if (proxylist.Count == 0){
-                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one proxy.", profile.Email, profile.ProductID), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one proxy.", profile.Email, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;}
 
             proxy_running = true;
@@ -291,24 +296,124 @@ namespace _3s_atc
             for (int i = 0; i < proxylist.Count; i++)
             {
                 int index = i;
-                Task.Factory.StartNew(() => proxyRun(profile, proxylist[index], index, rows));
+                Task.Run(() => proxyRun(profile, proxylist[index], index, rows));
             }
             
         }
+
+        void runSessionList(Profile profile, DataGridViewRowCollection rows)
+        {
+            if (sessionlist.Count == 0)
+            {
+                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one session.", profile.Email, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            sessions_running = true;
+
+            for (int i = 0; i < sessionlist.Count; i++)
+            {
+                int index = i;
+                Task.Run(() => runSession(profile, sessionlist[index], rows[index]));
+            }
+
+        }
+
+        void runSession(Profile profile, C_Session session, DataGridViewRow row)
+        {
+            row.Cells[8].Value = "Setting up...";
+            
+            IWebDriver _driver = createNewJSDriver();
+            _driver.Navigate().GoToUrl(profile.SplashUrl);
+
+            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 120))
+            {
+                row.Cells[8].Value = "On splash page...";
+
+                while (_driver.FindElements(By.Id("captcha")).Count == 0)
+                {
+                    if (session.refresh)
+                        refreshDriver(_driver);
+                    else
+                        System.Threading.Thread.Sleep(2000);
+                }
+
+                row.Cells[8].Value = "Splash page passed!";
+                row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
+
+                string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
+                session.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
+                session.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
+                row.Cells[4].Value = session.hmac;
+                session.sitekey = _driver.FindElement(By.Id("captcha")).GetAttribute("data-sitekey");
+                row.Cells[5].Value = session.sitekey;
+                session.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                row.Cells[6].Value = session.clientid;
+                session.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                row.Cells[7].Value = session.duplicate;
+
+                row.Cells[8].Value = "HMAC and Sitekey retrieved!";
+                foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
+                {
+                    if (cookie.Domain.Contains("adidas"))
+                        session.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
+                }
+
+                session.passed = true;
+
+                File.AppendAllText("logs.txt", String.Format("Session / Cookie --- Name: {0} --- Value : {1} / Sitekey: {2} / Client ID : {3} / Duplicate : {4}", cookie_name, session.hmac, session.sitekey, session.clientid, session.duplicate) + Environment.NewLine);
+
+                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), _driver.PageSource);
+                _driver.Quit();
+            }
+            else
+            {
+                row.Cells[8].Value = "Error!";
+                row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+
+                _driver.Quit();
+            }
+        }
         private string cartSplash(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows)
         {
-            if(!proxy_running)
+            cell.Value = "Waiting for HMAC...(check settings page)";
+            C_Proxy proxy = null;
+            C_Session session = null;
+
+            if (!proxy_running && profile.splashmode == 1)
+            {
                 Task.Factory.StartNew(() => runProxyList(profile, rows));
 
-            cell.Value = "Waiting for HMAC...(check settings page)";
+                while (proxylist.FirstOrDefault(s => proxy.passed) == null)
+                    System.Threading.Thread.Sleep(1000);
 
-            while (passedSplash.Count == 0)
-                System.Threading.Thread.Sleep(1000);
+                cell.Value = "GOT HMAC!";
 
-            cell.Value = "GOT HMAC!";
+                proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_expiration > DateTime.Now);
+            }
+            else if(!sessions_running && profile.splashmode == 2)
+            {
+                for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
+                    sessionlist.Add(new C_Session { refresh = false });
+                for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
+                    sessionlist.Add(new C_Session { refresh = true });
 
-            C_Proxy proxy = passedSplash.FirstOrDefault(s => s.hmac_expiration > DateTime.Now);
-            return cartNoSplash(profile, cell, proxy);
+                rows.Clear();
+
+                foreach(C_Session s in sessionlist)
+                    rows.Add( new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
+
+                Task.Factory.StartNew(() => runSessionList(profile, rows));
+
+                while (sessionlist.FirstOrDefault(x => x.passed) == null)
+                    System.Threading.Thread.Sleep(1000);
+
+                cell.Value = "GOT HMAC!";
+
+                session = sessionlist.FirstOrDefault(s => s.passed && s.hmac_expiration > DateTime.Now);
+            }
+
+            return cartNoSplash(profile, cell, proxy, session);
         }
 
         public bool LoggedIn(IWebDriver _driver, int timeout)
@@ -362,7 +467,6 @@ namespace _3s_atc
             driverOptions.AddAdditionalCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
 
             _driver = new PhantomJSDriver(driverService, driverOptions);
-
             return _driver;
         }
         
@@ -454,11 +558,11 @@ namespace _3s_atc
         {
             return (size - 0.5).ToString("0.#").Replace(',', '.');
         }
-        private string getFirstAvailableSize(List<double> sizes, string pid, string cid, bool forceCID)
+        private string getFirstAvailableSize(List<double> sizes, string pid, string cid, int forceCID)
         {
             Dictionary<string, Dictionary<string, string>> inventory;
 
-            if(forceCID)
+            if(forceCID > 0)
                 inventory = getClientInventory(pid, cid);
             else
                 inventory = getInventory(pid, cid);
@@ -493,7 +597,7 @@ namespace _3s_atc
             return null;
         }
 
-        private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null)
+        private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null, C_Session session=null)
         {
             Dictionary<string, string> post = new Dictionary<string, string>();
 
@@ -510,6 +614,12 @@ namespace _3s_atc
                 profile.Sitekey = proxy.sitekey; profile.captcha = true;
                 profile.ClientID = proxy.clientid; profile.clientid = true;
                 profile.Duplicate = proxy.duplicate; profile.duplicate = true;
+            }
+            else if(session != null)
+            {
+                profile.Sitekey = session.sitekey; profile.captcha = true;
+                profile.ClientID = session.clientid; profile.clientid = true;
+                profile.Duplicate = session.duplicate; profile.duplicate = true;
             }
 
             if (!profile.loggedin)
@@ -537,14 +647,14 @@ namespace _3s_atc
                 cell.Value = "Checking sizes...";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, profile.splash);
+                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, profile.splashmode);
 
                 if (size == null)
                     return "No sizes available";
 
                 cell.Value = "Adding to cart...";
                 post.Add("pid", size); post.Add("masterPid", profile.ProductID); post.Add("Quantity", "1"); post.Add("request", "ajax"); post.Add("responseformat", "json"); post.Add("sessionSelectedStoreID", "null"); post.Add("layer", "Add To Bag overlay");
-                result = webRequestPost(profile, atcURL, post, proxy);
+                result = webRequestPost(profile, atcURL, post, proxy, session);
             }
 
             return result;
@@ -552,7 +662,7 @@ namespace _3s_atc
 
         public string cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
         {
-            if (profile.splash && !String.IsNullOrWhiteSpace(profile.SplashUrl))
+            if (profile.splashmode > 0 && !String.IsNullOrWhiteSpace(profile.SplashUrl))
                 return cartSplash(profile, cell, rows);
             else
                 return cartNoSplash(profile, cell);

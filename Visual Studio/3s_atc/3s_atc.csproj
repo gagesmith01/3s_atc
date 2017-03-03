@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="C_Captcha.cs" />
     <Compile Include="C_Cookie.cs" />
+    <Compile Include="C_Session.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

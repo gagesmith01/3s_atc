@@ -16,6 +16,7 @@ namespace _3s_atc
         private List<double> Sizes;
         private int currentMouseOverRow;
         private int currentMouseOverRow2;
+        private bool warningDisplayed;
 
         public Form1()
         {
@@ -25,6 +26,7 @@ namespace _3s_atc
 
             helpers = new Helpers();
             Sizes = new List<double>();
+            warningDisplayed = false;
 
             if (Properties.Settings.Default.profiles.Length > 0)
                 helpers.profiles = helpers.LoadProfiles();
@@ -48,6 +50,9 @@ namespace _3s_atc
                     comboBox_3_Website.SelectedItem = comboBox_3_Website.Items[i]; break;
                 }
             }
+
+            comboBox_1_SplashMode.SelectedIndex = 0;
+            numericUpDown_Sessions.Value = Properties.Settings.Default.sessions_count; numericUpDown_RSessions.Value = Properties.Settings.Default.r_sessions_count;
         }
 
         public void addLog(string text, Color color)
@@ -78,7 +83,7 @@ namespace _3s_atc
                 return;
             }
 
-            if (String.IsNullOrWhiteSpace(textBox_1_Sitekey.Text) && checkBox_1_Captcha.Checked || String.IsNullOrWhiteSpace(textBox_1_ClientID.Text) && checkBox_1_ClientID.Checked || String.IsNullOrWhiteSpace(textBox_1_Duplicate.Text) && checkBox_1_Duplicate.Checked || String.IsNullOrWhiteSpace(textBox_1_Splashurl.Text) && checkBox_1_Splashpage.Checked)
+            if (String.IsNullOrWhiteSpace(textBox_1_Sitekey.Text) && checkBox_1_Captcha.Checked || String.IsNullOrWhiteSpace(textBox_1_ClientID.Text) && checkBox_1_ClientID.Checked || String.IsNullOrWhiteSpace(textBox_1_Duplicate.Text) && checkBox_1_Duplicate.Checked || String.IsNullOrWhiteSpace(textBox_1_Splashurl.Text) && comboBox_1_SplashMode.SelectedIndex > 0)
             {
                 MessageBox.Show("Captcha/Duplicate/Splash page checked but fields are empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -96,14 +101,21 @@ namespace _3s_atc
                 return;
             }
 
+            if(comboBox_1_SplashMode.SelectedIndex > 0 && !warningDisplayed)
+            {
+                MessageBox.Show("Please note that multi session method opens by definition multiple sessions with your IP and so can get you banned.That's why we recommend you to use this method only if you have a dynamic IP or are using a VPN.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                warningDisplayed = true;
+            }
+
             sitekey = (checkBox_1_Captcha.Checked) ? textBox_1_Sitekey.Text : null;
             clientid = (checkBox_1_ClientID.Checked) ? textBox_1_ClientID.Text : null;
             duplicate = (checkBox_1_Duplicate.Checked) ? textBox_1_Duplicate.Text : null;
-            splash_url = (checkBox_1_Splashpage.Checked) ? textBox_1_Splashurl.Text : null;
+            if (comboBox_1_SplashMode.SelectedIndex > 0) splash_url = textBox_1_Splashurl.Text; else splash_url = null;
+
 
             string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), sitekey, clientid, duplicate, richTextBox_1_Cookies.Text, splash_url, "" };
             int rowindex = dataGridView1.Rows.Add(row);
-            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splash = checkBox_1_Splashpage.Checked, loggedin = false, running = false, index = rowindex });
+            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splashmode = comboBox_1_SplashMode.SelectedIndex, loggedin = false, running = false, index = rowindex });
 
             helpers.SaveProfiles();
 
@@ -236,7 +248,7 @@ namespace _3s_atc
                 {
                     if (!profile.running)
                     {
-                        if (profile.splash)
+                        if (profile.splashmode > 0)
                             cart(profile, row.Cells[8], dataGridView2.Rows);
                         else
                             cart(profile, row.Cells[8]);
@@ -295,6 +307,9 @@ namespace _3s_atc
                 Properties.Settings.Default.locale = split[1];
                 Properties.Settings.Default.code = split[0];
             }
+
+            Properties.Settings.Default.sessions_count = Convert.ToInt32(numericUpDown_Sessions.Value);
+            Properties.Settings.Default.r_sessions_count = Convert.ToInt32(numericUpDown_RSessions.Value);
 
             Properties.Settings.Default.Save();
         }

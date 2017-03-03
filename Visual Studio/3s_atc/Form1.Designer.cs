@@ -37,7 +37,6 @@
             this.panel_Tools = new System.Windows.Forms.Panel();
             this.label_2_Inventory = new System.Windows.Forms.Label();
             this.button_2_Check = new System.Windows.Forms.Button();
-            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.panel_Settings = new System.Windows.Forms.Panel();
@@ -89,7 +88,6 @@
             this.button_1_SelectSizes = new System.Windows.Forms.Button();
             this.label_1_Splashurl = new System.Windows.Forms.Label();
             this.textBox_1_Splashurl = new System.Windows.Forms.TextBox();
-            this.checkBox_1_Splashpage = new System.Windows.Forms.CheckBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.email = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -104,14 +102,23 @@
             this.richTextBox_1_Logs = new System.Windows.Forms.RichTextBox();
             this.label_1_Logs = new System.Windows.Forms.Label();
             this.panel_Home = new System.Windows.Forms.Panel();
-            this.button_1_Login = new System.Windows.Forms.Button();
+            this.comboBox_1_SplashMode = new System.Windows.Forms.ComboBox();
             this.button_1_Run = new System.Windows.Forms.Button();
+            this.label_1_SplashMode = new System.Windows.Forms.Label();
+            this.button_1_Login = new System.Windows.Forms.Button();
+            this.numericUpDown_Sessions = new System.Windows.Forms.NumericUpDown();
+            this.label_3_SCount = new System.Windows.Forms.Label();
+            this.label_3_SRCount = new System.Windows.Forms.Label();
+            this.numericUpDown_RSessions = new System.Windows.Forms.NumericUpDown();
+            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.panel_Tools.SuspendLayout();
             this.panel_Settings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel_Home.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -180,15 +187,6 @@
             this.button_2_Check.UseVisualStyleBackColor = true;
             this.button_2_Check.Click += new System.EventHandler(this.button_2_Check_Click);
             // 
-            // textBox_2_PID
-            // 
-            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
-            this.textBox_2_PID.Name = "textBox_2_PID";
-            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
-            this.textBox_2_PID.TabIndex = 7;
-            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
-            // 
             // label_2_PID
             // 
             this.label_2_PID.AutoSize = true;
@@ -208,6 +206,10 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.numericUpDown_RSessions);
+            this.panel_Settings.Controls.Add(this.label_3_SRCount);
+            this.panel_Settings.Controls.Add(this.label_3_SCount);
+            this.panel_Settings.Controls.Add(this.numericUpDown_Sessions);
             this.panel_Settings.Controls.Add(this.label4);
             this.panel_Settings.Controls.Add(this.checkBox_3_Bypass);
             this.panel_Settings.Controls.Add(this.button_3_Browse);
@@ -236,7 +238,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(118, 71);
+            this.label4.Location = new System.Drawing.Point(118, 77);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(36, 13);
             this.label4.TabIndex = 23;
@@ -245,7 +247,7 @@
             // checkBox_3_Bypass
             // 
             this.checkBox_3_Bypass.AutoSize = true;
-            this.checkBox_3_Bypass.Location = new System.Drawing.Point(746, 88);
+            this.checkBox_3_Bypass.Location = new System.Drawing.Point(746, 94);
             this.checkBox_3_Bypass.Name = "checkBox_3_Bypass";
             this.checkBox_3_Bypass.Size = new System.Drawing.Size(99, 17);
             this.checkBox_3_Bypass.TabIndex = 22;
@@ -254,7 +256,7 @@
             // 
             // button_3_Browse
             // 
-            this.button_3_Browse.Location = new System.Drawing.Point(580, 29);
+            this.button_3_Browse.Location = new System.Drawing.Point(365, 24);
             this.button_3_Browse.Name = "button_3_Browse";
             this.button_3_Browse.Size = new System.Drawing.Size(75, 23);
             this.button_3_Browse.TabIndex = 21;
@@ -265,7 +267,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(451, 34);
+            this.label3.Location = new System.Drawing.Point(236, 29);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(128, 13);
             this.label3.TabIndex = 20;
@@ -274,7 +276,7 @@
             // label_3_Settings
             // 
             this.label_3_Settings.AutoSize = true;
-            this.label_3_Settings.Location = new System.Drawing.Point(483, 6);
+            this.label_3_Settings.Location = new System.Drawing.Point(483, 1);
             this.label_3_Settings.Name = "label_3_Settings";
             this.label_3_Settings.Size = new System.Drawing.Size(51, 13);
             this.label_3_Settings.TabIndex = 18;
@@ -294,12 +296,12 @@
             this.clientid,
             this.p_duplicate,
             this.Statuss});
-            this.dataGridView2.Location = new System.Drawing.Point(5, 140);
+            this.dataGridView2.Location = new System.Drawing.Point(5, 134);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(969, 305);
+            this.dataGridView2.Size = new System.Drawing.Size(969, 316);
             this.dataGridView2.TabIndex = 17;
             this.dataGridView2.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView2_UserDeletedRow);
             this.dataGridView2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView2_MouseClick);
@@ -369,7 +371,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(439, 89);
+            this.label2.Location = new System.Drawing.Point(439, 95);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 16;
@@ -377,7 +379,7 @@
             // 
             // textBox_3_Password
             // 
-            this.textBox_3_Password.Location = new System.Drawing.Point(504, 86);
+            this.textBox_3_Password.Location = new System.Drawing.Point(504, 92);
             this.textBox_3_Password.Name = "textBox_3_Password";
             this.textBox_3_Password.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Password.TabIndex = 15;
@@ -385,7 +387,7 @@
             // 
             // textBox_3_Username
             // 
-            this.textBox_3_Username.Location = new System.Drawing.Point(300, 86);
+            this.textBox_3_Username.Location = new System.Drawing.Point(300, 92);
             this.textBox_3_Username.Name = "textBox_3_Username";
             this.textBox_3_Username.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Username.TabIndex = 14;
@@ -393,7 +395,7 @@
             // label_3_Username
             // 
             this.label_3_Username.AutoSize = true;
-            this.label_3_Username.Location = new System.Drawing.Point(234, 89);
+            this.label_3_Username.Location = new System.Drawing.Point(234, 95);
             this.label_3_Username.Name = "label_3_Username";
             this.label_3_Username.Size = new System.Drawing.Size(61, 13);
             this.label_3_Username.TabIndex = 13;
@@ -402,7 +404,7 @@
             // checkBox_3_Auth
             // 
             this.checkBox_3_Auth.AutoSize = true;
-            this.checkBox_3_Auth.Location = new System.Drawing.Point(645, 88);
+            this.checkBox_3_Auth.Location = new System.Drawing.Point(645, 94);
             this.checkBox_3_Auth.Name = "checkBox_3_Auth";
             this.checkBox_3_Auth.Size = new System.Drawing.Size(94, 17);
             this.checkBox_3_Auth.TabIndex = 12;
@@ -411,7 +413,7 @@
             // 
             // button_3_Add
             // 
-            this.button_3_Add.Location = new System.Drawing.Point(852, 83);
+            this.button_3_Add.Location = new System.Drawing.Point(852, 89);
             this.button_3_Add.Name = "button_3_Add";
             this.button_3_Add.Size = new System.Drawing.Size(122, 25);
             this.button_3_Add.TabIndex = 10;
@@ -421,7 +423,7 @@
             // 
             // textBox_3_Address
             // 
-            this.textBox_3_Address.Location = new System.Drawing.Point(58, 85);
+            this.textBox_3_Address.Location = new System.Drawing.Point(58, 91);
             this.textBox_3_Address.Name = "textBox_3_Address";
             this.textBox_3_Address.Size = new System.Drawing.Size(173, 20);
             this.textBox_3_Address.TabIndex = 9;
@@ -429,7 +431,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 89);
+            this.label1.Location = new System.Drawing.Point(2, 94);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 8;
@@ -438,7 +440,7 @@
             // label_3_ProxyList
             // 
             this.label_3_ProxyList.AutoSize = true;
-            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 65);
+            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 73);
             this.label_3_ProxyList.Name = "label_3_ProxyList";
             this.label_3_ProxyList.Size = new System.Drawing.Size(54, 13);
             this.label_3_ProxyList.TabIndex = 7;
@@ -446,7 +448,7 @@
             // 
             // button_3_Update
             // 
-            this.button_3_Update.Location = new System.Drawing.Point(727, 29);
+            this.button_3_Update.Location = new System.Drawing.Point(871, 25);
             this.button_3_Update.Name = "button_3_Update";
             this.button_3_Update.Size = new System.Drawing.Size(85, 23);
             this.button_3_Update.TabIndex = 5;
@@ -510,7 +512,7 @@
             "VE - latin-america.adidas.com",
             "VN - adidas.com.vn",
             "ZA - adidas.co.za"});
-            this.comboBox_3_Website.Location = new System.Drawing.Point(283, 30);
+            this.comboBox_3_Website.Location = new System.Drawing.Point(73, 25);
             this.comboBox_3_Website.Name = "comboBox_3_Website";
             this.comboBox_3_Website.Size = new System.Drawing.Size(144, 21);
             this.comboBox_3_Website.TabIndex = 1;
@@ -518,7 +520,7 @@
             // label_3_Website
             // 
             this.label_3_Website.AutoSize = true;
-            this.label_3_Website.Location = new System.Drawing.Point(228, 34);
+            this.label_3_Website.Location = new System.Drawing.Point(18, 29);
             this.label_3_Website.Name = "label_3_Website";
             this.label_3_Website.Size = new System.Drawing.Size(48, 13);
             this.label_3_Website.TabIndex = 0;
@@ -703,16 +705,6 @@
             this.textBox_1_Splashurl.Size = new System.Drawing.Size(125, 20);
             this.textBox_1_Splashurl.TabIndex = 22;
             // 
-            // checkBox_1_Splashpage
-            // 
-            this.checkBox_1_Splashpage.AutoSize = true;
-            this.checkBox_1_Splashpage.Location = new System.Drawing.Point(588, 88);
-            this.checkBox_1_Splashpage.Name = "checkBox_1_Splashpage";
-            this.checkBox_1_Splashpage.Size = new System.Drawing.Size(85, 17);
-            this.checkBox_1_Splashpage.TabIndex = 23;
-            this.checkBox_1_Splashpage.Text = "Splash page";
-            this.checkBox_1_Splashpage.UseVisualStyleBackColor = true;
-            // 
             // dataGridView1
             // 
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -839,13 +831,14 @@
             // 
             // panel_Home
             // 
+            this.panel_Home.Controls.Add(this.comboBox_1_SplashMode);
             this.panel_Home.Controls.Add(this.button_1_Run);
+            this.panel_Home.Controls.Add(this.label_1_SplashMode);
             this.panel_Home.Controls.Add(this.button_1_Login);
             this.panel_Home.Controls.Add(this.label_1_Logs);
             this.panel_Home.Controls.Add(this.richTextBox_1_Logs);
             this.panel_Home.Controls.Add(this.button_1_AddProfile);
             this.panel_Home.Controls.Add(this.dataGridView1);
-            this.panel_Home.Controls.Add(this.checkBox_1_Splashpage);
             this.panel_Home.Controls.Add(this.textBox_1_Splashurl);
             this.panel_Home.Controls.Add(this.label_1_Splashurl);
             this.panel_Home.Controls.Add(this.button_1_SelectSizes);
@@ -873,15 +866,18 @@
             this.panel_Home.Size = new System.Drawing.Size(980, 457);
             this.panel_Home.TabIndex = 6;
             // 
-            // button_1_Login
+            // comboBox_1_SplashMode
             // 
-            this.button_1_Login.Location = new System.Drawing.Point(501, 430);
-            this.button_1_Login.Name = "button_1_Login";
-            this.button_1_Login.Size = new System.Drawing.Size(75, 23);
-            this.button_1_Login.TabIndex = 24;
-            this.button_1_Login.Text = "Login ";
-            this.button_1_Login.UseVisualStyleBackColor = true;
-            this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
+            this.comboBox_1_SplashMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_1_SplashMode.FormattingEnabled = true;
+            this.comboBox_1_SplashMode.Items.AddRange(new object[] {
+            "Off",
+            "Proxies",
+            "Multi sessions"});
+            this.comboBox_1_SplashMode.Location = new System.Drawing.Point(670, 84);
+            this.comboBox_1_SplashMode.Name = "comboBox_1_SplashMode";
+            this.comboBox_1_SplashMode.Size = new System.Drawing.Size(89, 21);
+            this.comboBox_1_SplashMode.TabIndex = 24;
             // 
             // button_1_Run
             // 
@@ -892,6 +888,66 @@
             this.button_1_Run.Text = "Run";
             this.button_1_Run.UseVisualStyleBackColor = true;
             this.button_1_Run.Click += new System.EventHandler(this.button_1_Run_Click);
+            // 
+            // label_1_SplashMode
+            // 
+            this.label_1_SplashMode.AutoSize = true;
+            this.label_1_SplashMode.Location = new System.Drawing.Point(596, 89);
+            this.label_1_SplashMode.Name = "label_1_SplashMode";
+            this.label_1_SplashMode.Size = new System.Drawing.Size(77, 13);
+            this.label_1_SplashMode.TabIndex = 25;
+            this.label_1_SplashMode.Text = "Splash mode : ";
+            // 
+            // button_1_Login
+            // 
+            this.button_1_Login.Location = new System.Drawing.Point(501, 430);
+            this.button_1_Login.Name = "button_1_Login";
+            this.button_1_Login.Size = new System.Drawing.Size(75, 23);
+            this.button_1_Login.TabIndex = 24;
+            this.button_1_Login.Text = "Login ";
+            this.button_1_Login.UseVisualStyleBackColor = true;
+            this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
+            // 
+            // numericUpDown_Sessions
+            // 
+            this.numericUpDown_Sessions.Location = new System.Drawing.Point(560, 26);
+            this.numericUpDown_Sessions.Name = "numericUpDown_Sessions";
+            this.numericUpDown_Sessions.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown_Sessions.TabIndex = 25;
+            // 
+            // label_3_SCount
+            // 
+            this.label_3_SCount.AutoSize = true;
+            this.label_3_SCount.Location = new System.Drawing.Point(458, 29);
+            this.label_3_SCount.Name = "label_3_SCount";
+            this.label_3_SCount.Size = new System.Drawing.Size(102, 13);
+            this.label_3_SCount.TabIndex = 26;
+            this.label_3_SCount.Text = "Number of sessions:";
+            // 
+            // label_3_SRCount
+            // 
+            this.label_3_SRCount.AutoSize = true;
+            this.label_3_SRCount.Location = new System.Drawing.Point(648, 29);
+            this.label_3_SRCount.Name = "label_3_SRCount";
+            this.label_3_SRCount.Size = new System.Drawing.Size(140, 13);
+            this.label_3_SRCount.TabIndex = 27;
+            this.label_3_SRCount.Text = "Number of refresh sessions :";
+            // 
+            // numericUpDown_RSessions
+            // 
+            this.numericUpDown_RSessions.Location = new System.Drawing.Point(789, 26);
+            this.numericUpDown_RSessions.Name = "numericUpDown_RSessions";
+            this.numericUpDown_RSessions.Size = new System.Drawing.Size(62, 20);
+            this.numericUpDown_RSessions.TabIndex = 28;
+            // 
+            // textBox_2_PID
+            // 
+            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
+            this.textBox_2_PID.Name = "textBox_2_PID";
+            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
+            this.textBox_2_PID.TabIndex = 7;
+            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
             // 
             // Form1
             // 
@@ -916,6 +972,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel_Home.ResumeLayout(false);
             this.panel_Home.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -982,7 +1040,6 @@
         private System.Windows.Forms.Button button_1_SelectSizes;
         private System.Windows.Forms.Label label_1_Splashurl;
         private System.Windows.Forms.TextBox textBox_1_Splashurl;
-        private System.Windows.Forms.CheckBox checkBox_1_Splashpage;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn email;
         private System.Windows.Forms.DataGridViewTextBoxColumn pid;
@@ -999,6 +1056,12 @@
         private System.Windows.Forms.Panel panel_Home;
         private System.Windows.Forms.Button button_1_Run;
         private System.Windows.Forms.Button button_1_Login;
+        private System.Windows.Forms.Label label_1_SplashMode;
+        private System.Windows.Forms.ComboBox comboBox_1_SplashMode;
+        private System.Windows.Forms.NumericUpDown numericUpDown_RSessions;
+        private System.Windows.Forms.Label label_3_SRCount;
+        private System.Windows.Forms.Label label_3_SCount;
+        private System.Windows.Forms.NumericUpDown numericUpDown_Sessions;
     }
 }
 

@@ -49,8 +49,9 @@
             this.checkBox_Captcha = new System.Windows.Forms.CheckBox();
             this.checkBox_ClientID = new System.Windows.Forms.CheckBox();
             this.checkBox_Duplicate = new System.Windows.Forms.CheckBox();
-            this.checkBox_Splash = new System.Windows.Forms.CheckBox();
             this.button_Update = new System.Windows.Forms.Button();
+            this.label_SplashMode = new System.Windows.Forms.Label();
+            this.comboBox_SplashMode = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -222,16 +223,6 @@
             this.checkBox_Duplicate.Text = "Duplicate";
             this.checkBox_Duplicate.UseVisualStyleBackColor = true;
             // 
-            // checkBox_Splash
-            // 
-            this.checkBox_Splash.AutoSize = true;
-            this.checkBox_Splash.Location = new System.Drawing.Point(520, 119);
-            this.checkBox_Splash.Name = "checkBox_Splash";
-            this.checkBox_Splash.Size = new System.Drawing.Size(87, 17);
-            this.checkBox_Splash.TabIndex = 20;
-            this.checkBox_Splash.Text = "Splash mode";
-            this.checkBox_Splash.UseVisualStyleBackColor = true;
-            // 
             // button_Update
             // 
             this.button_Update.Location = new System.Drawing.Point(755, 115);
@@ -242,13 +233,36 @@
             this.button_Update.UseVisualStyleBackColor = true;
             this.button_Update.Click += new System.EventHandler(this.button_Update_Click);
             // 
+            // label_SplashMode
+            // 
+            this.label_SplashMode.AutoSize = true;
+            this.label_SplashMode.Location = new System.Drawing.Point(508, 120);
+            this.label_SplashMode.Name = "label_SplashMode";
+            this.label_SplashMode.Size = new System.Drawing.Size(71, 13);
+            this.label_SplashMode.TabIndex = 22;
+            this.label_SplashMode.Text = "Splash mode:";
+            // 
+            // comboBox_SplashMode
+            // 
+            this.comboBox_SplashMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_SplashMode.FormattingEnabled = true;
+            this.comboBox_SplashMode.Items.AddRange(new object[] {
+            "Off",
+            "Proxies",
+            "Multi sessions"});
+            this.comboBox_SplashMode.Location = new System.Drawing.Point(579, 116);
+            this.comboBox_SplashMode.Name = "comboBox_SplashMode";
+            this.comboBox_SplashMode.Size = new System.Drawing.Size(88, 21);
+            this.comboBox_SplashMode.TabIndex = 23;
+            // 
             // Form_Edit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(865, 148);
+            this.Controls.Add(this.comboBox_SplashMode);
+            this.Controls.Add(this.label_SplashMode);
             this.Controls.Add(this.button_Update);
-            this.Controls.Add(this.checkBox_Splash);
             this.Controls.Add(this.checkBox_Duplicate);
             this.Controls.Add(this.checkBox_ClientID);
             this.Controls.Add(this.checkBox_Captcha);
@@ -299,7 +313,8 @@
         private System.Windows.Forms.CheckBox checkBox_Captcha;
         private System.Windows.Forms.CheckBox checkBox_ClientID;
         private System.Windows.Forms.CheckBox checkBox_Duplicate;
-        private System.Windows.Forms.CheckBox checkBox_Splash;
         private System.Windows.Forms.Button button_Update;
+        private System.Windows.Forms.Label label_SplashMode;
+        private System.Windows.Forms.ComboBox comboBox_SplashMode;
     }
 }

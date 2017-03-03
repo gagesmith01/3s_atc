@@ -22,7 +22,7 @@ namespace _3s_atc
         public bool captcha { set; get; }
         public bool clientid { set; get; }
         public bool duplicate { set; get; }
-        public bool splash { set; get; }
+        public int splashmode { set; get; }
         public bool loggedin { set; get; }
         public int index { set; get; }
         public bool running { set; get; }

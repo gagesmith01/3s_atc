@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace _3s_atc
 {
-    [Serializable()]
-    public class C_Proxy
+    public class C_Session
     {
-        public string address { get; set; }
-        public bool auth { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
         public bool passed { get; set; }
         public string hmac { get; set; }
         public string sitekey { get; set; }
@@ -22,7 +17,7 @@ namespace _3s_atc
         public List<C_Cookie> cookies;
         public DateTime? hmac_expiration { get; set; }
 
-        public C_Proxy()
+        public C_Session()
         {
             this.passed = false;
             this.cookies = new List<C_Cookie>();
