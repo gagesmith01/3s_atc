@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Diagnostics;
 using OpenQA.Selenium;
 using OpenQA.Selenium.PhantomJS;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Support.UI;
 
@@ -25,7 +26,7 @@ namespace _3s_atc
         private Dictionary<string, string> marketsList;
         private bool proxy_running, sessions_running;
         public List<string> loggingin_emails;
-        private List<C_Session> sessionlist;
+        public List<C_Session> sessionlist;
 
         public Helpers()
         {
@@ -184,11 +185,11 @@ namespace _3s_atc
 
                 if (js != null)
                 {
-                    string[] js_source = js.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    string[] js_source = js.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                     js = js_source.FirstOrDefault(s => s.Contains("$('#flashproductform').append"));
 
-                    string duplicate = js.Split('"')[5];
+                    string duplicate = js.Split(new string[] { "name=\"" }, StringSplitOptions.None)[1].Split('"')[0];
                     return duplicate;
                 }
             }
@@ -219,14 +220,14 @@ namespace _3s_atc
         private void refreshDriver(IWebDriver _driver)
         {
             System.Threading.Thread.Sleep(10000);
-            if (_driver.FindElements(By.Id("captcha")).Count == 0)
+            if (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
             {
                 _driver.Manage().Cookies.DeleteAllCookies();
                 _driver.Navigate().Refresh();
                 WaitForPageLoad(_driver, 60);
             }
         }
-        void proxyRun(Profile profile, C_Proxy proxy, int i, DataGridViewRowCollection rows)
+        private void proxyRun(Profile profile, C_Proxy proxy, int i, DataGridViewRowCollection rows)
         {
             rows[i].Cells[8].Value = "Setting up...";
 
@@ -234,11 +235,11 @@ namespace _3s_atc
             _driver = createNewJSDriver(proxy);
             _driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 120))
+            if (ElementDisplayed(_driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName("sk-fading-circle"), 120))
             {
                 rows[i].Cells[8].Value = "On splash page...";
 
-                while (_driver.FindElements(By.Id("captcha")).Count == 0)
+                while (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
                 {
                     if (proxy.refresh)
                         refreshDriver(_driver);
@@ -250,15 +251,24 @@ namespace _3s_atc
                 rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
                 string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
-                proxy.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                proxy.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                rows[i].Cells[4].Value = proxy.hmac;
-                proxy.sitekey = _driver.FindElement(By.Id("captcha")).GetAttribute("data-sitekey");
-                rows[i].Cells[5].Value = proxy.sitekey;
-                proxy.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
-                rows[i].Cells[6].Value = proxy.clientid;
-                proxy.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
-                rows[i].Cells[7].Value = proxy.duplicate;
+                if (cookie_name != null)
+                {
+                    proxy.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
+                    proxy.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
+                    rows[i].Cells[4].Value = proxy.hmac;
+                } if (_driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
+                {
+                    proxy.sitekey = _driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
+                    rows[i].Cells[5].Value = proxy.sitekey;
+                } if (_driver.FindElements(By.Id("flashproductform")).Count > 0)
+                {
+                    proxy.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                    rows[i].Cells[6].Value = proxy.clientid;
+                } if (_driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
+                {
+                    proxy.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                    rows[i].Cells[7].Value = proxy.duplicate;
+                }
 
                 rows[i].Cells[8].Value = "HMAC and Sitekey retrieved!";
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
@@ -285,7 +295,7 @@ namespace _3s_atc
                 _driver.Quit();
             }
         }
-        void runProxyList(Profile profile,DataGridViewRowCollection rows)
+        private void runProxyList(Profile profile,DataGridViewRowCollection rows)
         {
             if (proxylist.Count == 0){
                 MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one proxy.", profile.Email, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -301,7 +311,27 @@ namespace _3s_atc
             
         }
 
-        void runSessionList(Profile profile, DataGridViewRowCollection rows)
+        public void transferSession(C_Session session)
+        {
+            var driverService = ChromeDriverService.CreateDefaultService();
+            driverService.HideCommandPromptWindow = true;
+
+            IWebDriver _driver = new ChromeDriver(driverService);
+            _driver.Navigate().GoToUrl("https://www.google.com/"); // navigate to google so captcha solving isn't slow when passed the splash
+            WaitForPageLoad(_driver, 15);
+
+            Profile profile = profiles.FirstOrDefault(x => !String.IsNullOrEmpty(x.SplashUrl));
+            _driver.Navigate().GoToUrl(profile.SplashUrl);
+            WaitForPageLoad(_driver, 30);
+
+            foreach(C_Cookie cookie in session.cookies)
+                _driver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie(cookie.name, cookie.value, cookie.domain, "/", cookie.expiry));
+
+            IJavaScriptExecutor js = _driver as IJavaScriptExecutor;
+            js.ExecuteScript(String.Format("var source = '{0}';document.write(source);document.close();", session.source.Replace(System.Environment.NewLine, "").Replace("'", "\"").Replace("<script>", "<scr' + 'ipt>").Replace("<script ", "<scr' + 'ipt ").Replace("</script>", "</scr' + 'ipt>")));
+        }
+
+        private void runSessionList(Profile profile, DataGridViewRowCollection rows)
         {
             if (sessionlist.Count == 0)
             {
@@ -319,18 +349,18 @@ namespace _3s_atc
 
         }
 
-        void runSession(Profile profile, C_Session session, DataGridViewRow row)
+        private void runSession(Profile profile, C_Session session, DataGridViewRow row)
         {
             row.Cells[8].Value = "Setting up...";
             
             IWebDriver _driver = createNewJSDriver();
             _driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, By.CssSelector(".message.message-1.hidden"), 120))
+            if (ElementDisplayed(_driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName("sk-fading-circle"), 120))
             {
                 row.Cells[8].Value = "On splash page...";
 
-                while (_driver.FindElements(By.Id("captcha")).Count == 0)
+                while (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
                 {
                     if (session.refresh)
                         refreshDriver(_driver);
@@ -341,16 +371,28 @@ namespace _3s_atc
                 row.Cells[8].Value = "Splash page passed!";
                 row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
-                string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
-                session.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                session.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                row.Cells[4].Value = session.hmac;
-                session.sitekey = _driver.FindElement(By.Id("captcha")).GetAttribute("data-sitekey");
-                row.Cells[5].Value = session.sitekey;
-                session.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
-                row.Cells[6].Value = session.clientid;
-                session.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
-                row.Cells[7].Value = session.duplicate;
+                session.source = _driver.PageSource;
+
+                string cookie_name = null;
+                if (_driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")) != null)
+                {
+                    cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
+                    session.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
+                    session.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
+                    row.Cells[4].Value = session.hmac;
+                } if (_driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
+                {
+                    session.sitekey = _driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
+                    row.Cells[5].Value = session.sitekey;
+                } if (_driver.FindElements(By.Id("flashproductform")).Count > 0)
+                {
+                    session.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                    row.Cells[6].Value = session.clientid;
+                } if (_driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
+                {
+                    session.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                    row.Cells[7].Value = session.duplicate;
+                }
 
                 row.Cells[8].Value = "HMAC and Sitekey retrieved!";
                 foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
@@ -400,7 +442,7 @@ namespace _3s_atc
 
                 rows.Clear();
 
-                foreach(C_Session s in sessionlist)
+                foreach(C_Session s in this.sessionlist)
                     rows.Add( new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
 
                 Task.Factory.StartNew(() => runSessionList(profile, rows));
@@ -448,6 +490,7 @@ namespace _3s_atc
             IWebDriver _driver;
             var driverService = PhantomJSDriverService.CreateDefaultService();
             driverService.HideCommandPromptWindow = true;
+            driverService.LoadImages = false; //reduce ram usage
 
             if (proxy != null)
             {

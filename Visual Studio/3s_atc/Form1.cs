@@ -101,6 +101,11 @@ namespace _3s_atc
                 return;
             }
 
+            if (comboBox_1_SplashMode.SelectedIndex > 0 && (Properties.Settings.Default.sessions_count == 0 || Properties.Settings.Default.r_sessions_count == 0))
+            {
+                MessageBox.Show("Multi-sessions method needs at least 1 session, please update your settings." , "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             if(comboBox_1_SplashMode.SelectedIndex > 0 && !warningDisplayed)
             {
                 MessageBox.Show("Please note that multi session method opens by definition multiple sessions with your IP and so can get you banned.That's why we recommend you to use this method only if you have a dynamic IP or are using a VPN.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -368,7 +373,11 @@ namespace _3s_atc
                 {
                     ContextMenu m = new ContextMenu();
 
-                    m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
+                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value != "session")
+                        m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
+                    else if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value == "session" && (dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value == "Splash page passed!" || dataGridView2.Rows[currentMouseOverRow2].Cells[5].Value != null))
+                        m.MenuItems.Add(new MenuItem("Transfer session", transferSession_Click));
+
                     m.Show(dataGridView2, new Point(e.X, e.Y));
                 }
             }
@@ -387,6 +396,13 @@ namespace _3s_atc
             form_proxyedit.ShowDialog();
 
             updateProxyRows(proxy, index);
+        }
+
+        private void transferSession_Click(Object sender, System.EventArgs e)
+        {
+            int index = currentMouseOverRow2;
+            C_Session session = helpers.sessionlist[index];
+            helpers.transferSession(session);
         }
 
         private void updateProxyRows(C_Proxy proxy, int index)
