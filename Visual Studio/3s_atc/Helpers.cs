@@ -45,6 +45,9 @@ namespace _3s_atc
         {
             foreach (var process in System.Diagnostics.Process.GetProcessesByName("phantomjs"))
                 process.Kill();
+
+            foreach (var process in System.Diagnostics.Process.GetProcessesByName("chromedriver"))
+                process.Kill();
         }
 
         private bool ReadCookie(string hostName, string cookieName, ref string value)
@@ -463,7 +466,7 @@ namespace _3s_atc
             try
             {
                 var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
-                wait.Until(x => x.Manage().Cookies.GetCookieNamed("username") != null && x.Url.ToLower().Contains("myaccount-show"));
+                wait.Until(x => x.Manage().Cookies.GetCookieNamed("pagecontext_customer_email") != null && x.Url.ToLower().Contains("myaccount-show"));
                 return true;
             }
             catch
@@ -491,6 +494,9 @@ namespace _3s_atc
             var driverService = PhantomJSDriverService.CreateDefaultService();
             driverService.HideCommandPromptWindow = true;
             driverService.LoadImages = false; //reduce ram usage
+            driverService.IgnoreSslErrors = true;
+            driverService.SslProtocol = "any";
+            driverService.WebSecurity = false;
 
             if (proxy != null)
             {
@@ -503,13 +509,43 @@ namespace _3s_atc
                     driverService.ProxyType = "http";
 
                 driverService.Proxy = proxy.address;
-                driverService.IgnoreSslErrors = true;
             }
 
             var driverOptions = new PhantomJSOptions();
-            driverOptions.AddAdditionalCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
-
+            driverOptions.AddAdditionalCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36");
+            driverOptions.AddAdditionalCapability("phantomjs.page.customHeaders.Referer", "http://" + Properties.Settings.Default.locale + "/");
+            
             _driver = new PhantomJSDriver(driverService, driverOptions);
+            return _driver;
+        }
+
+        public IWebDriver createNewChromeDriver(C_Proxy proxy = null)
+        {
+            IWebDriver _driver;
+            var driverService = ChromeDriverService.CreateDefaultService();
+            driverService.HideCommandPromptWindow = true;
+
+            var driverOptions = new ChromeOptions();
+            driverOptions.AddArgument("--window-position=-32000,-32000");
+
+            if (proxy != null)
+            {
+                var c_proxy = new Proxy();
+
+                if (proxy.auth)
+                {
+                    c_proxy.SocksProxy = proxy.address;
+                    c_proxy.SocksUserName = proxy.username;
+                    c_proxy.SocksPassword = proxy.password;
+                }
+                else
+                    c_proxy.HttpProxy = proxy.address;
+
+                driverOptions.Proxy = c_proxy;
+            }
+
+            _driver = new ChromeDriver(driverService, driverOptions);
+
             return _driver;
         }
         
@@ -541,17 +577,18 @@ namespace _3s_atc
 
             cell.Value = "Connecting to login page...";
 
-            IWebDriver _driver = createNewJSDriver(proxy);
-            _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account");
-
+            IWebDriver _driver = createNewChromeDriver(proxy);
+            _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account"); 
+            
             if (ElementDisplayed(_driver, By.Id("username"), 120))
             {
+                cell.Value = "Logging in...";
+
                 //executing javascript is much faster than sending keys
                 ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('username').value='{0}'", profile.Email));
                 ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('password').value='{0}'", profile.Password));
                 ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('rememberme').click()");
                 ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('signinSubmit').click()");
-                cell.Value = "Logging in...";
             }
             else
             {
