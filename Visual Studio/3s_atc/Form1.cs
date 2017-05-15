@@ -52,7 +52,7 @@ namespace _3s_atc
             }
 
             comboBox_1_SplashMode.SelectedIndex = 0;
-            numericUpDown_Sessions.Value = Properties.Settings.Default.sessions_count; numericUpDown_RSessions.Value = Properties.Settings.Default.r_sessions_count;
+            numericUpDown_Sessions.Value = Properties.Settings.Default.sessions_count; numericUpDown_RSessions.Value = Properties.Settings.Default.r_sessions_count; numericUpDown_3_RefreshInterval.Value = Properties.Settings.Default.refresh_interval; textBox_3_SplashIdentifier.Text = Properties.Settings.Default.splashidentifier; textBox_3_ProductPageIdentifier.Text = Properties.Settings.Default.productpageidentifier;
         }
 
         public void addLog(string text, Color color)
@@ -315,6 +315,9 @@ namespace _3s_atc
 
             Properties.Settings.Default.sessions_count = Convert.ToInt32(numericUpDown_Sessions.Value);
             Properties.Settings.Default.r_sessions_count = Convert.ToInt32(numericUpDown_RSessions.Value);
+            Properties.Settings.Default.refresh_interval = Convert.ToInt32(numericUpDown_3_RefreshInterval.Value);
+            Properties.Settings.Default.splashidentifier = textBox_3_SplashIdentifier.Text;
+            Properties.Settings.Default.productpageidentifier = textBox_3_ProductPageIdentifier.Text;
 
             Properties.Settings.Default.Save();
         }
@@ -373,11 +376,18 @@ namespace _3s_atc
                 {
                     ContextMenu m = new ContextMenu();
 
-                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value != "session")
+                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString() != "session")
                         m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
-                    else if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value == "session" && (dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value == "Splash page passed!" || dataGridView2.Rows[currentMouseOverRow2].Cells[5].Value != null))
-                        m.MenuItems.Add(new MenuItem("Transfer session", transferSession_Click));
+                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString() != "Setting up..." || !String.IsNullOrEmpty(dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString()))
+                    {
+                        System.Drawing.Point pos = new System.Drawing.Point(-32000, -32000);
 
+                        if (helpers.sessionlist[currentMouseOverRow2].driver.Manage().Window.Position == pos)
+                            m.MenuItems.Add(new MenuItem("Show browser", showBrowser_Click));
+                        else
+                            m.MenuItems.Add(new MenuItem("Hide browser", hideBrowser_Click));
+                    }
+                    
                     m.Show(dataGridView2, new Point(e.X, e.Y));
                 }
             }
@@ -398,11 +408,29 @@ namespace _3s_atc
             updateProxyRows(proxy, index);
         }
 
-        private void transferSession_Click(Object sender, System.EventArgs e)
+        private void showBrowser_Click(Object sender, System.EventArgs e)
         {
             int index = currentMouseOverRow2;
-            C_Session session = helpers.sessionlist[index];
-            helpers.transferSession(session);
+            OpenQA.Selenium.IWebDriver _driver = null;
+
+            if (helpers.sessionlist.Count > 0)
+                _driver = helpers.sessionlist[index].driver;
+            else
+                _driver = helpers.proxylist[index].driver;
+
+            string handle =_driver.CurrentWindowHandle;
+            _driver.Manage().Window.Position = new System.Drawing.Point(0, 0);
+            _driver.SwitchTo().Window(handle);
+        }
+
+        private void hideBrowser_Click(Object sender, System.EventArgs e)
+        {
+            int index = currentMouseOverRow2;
+
+            if (helpers.sessionlist.Count > 0)
+                helpers.sessionlist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
+            else
+                helpers.proxylist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
         }
 
         private void updateProxyRows(C_Proxy proxy, int index)

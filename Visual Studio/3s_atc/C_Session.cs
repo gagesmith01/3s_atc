@@ -15,6 +15,7 @@ namespace _3s_atc
         public string duplicate { get; set; }
         public bool refresh { get; set; }
         public List<C_Cookie> cookies;
+        public OpenQA.Selenium.IWebDriver driver { get; set; }
         public DateTime? hmac_expiration { get; set; }
         public string source { get; set; }
 

@@ -222,8 +222,11 @@ namespace _3s_atc
         }
         private void refreshDriver(IWebDriver _driver)
         {
-            System.Threading.Thread.Sleep(10000);
-            if (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
+            int interval = Properties.Settings.Default.refresh_interval * 1000;
+
+            System.Threading.Thread.Sleep(interval);
+
+            if (_driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
             {
                 _driver.Manage().Cookies.DeleteAllCookies();
                 _driver.Navigate().Refresh();
@@ -234,18 +237,17 @@ namespace _3s_atc
         {
             rows[i].Cells[8].Value = "Setting up...";
 
-            IWebDriver _driver;
-            _driver = createNewJSDriver(proxy);
-            _driver.Navigate().GoToUrl(profile.SplashUrl);
+            proxy.driver = createNewChromeDriver(proxy);
+            proxy.driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName("sk-fading-circle"), 120))
+            if (ElementDisplayed(proxy.driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName(Properties.Settings.Default.splashidentifier), 120))
             {
                 rows[i].Cells[8].Value = "On splash page...";
 
-                while (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
+                while (proxy.driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
                 {
                     if (proxy.refresh)
-                        refreshDriver(_driver);
+                        refreshDriver(proxy.driver);
                     else
                         System.Threading.Thread.Sleep(1000);
                 }
@@ -253,28 +255,28 @@ namespace _3s_atc
                 rows[i].Cells[8].Value = "Splash page passed!";
                 rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
-                string cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
+                string cookie_name = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
                 if (cookie_name != null)
                 {
-                    proxy.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                    proxy.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
+                    proxy.hmac = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
+                    proxy.hmac_expiration = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
                     rows[i].Cells[4].Value = proxy.hmac;
-                } if (_driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
+                } if (proxy.driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
                 {
-                    proxy.sitekey = _driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
+                    proxy.sitekey = proxy.driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
                     rows[i].Cells[5].Value = proxy.sitekey;
-                } if (_driver.FindElements(By.Id("flashproductform")).Count > 0)
+                } if (proxy.driver.FindElements(By.Id("flashproductform")).Count > 0)
                 {
-                    proxy.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                    proxy.clientid = proxy.driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
                     rows[i].Cells[6].Value = proxy.clientid;
-                } if (_driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
+                } if (proxy.driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
                 {
-                    proxy.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                    proxy.duplicate = getDuplicate(proxy.driver.PageSource, proxy.driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
                     rows[i].Cells[7].Value = proxy.duplicate;
                 }
 
                 rows[i].Cells[8].Value = "HMAC and Sitekey retrieved!";
-                foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
+                foreach (OpenQA.Selenium.Cookie cookie in proxy.driver.Manage().Cookies.AllCookies)
                 {
                     if (cookie.Domain.Contains("adidas"))
                         proxy.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
@@ -287,15 +289,15 @@ namespace _3s_atc
                 else
                     File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} / Cookie --- Name: {1} --- Value : {2} / Sitekey: {3} / Client ID : {4} / Duplicate : {5}", proxy.address, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
                 
-                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), _driver.PageSource);
-                _driver.Quit();
+                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), proxy.driver.PageSource);
+                proxy.driver.Quit();
             }
             else
             {
                 rows[i].Cells[8].Value = "Error!";
                 rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
 
-                _driver.Quit();
+                proxy.driver.Quit();
             }
         }
         private void runProxyList(Profile profile,DataGridViewRowCollection rows)
@@ -312,26 +314,6 @@ namespace _3s_atc
                 Task.Run(() => proxyRun(profile, proxylist[index], index, rows));
             }
             
-        }
-
-        public void transferSession(C_Session session)
-        {
-            var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-
-            IWebDriver _driver = new ChromeDriver(driverService);
-            _driver.Navigate().GoToUrl("https://www.google.com/"); // navigate to google so captcha solving isn't slow when passed the splash
-            WaitForPageLoad(_driver, 15);
-
-            Profile profile = profiles.FirstOrDefault(x => !String.IsNullOrEmpty(x.SplashUrl));
-            _driver.Navigate().GoToUrl(profile.SplashUrl);
-            WaitForPageLoad(_driver, 30);
-
-            foreach(C_Cookie cookie in session.cookies)
-                _driver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie(cookie.name, cookie.value, cookie.domain, "/", cookie.expiry));
-
-            IJavaScriptExecutor js = _driver as IJavaScriptExecutor;
-            js.ExecuteScript(String.Format("var source = '{0}';document.write(source);document.close();", session.source.Replace(System.Environment.NewLine, "").Replace("'", "\"").Replace("<script>", "<scr' + 'ipt>").Replace("<script ", "<scr' + 'ipt ").Replace("</script>", "</scr' + 'ipt>")));
         }
 
         private void runSessionList(Profile profile, DataGridViewRowCollection rows)
@@ -355,18 +337,19 @@ namespace _3s_atc
         private void runSession(Profile profile, C_Session session, DataGridViewRow row)
         {
             row.Cells[8].Value = "Setting up...";
-            
-            IWebDriver _driver = createNewJSDriver();
-            _driver.Navigate().GoToUrl(profile.SplashUrl);
 
-            if (ElementDisplayed(_driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName("sk-fading-circle"), 120))
+            session.driver = createNewChromeDriver();
+
+            session.driver.Navigate().GoToUrl(profile.SplashUrl);
+
+            if (ElementDisplayed(session.driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName(Properties.Settings.Default.splashidentifier), 120))
             {
                 row.Cells[8].Value = "On splash page...";
 
-                while (_driver.FindElements(By.ClassName("g-recaptcha")).Count == 0)
+                while (session.driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
                 {
                     if (session.refresh)
-                        refreshDriver(_driver);
+                        refreshDriver(session.driver);
                     else
                         System.Threading.Thread.Sleep(2000);
                 }
@@ -374,31 +357,31 @@ namespace _3s_atc
                 row.Cells[8].Value = "Splash page passed!";
                 row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
 
-                session.source = _driver.PageSource;
+                session.source = session.driver.PageSource;
 
                 string cookie_name = null;
-                if (_driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")) != null)
+                if (session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")) != null)
                 {
-                    cookie_name = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
-                    session.hmac = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                    session.hmac_expiration = _driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
+                    cookie_name = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
+                    session.hmac = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
+                    session.hmac_expiration = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
                     row.Cells[4].Value = session.hmac;
-                } if (_driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
+                } if (session.driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
                 {
-                    session.sitekey = _driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
+                    session.sitekey = session.driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
                     row.Cells[5].Value = session.sitekey;
-                } if (_driver.FindElements(By.Id("flashproductform")).Count > 0)
+                } if (session.driver.FindElements(By.Id("flashproductform")).Count > 0)
                 {
-                    session.clientid = _driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
+                    session.clientid = session.driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
                     row.Cells[6].Value = session.clientid;
-                } if (_driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
+                } if (session.driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
                 {
-                    session.duplicate = getDuplicate(_driver.PageSource, _driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
+                    session.duplicate = getDuplicate(session.driver.PageSource, session.driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
                     row.Cells[7].Value = session.duplicate;
                 }
 
                 row.Cells[8].Value = "HMAC and Sitekey retrieved!";
-                foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
+                foreach (OpenQA.Selenium.Cookie cookie in session.driver.Manage().Cookies.AllCookies)
                 {
                     if (cookie.Domain.Contains("adidas"))
                         session.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
@@ -408,15 +391,15 @@ namespace _3s_atc
 
                 File.AppendAllText("logs.txt", String.Format("Session / Cookie --- Name: {0} --- Value : {1} / Sitekey: {2} / Client ID : {3} / Duplicate : {4}", cookie_name, session.hmac, session.sitekey, session.clientid, session.duplicate) + Environment.NewLine);
 
-                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), _driver.PageSource);
-                _driver.Quit();
+                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), session.driver.PageSource);
+                session.driver.Quit();
             }
             else
             {
                 row.Cells[8].Value = "Error!";
                 row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
 
-                _driver.Quit();
+                session.driver.Quit();
             }
         }
         private string cartSplash(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows)
@@ -445,7 +428,7 @@ namespace _3s_atc
 
                 rows.Clear();
 
-                foreach(C_Session s in this.sessionlist)
+                foreach(C_Session s in sessionlist)
                     rows.Add( new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
 
                 Task.Factory.StartNew(() => runSessionList(profile, rows));

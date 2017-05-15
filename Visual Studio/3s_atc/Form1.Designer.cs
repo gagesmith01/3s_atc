@@ -40,6 +40,14 @@
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.textBox_3_SplashIdentifier = new System.Windows.Forms.TextBox();
+            this.label_3_SplashIdentifier = new System.Windows.Forms.Label();
+            this.numericUpDown_3_RefreshInterval = new System.Windows.Forms.NumericUpDown();
+            this.label_3_RefreshInterval = new System.Windows.Forms.Label();
+            this.numericUpDown_RSessions = new System.Windows.Forms.NumericUpDown();
+            this.label_3_SRCount = new System.Windows.Forms.Label();
+            this.label_3_SCount = new System.Windows.Forms.Label();
+            this.numericUpDown_Sessions = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.checkBox_3_Bypass = new System.Windows.Forms.CheckBox();
             this.button_3_Browse = new System.Windows.Forms.Button();
@@ -106,19 +114,18 @@
             this.button_1_Run = new System.Windows.Forms.Button();
             this.label_1_SplashMode = new System.Windows.Forms.Label();
             this.button_1_Login = new System.Windows.Forms.Button();
-            this.numericUpDown_Sessions = new System.Windows.Forms.NumericUpDown();
-            this.label_3_SCount = new System.Windows.Forms.Label();
-            this.label_3_SRCount = new System.Windows.Forms.Label();
-            this.numericUpDown_RSessions = new System.Windows.Forms.NumericUpDown();
+            this.textBox_3_ProductPageIdentifier = new System.Windows.Forms.TextBox();
+            this.label_3_ProductPageIdentifier = new System.Windows.Forms.Label();
             this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.panel_Tools.SuspendLayout();
             this.panel_Settings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_3_RefreshInterval)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel_Home.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -206,6 +213,12 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.textBox_3_ProductPageIdentifier);
+            this.panel_Settings.Controls.Add(this.label_3_ProductPageIdentifier);
+            this.panel_Settings.Controls.Add(this.textBox_3_SplashIdentifier);
+            this.panel_Settings.Controls.Add(this.label_3_SplashIdentifier);
+            this.panel_Settings.Controls.Add(this.numericUpDown_3_RefreshInterval);
+            this.panel_Settings.Controls.Add(this.label_3_RefreshInterval);
             this.panel_Settings.Controls.Add(this.numericUpDown_RSessions);
             this.panel_Settings.Controls.Add(this.label_3_SRCount);
             this.panel_Settings.Controls.Add(this.label_3_SCount);
@@ -235,10 +248,74 @@
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
             // 
+            // textBox_3_SplashIdentifier
+            // 
+            this.textBox_3_SplashIdentifier.Location = new System.Drawing.Point(435, 56);
+            this.textBox_3_SplashIdentifier.Name = "textBox_3_SplashIdentifier";
+            this.textBox_3_SplashIdentifier.Size = new System.Drawing.Size(114, 20);
+            this.textBox_3_SplashIdentifier.TabIndex = 32;
+            // 
+            // label_3_SplashIdentifier
+            // 
+            this.label_3_SplashIdentifier.AutoSize = true;
+            this.label_3_SplashIdentifier.Location = new System.Drawing.Point(345, 60);
+            this.label_3_SplashIdentifier.Name = "label_3_SplashIdentifier";
+            this.label_3_SplashIdentifier.Size = new System.Drawing.Size(87, 13);
+            this.label_3_SplashIdentifier.TabIndex = 31;
+            this.label_3_SplashIdentifier.Text = "Splash identifier :";
+            // 
+            // numericUpDown_3_RefreshInterval
+            // 
+            this.numericUpDown_3_RefreshInterval.Location = new System.Drawing.Point(222, 56);
+            this.numericUpDown_3_RefreshInterval.Name = "numericUpDown_3_RefreshInterval";
+            this.numericUpDown_3_RefreshInterval.Size = new System.Drawing.Size(49, 20);
+            this.numericUpDown_3_RefreshInterval.TabIndex = 30;
+            // 
+            // label_3_RefreshInterval
+            // 
+            this.label_3_RefreshInterval.AutoSize = true;
+            this.label_3_RefreshInterval.Location = new System.Drawing.Point(75, 55);
+            this.label_3_RefreshInterval.Name = "label_3_RefreshInterval";
+            this.label_3_RefreshInterval.Size = new System.Drawing.Size(141, 26);
+            this.label_3_RefreshInterval.TabIndex = 29;
+            this.label_3_RefreshInterval.Text = "Refresh interval in seconds :\r\n(refresh sessions and proxy)";
+            // 
+            // numericUpDown_RSessions
+            // 
+            this.numericUpDown_RSessions.Location = new System.Drawing.Point(789, 18);
+            this.numericUpDown_RSessions.Name = "numericUpDown_RSessions";
+            this.numericUpDown_RSessions.Size = new System.Drawing.Size(62, 20);
+            this.numericUpDown_RSessions.TabIndex = 28;
+            // 
+            // label_3_SRCount
+            // 
+            this.label_3_SRCount.AutoSize = true;
+            this.label_3_SRCount.Location = new System.Drawing.Point(648, 21);
+            this.label_3_SRCount.Name = "label_3_SRCount";
+            this.label_3_SRCount.Size = new System.Drawing.Size(140, 13);
+            this.label_3_SRCount.TabIndex = 27;
+            this.label_3_SRCount.Text = "Number of refresh sessions :";
+            // 
+            // label_3_SCount
+            // 
+            this.label_3_SCount.AutoSize = true;
+            this.label_3_SCount.Location = new System.Drawing.Point(458, 21);
+            this.label_3_SCount.Name = "label_3_SCount";
+            this.label_3_SCount.Size = new System.Drawing.Size(102, 13);
+            this.label_3_SCount.TabIndex = 26;
+            this.label_3_SCount.Text = "Number of sessions:";
+            // 
+            // numericUpDown_Sessions
+            // 
+            this.numericUpDown_Sessions.Location = new System.Drawing.Point(560, 18);
+            this.numericUpDown_Sessions.Name = "numericUpDown_Sessions";
+            this.numericUpDown_Sessions.Size = new System.Drawing.Size(67, 20);
+            this.numericUpDown_Sessions.TabIndex = 25;
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(118, 77);
+            this.label4.Location = new System.Drawing.Point(118, 92);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(36, 13);
             this.label4.TabIndex = 23;
@@ -247,7 +324,7 @@
             // checkBox_3_Bypass
             // 
             this.checkBox_3_Bypass.AutoSize = true;
-            this.checkBox_3_Bypass.Location = new System.Drawing.Point(746, 94);
+            this.checkBox_3_Bypass.Location = new System.Drawing.Point(746, 109);
             this.checkBox_3_Bypass.Name = "checkBox_3_Bypass";
             this.checkBox_3_Bypass.Size = new System.Drawing.Size(99, 17);
             this.checkBox_3_Bypass.TabIndex = 22;
@@ -256,7 +333,7 @@
             // 
             // button_3_Browse
             // 
-            this.button_3_Browse.Location = new System.Drawing.Point(365, 24);
+            this.button_3_Browse.Location = new System.Drawing.Point(365, 16);
             this.button_3_Browse.Name = "button_3_Browse";
             this.button_3_Browse.Size = new System.Drawing.Size(75, 23);
             this.button_3_Browse.TabIndex = 21;
@@ -267,7 +344,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(236, 29);
+            this.label3.Location = new System.Drawing.Point(236, 21);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(128, 13);
             this.label3.TabIndex = 20;
@@ -371,7 +448,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(439, 95);
+            this.label2.Location = new System.Drawing.Point(439, 110);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(59, 13);
             this.label2.TabIndex = 16;
@@ -379,7 +456,7 @@
             // 
             // textBox_3_Password
             // 
-            this.textBox_3_Password.Location = new System.Drawing.Point(504, 92);
+            this.textBox_3_Password.Location = new System.Drawing.Point(504, 107);
             this.textBox_3_Password.Name = "textBox_3_Password";
             this.textBox_3_Password.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Password.TabIndex = 15;
@@ -387,7 +464,7 @@
             // 
             // textBox_3_Username
             // 
-            this.textBox_3_Username.Location = new System.Drawing.Point(300, 92);
+            this.textBox_3_Username.Location = new System.Drawing.Point(300, 107);
             this.textBox_3_Username.Name = "textBox_3_Username";
             this.textBox_3_Username.Size = new System.Drawing.Size(129, 20);
             this.textBox_3_Username.TabIndex = 14;
@@ -395,7 +472,7 @@
             // label_3_Username
             // 
             this.label_3_Username.AutoSize = true;
-            this.label_3_Username.Location = new System.Drawing.Point(234, 95);
+            this.label_3_Username.Location = new System.Drawing.Point(234, 110);
             this.label_3_Username.Name = "label_3_Username";
             this.label_3_Username.Size = new System.Drawing.Size(61, 13);
             this.label_3_Username.TabIndex = 13;
@@ -404,7 +481,7 @@
             // checkBox_3_Auth
             // 
             this.checkBox_3_Auth.AutoSize = true;
-            this.checkBox_3_Auth.Location = new System.Drawing.Point(645, 94);
+            this.checkBox_3_Auth.Location = new System.Drawing.Point(645, 109);
             this.checkBox_3_Auth.Name = "checkBox_3_Auth";
             this.checkBox_3_Auth.Size = new System.Drawing.Size(94, 17);
             this.checkBox_3_Auth.TabIndex = 12;
@@ -413,7 +490,7 @@
             // 
             // button_3_Add
             // 
-            this.button_3_Add.Location = new System.Drawing.Point(852, 89);
+            this.button_3_Add.Location = new System.Drawing.Point(852, 104);
             this.button_3_Add.Name = "button_3_Add";
             this.button_3_Add.Size = new System.Drawing.Size(122, 25);
             this.button_3_Add.TabIndex = 10;
@@ -423,7 +500,7 @@
             // 
             // textBox_3_Address
             // 
-            this.textBox_3_Address.Location = new System.Drawing.Point(58, 91);
+            this.textBox_3_Address.Location = new System.Drawing.Point(58, 106);
             this.textBox_3_Address.Name = "textBox_3_Address";
             this.textBox_3_Address.Size = new System.Drawing.Size(173, 20);
             this.textBox_3_Address.TabIndex = 9;
@@ -431,7 +508,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 94);
+            this.label1.Location = new System.Drawing.Point(2, 109);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 8;
@@ -440,7 +517,7 @@
             // label_3_ProxyList
             // 
             this.label_3_ProxyList.AutoSize = true;
-            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 73);
+            this.label_3_ProxyList.Location = new System.Drawing.Point(480, 88);
             this.label_3_ProxyList.Name = "label_3_ProxyList";
             this.label_3_ProxyList.Size = new System.Drawing.Size(54, 13);
             this.label_3_ProxyList.TabIndex = 7;
@@ -448,7 +525,7 @@
             // 
             // button_3_Update
             // 
-            this.button_3_Update.Location = new System.Drawing.Point(871, 25);
+            this.button_3_Update.Location = new System.Drawing.Point(871, 17);
             this.button_3_Update.Name = "button_3_Update";
             this.button_3_Update.Size = new System.Drawing.Size(85, 23);
             this.button_3_Update.TabIndex = 5;
@@ -512,7 +589,7 @@
             "VE - latin-america.adidas.com",
             "VN - adidas.com.vn",
             "ZA - adidas.co.za"});
-            this.comboBox_3_Website.Location = new System.Drawing.Point(73, 25);
+            this.comboBox_3_Website.Location = new System.Drawing.Point(73, 17);
             this.comboBox_3_Website.Name = "comboBox_3_Website";
             this.comboBox_3_Website.Size = new System.Drawing.Size(144, 21);
             this.comboBox_3_Website.TabIndex = 1;
@@ -520,7 +597,7 @@
             // label_3_Website
             // 
             this.label_3_Website.AutoSize = true;
-            this.label_3_Website.Location = new System.Drawing.Point(18, 29);
+            this.label_3_Website.Location = new System.Drawing.Point(18, 21);
             this.label_3_Website.Name = "label_3_Website";
             this.label_3_Website.Size = new System.Drawing.Size(48, 13);
             this.label_3_Website.TabIndex = 0;
@@ -908,37 +985,21 @@
             this.button_1_Login.UseVisualStyleBackColor = true;
             this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
             // 
-            // numericUpDown_Sessions
+            // textBox_3_ProductPageIdentifier
             // 
-            this.numericUpDown_Sessions.Location = new System.Drawing.Point(560, 26);
-            this.numericUpDown_Sessions.Name = "numericUpDown_Sessions";
-            this.numericUpDown_Sessions.Size = new System.Drawing.Size(67, 20);
-            this.numericUpDown_Sessions.TabIndex = 25;
+            this.textBox_3_ProductPageIdentifier.Location = new System.Drawing.Point(728, 57);
+            this.textBox_3_ProductPageIdentifier.Name = "textBox_3_ProductPageIdentifier";
+            this.textBox_3_ProductPageIdentifier.Size = new System.Drawing.Size(114, 20);
+            this.textBox_3_ProductPageIdentifier.TabIndex = 34;
             // 
-            // label_3_SCount
+            // label_3_ProductPageIdentifier
             // 
-            this.label_3_SCount.AutoSize = true;
-            this.label_3_SCount.Location = new System.Drawing.Point(458, 29);
-            this.label_3_SCount.Name = "label_3_SCount";
-            this.label_3_SCount.Size = new System.Drawing.Size(102, 13);
-            this.label_3_SCount.TabIndex = 26;
-            this.label_3_SCount.Text = "Number of sessions:";
-            // 
-            // label_3_SRCount
-            // 
-            this.label_3_SRCount.AutoSize = true;
-            this.label_3_SRCount.Location = new System.Drawing.Point(648, 29);
-            this.label_3_SRCount.Name = "label_3_SRCount";
-            this.label_3_SRCount.Size = new System.Drawing.Size(140, 13);
-            this.label_3_SRCount.TabIndex = 27;
-            this.label_3_SRCount.Text = "Number of refresh sessions :";
-            // 
-            // numericUpDown_RSessions
-            // 
-            this.numericUpDown_RSessions.Location = new System.Drawing.Point(789, 26);
-            this.numericUpDown_RSessions.Name = "numericUpDown_RSessions";
-            this.numericUpDown_RSessions.Size = new System.Drawing.Size(62, 20);
-            this.numericUpDown_RSessions.TabIndex = 28;
+            this.label_3_ProductPageIdentifier.AutoSize = true;
+            this.label_3_ProductPageIdentifier.Location = new System.Drawing.Point(609, 59);
+            this.label_3_ProductPageIdentifier.Name = "label_3_ProductPageIdentifier";
+            this.label_3_ProductPageIdentifier.Size = new System.Drawing.Size(119, 13);
+            this.label_3_ProductPageIdentifier.TabIndex = 33;
+            this.label_3_ProductPageIdentifier.Text = "Product page identifier :";
             // 
             // textBox_2_PID
             // 
@@ -968,12 +1029,13 @@
             this.panel_Tools.PerformLayout();
             this.panel_Settings.ResumeLayout(false);
             this.panel_Settings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_3_RefreshInterval)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel_Home.ResumeLayout(false);
             this.panel_Home.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Sessions)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_RSessions)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1062,6 +1124,12 @@
         private System.Windows.Forms.Label label_3_SRCount;
         private System.Windows.Forms.Label label_3_SCount;
         private System.Windows.Forms.NumericUpDown numericUpDown_Sessions;
+        private System.Windows.Forms.TextBox textBox_3_SplashIdentifier;
+        private System.Windows.Forms.Label label_3_SplashIdentifier;
+        private System.Windows.Forms.NumericUpDown numericUpDown_3_RefreshInterval;
+        private System.Windows.Forms.Label label_3_RefreshInterval;
+        private System.Windows.Forms.TextBox textBox_3_ProductPageIdentifier;
+        private System.Windows.Forms.Label label_3_ProductPageIdentifier;
     }
 }
 
