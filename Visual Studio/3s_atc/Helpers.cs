@@ -10,11 +10,7 @@ using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Diagnostics;
-using OpenQA.Selenium;
-using OpenQA.Selenium.PhantomJS;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.Events;
-using OpenQA.Selenium.Support.UI;
+using System.IO.Pipes;
 
 namespace _3s_atc
 {
@@ -27,9 +23,11 @@ namespace _3s_atc
         private bool proxy_running, sessions_running;
         public List<string> loggingin_emails;
         public List<C_Session> sessionlist;
+        private Form1 form1;
 
-        public Helpers()
+        public Helpers(Form1 form)
         {
+            form1 = form;
             proxy_running = false;
             profiles = new List<Profile>(); 
             captchas = new List<C_Captcha>(); 
@@ -38,16 +36,6 @@ namespace _3s_atc
             sessionlist = new List<C_Session>();
 
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
-        }
-
-        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            foreach (var process in System.Diagnostics.Process.GetProcessesByName("phantomjs"))
-                process.Kill();
-
-            foreach (var process in System.Diagnostics.Process.GetProcessesByName("chromedriver"))
-                process.Kill();
         }
 
         private bool ReadCookie(string hostName, string cookieName, ref string value)
@@ -170,136 +158,6 @@ namespace _3s_atc
             return pageContent;
         }
 
-        private string getDuplicate(string source, string ogurl)
-        {
-            string[] lines = source.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            string script_line = lines.FirstOrDefault(s => s.Contains("application.js"));
-
-            if (script_line != null)
-            {
-                script_line = script_line.Split('"')[1];
-
-                if (!script_line.Contains("adidas."))
-                    script_line = ogurl + "/" + script_line;
-                else if (script_line.StartsWith("//"))
-                    script_line = "http://" + script_line.Remove(0, 2);
-
-                string js = webRequest(script_line);
-
-                if (js != null)
-                {
-                    string[] js_source = js.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-
-                    js = js_source.FirstOrDefault(s => s.Contains("$('#flashproductform').append"));
-
-                    string duplicate = js.Split(new string[] { "name=\"" }, StringSplitOptions.None)[1].Split('"')[0];
-                    return duplicate;
-                }
-            }
-
-            return null;
-
-        }
-
-        public void WaitForPageLoad(IWebDriver _driver, int timeout) 
-        {
-            string state = string.Empty;
-            try 
-            {
-                WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
-
-                wait.Until(d => {
-                    try { state = ((IJavaScriptExecutor) _driver).ExecuteScript(@"return document.readyState").ToString(); }
-                    catch (InvalidOperationException) { } 
-                    catch (NoSuchWindowException) { _driver.SwitchTo().Window(_driver.WindowHandles.Last()); }
-                    return (state.Equals("complete", StringComparison.InvariantCultureIgnoreCase));		
-                });
-            } 
-            catch 
-            {
-                throw;
-            }
-        }
-        private void refreshDriver(IWebDriver _driver)
-        {
-            int interval = Properties.Settings.Default.refresh_interval * 1000;
-
-            System.Threading.Thread.Sleep(interval);
-
-            if (_driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
-            {
-                _driver.Manage().Cookies.DeleteAllCookies();
-                _driver.Navigate().Refresh();
-                WaitForPageLoad(_driver, 60);
-            }
-        }
-        private void proxyRun(Profile profile, C_Proxy proxy, int i, DataGridViewRowCollection rows)
-        {
-            rows[i].Cells[8].Value = "Setting up...";
-
-            proxy.driver = createNewChromeDriver(proxy);
-            proxy.driver.Navigate().GoToUrl(profile.SplashUrl);
-
-            if (ElementDisplayed(proxy.driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName(Properties.Settings.Default.splashidentifier), 120))
-            {
-                rows[i].Cells[8].Value = "On splash page...";
-
-                while (proxy.driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
-                {
-                    if (proxy.refresh)
-                        refreshDriver(proxy.driver);
-                    else
-                        System.Threading.Thread.Sleep(1000);
-                }
-
-                rows[i].Cells[8].Value = "Splash page passed!";
-                rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
-
-                string cookie_name = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
-                if (cookie_name != null)
-                {
-                    proxy.hmac = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                    proxy.hmac_expiration = proxy.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                    rows[i].Cells[4].Value = proxy.hmac;
-                } if (proxy.driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
-                {
-                    proxy.sitekey = proxy.driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
-                    rows[i].Cells[5].Value = proxy.sitekey;
-                } if (proxy.driver.FindElements(By.Id("flashproductform")).Count > 0)
-                {
-                    proxy.clientid = proxy.driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
-                    rows[i].Cells[6].Value = proxy.clientid;
-                } if (proxy.driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
-                {
-                    proxy.duplicate = getDuplicate(proxy.driver.PageSource, proxy.driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
-                    rows[i].Cells[7].Value = proxy.duplicate;
-                }
-
-                rows[i].Cells[8].Value = "HMAC and Sitekey retrieved!";
-                foreach (OpenQA.Selenium.Cookie cookie in proxy.driver.Manage().Cookies.AllCookies)
-                {
-                    if (cookie.Domain.Contains("adidas"))
-                        proxy.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
-                }
-
-                proxy.passed = true;
-
-                if(proxy.auth)
-                    File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} --- Username: {1} --- Password: {2} / Cookie --- Name: {3} --- Value : {4} / Sitekey: {5} / Client ID : {6} / Duplicate : {7}", proxy.address, proxy.username, proxy.password, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
-                else
-                    File.AppendAllText("logs.txt", String.Format("Proxy --- Address : {0} / Cookie --- Name: {1} --- Value : {2} / Sitekey: {3} / Client ID : {4} / Duplicate : {5}", proxy.address, cookie_name, proxy.hmac, proxy.sitekey, proxy.clientid, proxy.duplicate) + Environment.NewLine);
-                
-                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), proxy.driver.PageSource);
-                proxy.driver.Quit();
-            }
-            else
-            {
-                rows[i].Cells[8].Value = "Error!";
-                rows[i].Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-
-                proxy.driver.Quit();
-            }
-        }
         private void runProxyList(Profile profile,DataGridViewRowCollection rows)
         {
             if (proxylist.Count == 0){
@@ -311,7 +169,11 @@ namespace _3s_atc
             for (int i = 0; i < proxylist.Count; i++)
             {
                 int index = i;
-                Task.Run(() => proxyRun(profile, proxylist[index], index, rows));
+                Task.Run(() =>
+                {
+                    runProxy(profile, index, rows[index]);
+                });
+                System.Threading.Thread.Sleep(1000);
             }
             
         }
@@ -329,79 +191,201 @@ namespace _3s_atc
             for (int i = 0; i < sessionlist.Count; i++)
             {
                 int index = i;
-                Task.Run(() => runSession(profile, sessionlist[index], rows[index]));
+                Task.Run(() =>
+                {
+                    runSession(profile, index, rows[index]);
+                });
+                System.Threading.Thread.Sleep(1000);
             }
-
         }
 
-        private void runSession(Profile profile, C_Session session, DataGridViewRow row)
+        public C_Session DeserializeSession(string sessionData)
         {
+            try
+            {
+                C_Session result;
+
+                System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(C_Session));
+
+                using (TextReader reader = new StringReader(sessionData))
+                {
+                    result = (C_Session)xsSubmit.Deserialize(reader);
+                }
+
+                return result;
+            }
+            catch (Exception c)
+            {
+                System.Windows.Forms.MessageBox.Show(c.Message);
+                return null;
+            }
+        }
+
+        private string SerializeSession(C_Session data)
+        {
+            System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(C_Session));
+            var xml = "";
+
+            using (var sww = new StringWriter())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, data);
+                    xml = sww.ToString();
+                }
+            }
+
+            return xml;
+        }
+
+        private void runSession(Profile profile, int index, DataGridViewRow row)
+        {
+            C_Session session = sessionlist[index];
             row.Cells[8].Value = "Setting up...";
 
-            session.driver = createNewChromeDriver();
+            var pipe = new NamedPipeServerStream("session_" + index.ToString(), PipeDirection.InOut, 1);
+            Process.Start("3s_atc - browser.exe", profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString());
+            pipe.WaitForConnection();
 
-            session.driver.Navigate().GoToUrl(profile.SplashUrl);
+            string sessionData = SerializeSession(session);
 
-            if (ElementDisplayed(session.driver, /*By.CssSelector(".message.message-1.hidden")*/By.ClassName(Properties.Settings.Default.splashidentifier), 120))
+            try
             {
-                row.Cells[8].Value = "On splash page...";
+                StreamWriter writer = new StreamWriter(pipe);
+                writer.WriteLine(sessionData);
+                writer.Flush();
 
-                while (session.driver.FindElements(By.ClassName(Properties.Settings.Default.productpageidentifier)).Count == 0)
+                StreamReader reader = new StreamReader(pipe);
+
+                while (true)
                 {
-                    if (session.refresh)
-                        refreshDriver(session.driver);
-                    else
-                        System.Threading.Thread.Sleep(2000);
+                    string str = reader.ReadLine();
+                    if (!String.IsNullOrEmpty(str))
+                        parseMessage(session, str, row);
                 }
 
-                row.Cells[8].Value = "Splash page passed!";
-                row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Green };
-
-                session.source = session.driver.PageSource;
-
-                string cookie_name = null;
-                if (session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")) != null)
-                {
-                    cookie_name = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Name;
-                    session.hmac = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Value;
-                    session.hmac_expiration = session.driver.Manage().Cookies.AllCookies.FirstOrDefault(s => s.Value.Contains("hmac")).Expiry;
-                    row.Cells[4].Value = session.hmac;
-                } if (session.driver.FindElements(By.ClassName("g-recaptcha")).Count > 0)
-                {
-                    session.sitekey = session.driver.FindElement(By.ClassName("g-recaptcha")).GetAttribute("data-sitekey");
-                    row.Cells[5].Value = session.sitekey;
-                } if (session.driver.FindElements(By.Id("flashproductform")).Count > 0)
-                {
-                    session.clientid = session.driver.FindElement(By.Id("flashproductform")).GetAttribute("action").Split(new string[] { "clientId=" }, StringSplitOptions.None)[1];
-                    row.Cells[6].Value = session.clientid;
-                } if (session.driver.FindElements(By.XPath("//link[@rel='canonical']")).Count > 0)
-                {
-                    session.duplicate = getDuplicate(session.driver.PageSource, session.driver.FindElement(By.XPath("//link[@rel='canonical']")).GetAttribute("href"));
-                    row.Cells[7].Value = session.duplicate;
-                }
-
-                row.Cells[8].Value = "HMAC and Sitekey retrieved!";
-                foreach (OpenQA.Selenium.Cookie cookie in session.driver.Manage().Cookies.AllCookies)
-                {
-                    if (cookie.Domain.Contains("adidas"))
-                        session.cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
-                }
-
-                session.passed = true;
-
-                File.AppendAllText("logs.txt", String.Format("Session / Cookie --- Name: {0} --- Value : {1} / Sitekey: {2} / Client ID : {3} / Duplicate : {4}", cookie_name, session.hmac, session.sitekey, session.clientid, session.duplicate) + Environment.NewLine);
-
-                File.WriteAllText(String.Format("{0}\\{1}_productpage_source.txt", AppDomain.CurrentDomain.BaseDirectory, profile.ProductID), session.driver.PageSource);
-                session.driver.Quit();
             }
-            else
-            {
-                row.Cells[8].Value = "Error!";
-                row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
 
-                session.driver.Quit();
+            catch (IOException exception)
+            {
+                MessageBox.Show(String.Format("Session {0} error: {1}\n", index.ToString(), exception.Message));
             }
         }
+
+        public C_Proxy DeserializeProxy(string proxyData)
+        {
+            try
+            {
+                C_Proxy result;
+
+                System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(C_Proxy));
+
+                using (TextReader reader = new StringReader(proxyData))
+                {
+                    result = (C_Proxy)xsSubmit.Deserialize(reader);
+                }
+
+                return result;
+            }
+            catch (Exception c)
+            {
+                System.Windows.Forms.MessageBox.Show(c.Message);
+                return null;
+            }
+        }
+
+        private string SerializeProxy(C_Proxy data)
+        {
+            System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(C_Proxy));
+            var xml = "";
+
+            using (var sww = new StringWriter())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, data);
+                    xml = sww.ToString();
+                }
+            }
+
+            return xml;
+        }
+
+        private void runProxy(Profile profile, int index, DataGridViewRow row)
+        {
+            C_Proxy proxy = proxylist[index];
+
+            row.Cells[8].Value = "Setting up...";
+
+            var pipe = new NamedPipeServerStream("proxy_" + index.ToString(), PipeDirection.InOut, 1);
+            Process.Start("3s_atc - browser.exe", profile.SplashUrl + " proxy_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString());
+            pipe.WaitForConnection();
+
+            string proxyData = SerializeProxy(proxy);
+
+            try
+            {
+                StreamWriter writer = new StreamWriter(pipe);
+                writer.WriteLine(proxyData);
+                writer.Flush();
+
+                StreamReader reader = new StreamReader(pipe);
+
+                while (true)
+                {
+                    string str = reader.ReadLine();
+                    if (!String.IsNullOrEmpty(str))
+                        parseMessage(null, str, row, proxy);
+                }
+
+            }
+
+            catch (IOException exception)
+            {
+                MessageBox.Show(String.Format("Session {0} error: {1}\n", index.ToString(), exception.Message));
+            }
+        }
+
+        private void parseMessage(C_Session session, string msg, DataGridViewRow row, C_Proxy proxy=null)
+        {
+            switch(msg)
+            {
+                case "splash":
+                    row.Cells[8].Value = "On splash page...";
+                    break;
+                case "product":
+                    row.Cells[8].Value = "ON PRODUCT PAGE!";
+                    break;
+                case "error":
+                    row.Cells[8].Value = "ERROR COULD NOT REACH SPLASH PAGE!";
+                    row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                    break;
+                default:
+                    if (msg.Contains("xml"))
+                    {
+                        if (session != null)
+                        {
+                            session = DeserializeSession(msg);
+                            row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
+                            row.Cells[4].Value = session.hmac_cookie.value;
+                            row.Cells[5].Value = session.sitekey;
+                            row.Cells[6].Value = session.clientid;
+                            row.Cells[7].Value = session.duplicate;
+                        }
+                        else if (session == null && proxy != null)
+                        {
+                            proxy = DeserializeProxy(msg);
+                            row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
+                            row.Cells[4].Value = proxy.hmac_cookie.value;
+                            row.Cells[5].Value = proxy.sitekey;
+                            row.Cells[6].Value = proxy.clientid;
+                            row.Cells[7].Value = proxy.duplicate;
+                        }
+                    }
+                    break;
+            }
+        }
+
         private string cartSplash(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows)
         {
             cell.Value = "Waiting for HMAC...(check settings page)";
@@ -410,126 +394,38 @@ namespace _3s_atc
 
             if (!proxy_running && profile.splashmode == 1)
             {
-                Task.Factory.StartNew(() => runProxyList(profile, rows));
+                Task.Run(() => runProxyList(profile, rows));
 
                 while (proxylist.FirstOrDefault(s => proxy.passed) == null)
                     System.Threading.Thread.Sleep(1000);
 
                 cell.Value = "GOT HMAC!";
 
-                proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_expiration > DateTime.Now);
+                proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_cookie.expiry > DateTime.Now);
             }
             else if(!sessions_running && profile.splashmode == 2)
             {
-                for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
-                    sessionlist.Add(new C_Session { refresh = false });
-                for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
-                    sessionlist.Add(new C_Session { refresh = true });
+                    for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
+                        sessionlist.Add(new C_Session { refresh = false });
+                    for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
+                        sessionlist.Add(new C_Session { refresh = true });
 
                 rows.Clear();
 
-                foreach(C_Session s in sessionlist)
-                    rows.Add( new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
+                    foreach (C_Session s in sessionlist)
+                        rows.Add(new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
 
-                Task.Factory.StartNew(() => runSessionList(profile, rows));
+                Task.Run(() => runSessionList(profile, rows));
 
-                while (sessionlist.FirstOrDefault(x => x.passed) == null)
+                while (sessionlist.FirstOrDefault(x => x.passed == true) == null)
                     System.Threading.Thread.Sleep(1000);
 
                 cell.Value = "GOT HMAC!";
 
-                session = sessionlist.FirstOrDefault(s => s.passed && s.hmac_expiration > DateTime.Now);
+                session = sessionlist.FirstOrDefault(s => s.passed && s.hmac_cookie.expiry > DateTime.Now);
             }
 
             return cartNoSplash(profile, cell, proxy, session);
-        }
-
-        public bool LoggedIn(IWebDriver _driver, int timeout)
-        {
-            try
-            {
-                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
-                wait.Until(x => x.Manage().Cookies.GetCookieNamed("pagecontext_customer_email") != null && x.Url.ToLower().Contains("myaccount-show"));
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        public bool ElementDisplayed(IWebDriver _driver, By by, int timeout)
-        {
-            try
-            {
-                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeout));
-                var myElement = wait.Until(x => x.FindElement(by));
-                return myElement.Displayed;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public IWebDriver createNewJSDriver(C_Proxy proxy=null)
-        {
-            IWebDriver _driver;
-            var driverService = PhantomJSDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-            driverService.LoadImages = false; //reduce ram usage
-            driverService.IgnoreSslErrors = true;
-            driverService.SslProtocol = "any";
-            driverService.WebSecurity = false;
-
-            if (proxy != null)
-            {
-                if (proxy.auth)
-                {
-                    driverService.ProxyType = "socks5";
-                    driverService.ProxyAuthentication = String.Format("{0}:{1}", proxy.username, proxy.password);
-                }
-                else
-                    driverService.ProxyType = "http";
-
-                driverService.Proxy = proxy.address;
-            }
-
-            var driverOptions = new PhantomJSOptions();
-            driverOptions.AddAdditionalCapability("phantomjs.page.settings.userAgent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36");
-            driverOptions.AddAdditionalCapability("phantomjs.page.customHeaders.Referer", "http://" + Properties.Settings.Default.locale + "/");
-            
-            _driver = new PhantomJSDriver(driverService, driverOptions);
-            return _driver;
-        }
-
-        public IWebDriver createNewChromeDriver(C_Proxy proxy = null)
-        {
-            IWebDriver _driver;
-            var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-
-            var driverOptions = new ChromeOptions();
-            driverOptions.AddArgument("--window-position=-32000,-32000");
-
-            if (proxy != null)
-            {
-                var c_proxy = new Proxy();
-
-                if (proxy.auth)
-                {
-                    c_proxy.SocksProxy = proxy.address;
-                    c_proxy.SocksUserName = proxy.username;
-                    c_proxy.SocksPassword = proxy.password;
-                }
-                else
-                    c_proxy.HttpProxy = proxy.address;
-
-                driverOptions.Proxy = c_proxy;
-            }
-
-            _driver = new ChromeDriver(driverService, driverOptions);
-
-            return _driver;
         }
         
         public bool login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
@@ -538,7 +434,7 @@ namespace _3s_atc
             {
                 cell.Value = "Logging in...";
 
-                while (loggingin_emails.Find(x => x == profile.Email) != null && profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) == null)
+                while (loggingin_emails.Count > 0 && loggingin_emails.Find(x => x == profile.Email) != null && profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) == null)
                     System.Threading.Thread.Sleep(1000);
 
                 return Login(profile, cell, proxy);
@@ -546,6 +442,7 @@ namespace _3s_atc
 
             return false;
         }
+
         private bool Login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
         {
             if (profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) != null)
@@ -560,52 +457,64 @@ namespace _3s_atc
 
             cell.Value = "Connecting to login page...";
 
-            IWebDriver _driver = createNewChromeDriver(proxy);
-            _driver.Navigate().GoToUrl("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account"); 
+            Form_Browser browser = form1.newBrowser("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account", "login", proxy);
             
-            if (ElementDisplayed(_driver, By.Id("username"), 120))
+            bool ready = browser.DocumentReady(TimeSpan.FromSeconds(60));
+
+            if (ready && Convert.ToBoolean(browser.getElementById("username", null, null, false, true)) == true)
             {
                 cell.Value = "Logging in...";
 
-                //executing javascript is much faster than sending keys
-                ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('username').value='{0}'", profile.Email));
-                ((IJavaScriptExecutor)_driver).ExecuteScript(String.Format("document.getElementById('password').value='{0}'", profile.Password));
-                ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('rememberme').click()");
-                ((IJavaScriptExecutor)_driver).ExecuteScript("document.getElementById('signinSubmit').click()");
+                browser.getElementById("username", null, profile.Email);
+                browser.getElementById("password", null, profile.Password);
+                browser.getElementById("rememberme", null, null, true);
+                browser.getElementById("signinSubmit", null, null, true);
             }
             else
             {
                 cell.Value = "Error while connecting to login page";
                 cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-                _driver.Quit();
+                browser.Dspose();
                 return false;
             }
 
-
-            if (LoggedIn(_driver, 90))
+            if (browser.LoggedIn())
             {
                 cell.Value = "Logged in!";
-                System.Threading.Thread.Sleep(500);
 
                 profile.loggedin = true;
-                foreach (OpenQA.Selenium.Cookie cookie in _driver.Manage().Cookies.AllCookies)
+
+                if (browser.DocumentReady(TimeSpan.FromSeconds(60)))
                 {
-                    if (cookie.Domain.Contains("adidas"))
-                        profile.Cookies.Add(new C_Cookie { name = cookie.Name, value = cookie.Value, domain = cookie.Domain, expiry = cookie.Expiry });
+                    foreach (CefSharp.Cookie c in browser.getCookies())
+                        profile.Cookies.Add(new C_Cookie { name = c.Name, value = c.Value, domain = c.Domain, expiry = c.Expires });
                 }
 
-                if(profiles.FirstOrDefault(x => x.Email == profile.Email && !x.loggedin) == null)
-                    loggingin_emails.Remove(profile.Email);
+                loggingin_emails.Remove(profile.Email);
 
-                _driver.Quit();
+                CefSharp.Cef.GetGlobalCookieManager().DeleteCookies(null, null);
+
+                browser.Dspose();
+
                 return true;
             }
             else
             {
                 profile.loggedin = false;
-                cell.Value = _driver.FindElement(By.CssSelector(".errorcommon.errorcommonshow")).Text;
-                cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-                _driver.Quit();
+                loggingin_emails.Remove(profile.Email);
+
+                if (Convert.ToBoolean(browser.getElementByClassName("errorcommon errorcommonshow")) == true)
+                {
+                    cell.Value = browser.getElementByClassName("errorcommon errorcommonshow", true);
+                    cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                }
+                else
+                {
+                    cell.Value = "Unknown error while logging in.";
+                    cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                }
+
+                browser.Dspose();
                 return false;
             }
         }
@@ -686,7 +595,7 @@ namespace _3s_atc
             }
 
             if (!profile.loggedin)
-                Task.Run(() => login(profile, cell, proxy));
+                login(profile, cell, proxy);
 
             if (profile.loggedin)
             {
@@ -729,30 +638,6 @@ namespace _3s_atc
                 return cartSplash(profile, cell, rows);
             else
                 return cartNoSplash(profile, cell);
-        }
-
-        public static string webRequest(string url)
-        {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(url);
-            webRequest.Method = "GET";
-            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
-            webRequest.ContentType = "application/json; charset=utf-8";
-            webRequest.Timeout = 30000;
-
-            string pageContent = string.Empty;
-
-            using (var response = (HttpWebResponse)webRequest.GetResponse())
-            {
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var streamReader = new StreamReader(responseStream, Encoding.UTF8))
-                    {
-                        pageContent = streamReader.ReadToEnd();
-                    }
-                }
-            }
-
-            return pageContent;
         }
 
         public static Dictionary<string, dynamic> json_decode(string source)
@@ -868,34 +753,12 @@ namespace _3s_atc
             return products;
         }
 
-        public string getCookie(string cookie_name, string[] cookies)
-        {
-            foreach (string cookie in cookies)
-            {
-                string name = cookie.Split('=')[0];
-                if (name.Contains(cookie_name))
-                    return cookie.Substring(name.Length + 1);
-            }
-
-            return null;
-        }
-
         public double getUSSize(string size)
         {
             string[] tokens = size.Split(new char[0]);
             double US_Size = double.Parse(tokens[1], System.Globalization.CultureInfo.InvariantCulture);
 
             return US_Size;
-        }
-
-        public int getAdidasSize(string size)
-        {
-            double US_Size = getUSSize(size);
-
-            double Size = ((US_Size - 6.5) * 20) + 580;
-            int rawSize = Convert.ToInt32(Size);
-
-            return rawSize;
         }
 
         public Dictionary<string,string> splitCookies(string cookie)

@@ -26,5 +26,14 @@
     <Setting Name="r_sessions_count" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="refresh_interval" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="splashidentifier" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sk-fading-circle</Value>
+    </Setting>
+    <Setting Name="productpageidentifier" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sizeChart</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

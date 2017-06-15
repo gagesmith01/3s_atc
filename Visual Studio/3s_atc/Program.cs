@@ -26,6 +26,16 @@ namespace _3s_atc
         [STAThread]
         static void Main()
         {
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + "\\data");
+
+            if (!di.Exists)
+                di.Create();
+
+            foreach (System.IO.FileInfo file in di.GetFiles())
+                file.Delete();
+            foreach (System.IO.DirectoryInfo dir in di.GetDirectories())
+                dir.Delete(true);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

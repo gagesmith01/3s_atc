@@ -118,5 +118,41 @@ namespace _3s_atc.Properties {
                 this["r_sessions_count"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int refresh_interval {
+            get {
+                return ((int)(this["refresh_interval"]));
+            }
+            set {
+                this["refresh_interval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("sk-fading-circle")]
+        public string splashidentifier {
+            get {
+                return ((string)(this["splashidentifier"]));
+            }
+            set {
+                this["splashidentifier"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("sizeChart")]
+        public string productpageidentifier {
+            get {
+                return ((string)(this["productpageidentifier"]));
+            }
+            set {
+                this["productpageidentifier"] = value;
+            }
+        }
     }
 }

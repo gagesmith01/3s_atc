@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace _3s_atc
 {
+    [Serializable()]
     public class C_Session
     {
         public bool passed { get; set; }
-        public string hmac { get; set; }
+        public C_Cookie hmac_cookie { get; set; }
         public string sitekey { get; set; }
         public string clientid { get; set; }
         public string duplicate { get; set; }
         public bool refresh { get; set; }
         public List<C_Cookie> cookies;
-        public OpenQA.Selenium.IWebDriver driver { get; set; }
-        public DateTime? hmac_expiration { get; set; }
         public string source { get; set; }
 
         public C_Session()

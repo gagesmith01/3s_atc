@@ -12,6 +12,8 @@ namespace _3s_atc
 {
     public partial class Form1 : Form
     {
+        private static Form1 mainForm;
+
         public Helpers helpers;
         private List<double> Sizes;
         private int currentMouseOverRow;
@@ -24,7 +26,7 @@ namespace _3s_atc
 
             addLog("Welcome to 3s_atc!", Color.Empty);
 
-            helpers = new Helpers();
+            helpers = new Helpers(this);
             Sizes = new List<double>();
             warningDisplayed = false;
 
@@ -101,12 +103,12 @@ namespace _3s_atc
                 return;
             }
 
-            if (comboBox_1_SplashMode.SelectedIndex > 0 && (Properties.Settings.Default.sessions_count == 0 || Properties.Settings.Default.r_sessions_count == 0))
+            if (comboBox_1_SplashMode.SelectedIndex > 1 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
             {
                 MessageBox.Show("Multi-sessions method needs at least 1 session, please update your settings." , "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if(comboBox_1_SplashMode.SelectedIndex > 0 && !warningDisplayed)
+            if(comboBox_1_SplashMode.SelectedIndex > 1 && !warningDisplayed)
             {
                 MessageBox.Show("Please note that multi session method opens by definition multiple sessions with your IP and so can get you banned.That's why we recommend you to use this method only if you have a dynamic IP or are using a VPN.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 warningDisplayed = true;
@@ -222,14 +224,23 @@ namespace _3s_atc
         {
             Task.Run(() => helpers.getCaptcha(helpers.profiles[currentMouseOverRow]));
         }
-        private async Task cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
+
+        private async Task cart(Profile profile, DataGridViewCell cell)
         {
+            DataGridViewRowCollection rows = null;
+
             addLog(String.Format("{0} : started process for product '{1}'", profile.Email, profile.ProductID), Color.Empty);
             addLog(String.Format("{0} : logging in...", profile.Email, profile.ProductID), Color.Empty);
 
             cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-            string result = await Task.Run(() => helpers.cart(profile, cell, rows));
+            if (profile.splashmode > 0)
+                rows = dataGridView2.Rows;
+
+            string result = null;
+
+            result = await Task.Run(() => helpers.cart(profile, cell, rows));
+
             if (result.Contains("SUCCESS"))
             {
                 addLog(String.Format("{0} : product '{1}' in your cart!", profile.Email, profile.ProductID), Color.Green);
@@ -252,12 +263,7 @@ namespace _3s_atc
                 if (String.IsNullOrWhiteSpace(row.Cells[8].Value.ToString()) || row.Cells[8].Value.ToString().Contains("Error") || row.Cells[8].Style.ForeColor == Color.Red || row.Cells[8].Value == "Logged in!" && profile.loggedin)
                 {
                     if (!profile.running)
-                    {
-                        if (profile.splashmode > 0)
-                            cart(profile, row.Cells[8], dataGridView2.Rows);
-                        else
-                            cart(profile, row.Cells[8]);
-                    }
+                        cart(profile, row.Cells[8]);
                 }
 
                 System.Threading.Thread.Sleep(250);
@@ -336,7 +342,7 @@ namespace _3s_atc
                 return;
             }
 
-            helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, hmac = null, sitekey = null, auth = checkBox_3_Auth.Checked, refresh = checkBox_3_Bypass.Checked });
+            helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, sitekey = null, auth = checkBox_3_Auth.Checked, refresh = checkBox_3_Bypass.Checked });
 
             dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Bypass.Checked.ToString(), checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, null, null, null, null });
 
@@ -382,10 +388,10 @@ namespace _3s_atc
                     {
                         System.Drawing.Point pos = new System.Drawing.Point(-32000, -32000);
 
-                        if (helpers.sessionlist[currentMouseOverRow2].driver.Manage().Window.Position == pos)
+                        /*if (helpers.sessionlist[currentMouseOverRow2].driver.Manage().Window.Position == pos)
                             m.MenuItems.Add(new MenuItem("Show browser", showBrowser_Click));
                         else
-                            m.MenuItems.Add(new MenuItem("Hide browser", hideBrowser_Click));
+                            m.MenuItems.Add(new MenuItem("Hide browser", hideBrowser_Click));*/
                     }
                     
                     m.Show(dataGridView2, new Point(e.X, e.Y));
@@ -408,7 +414,7 @@ namespace _3s_atc
             updateProxyRows(proxy, index);
         }
 
-        private void showBrowser_Click(Object sender, System.EventArgs e)
+        /*private void showBrowser_Click(Object sender, System.EventArgs e)
         {
             int index = currentMouseOverRow2;
             OpenQA.Selenium.IWebDriver _driver = null;
@@ -431,7 +437,7 @@ namespace _3s_atc
                 helpers.sessionlist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
             else
                 helpers.proxylist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
-        }
+        }*/
 
         private void updateProxyRows(C_Proxy proxy, int index)
         {
@@ -452,10 +458,23 @@ namespace _3s_atc
                     Profile profile = helpers.profiles[index];
                     DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
 
-                    Task.Run(() => helpers.login(profile, row.Cells[8], null));
+
+                    helpers.login(profile, row.Cells[8], null);
                     System.Threading.Thread.Sleep(500);
                 }
             });
+        }
+
+        public Form_Browser newBrowser(string url, string title, C_Proxy proxy)
+        {
+            Form_Browser browser = null;
+
+            this.Invoke((MethodInvoker)delegate
+            {
+                browser = new Form_Browser(url, title, proxy);
+            });
+
+            return browser;
         }
     }
 }
