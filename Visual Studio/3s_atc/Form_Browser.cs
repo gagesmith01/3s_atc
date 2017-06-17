@@ -19,7 +19,7 @@ namespace _3s_atc
         public Form_Browser(string url, string title, C_Proxy proxy)
         {
             if (!Cef.IsInitialized)
-                Cef.Initialize();
+                Cef.Initialize(new CefSettings() { UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36" });
 
             _browser = new ChromiumWebBrowser(url);
             this.Controls.Add(_browser);

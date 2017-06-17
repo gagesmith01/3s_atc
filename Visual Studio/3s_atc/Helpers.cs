@@ -241,11 +241,22 @@ namespace _3s_atc
         private void runSession(Profile profile, int index, DataGridViewRow row)
         {
             C_Session session = sessionlist[index];
+            session.index = index;
+
             row.Cells[8].Value = "Setting up...";
 
             var pipe = new NamedPipeServerStream("session_" + index.ToString(), PipeDirection.InOut, 1);
-            Process.Start("3s_atc - browser.exe", profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString());
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
+            process.Start();
+
+            session.pid = process.Id;
+
             pipe.WaitForConnection();
+
+            session.hideShow();
 
             string sessionData = SerializeSession(session);
 
@@ -261,7 +272,7 @@ namespace _3s_atc
                 {
                     string str = reader.ReadLine();
                     if (!String.IsNullOrEmpty(str))
-                        parseMessage(session, str, row);
+                        parseMessage(index, str, row);
                 }
 
             }
@@ -314,12 +325,20 @@ namespace _3s_atc
         private void runProxy(Profile profile, int index, DataGridViewRow row)
         {
             C_Proxy proxy = proxylist[index];
+            proxy.index = index;
 
             row.Cells[8].Value = "Setting up...";
 
             var pipe = new NamedPipeServerStream("proxy_" + index.ToString(), PipeDirection.InOut, 1);
-            Process.Start("3s_atc - browser.exe", profile.SplashUrl + " proxy_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString());
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = profile.SplashUrl + " proxy_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
+            process.Start();
+
             pipe.WaitForConnection();
+
+            proxy.pid = process.Id;
 
             string proxyData = SerializeProxy(proxy);
 
@@ -335,7 +354,7 @@ namespace _3s_atc
                 {
                     string str = reader.ReadLine();
                     if (!String.IsNullOrEmpty(str))
-                        parseMessage(null, str, row, proxy);
+                        parseMessage(index, str, row, false, true);
                 }
 
             }
@@ -346,7 +365,7 @@ namespace _3s_atc
             }
         }
 
-        private void parseMessage(C_Session session, string msg, DataGridViewRow row, C_Proxy proxy=null)
+        private void parseMessage(int index, string msg, DataGridViewRow row, bool session=true, bool proxy=false)
         {
             switch(msg)
             {
@@ -363,23 +382,23 @@ namespace _3s_atc
                 default:
                     if (msg.Contains("xml"))
                     {
-                        if (session != null)
+                        if (session)
                         {
-                            session = DeserializeSession(msg);
+                            sessionlist[index] = DeserializeSession(msg);
                             row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
-                            row.Cells[4].Value = session.hmac_cookie.value;
-                            row.Cells[5].Value = session.sitekey;
-                            row.Cells[6].Value = session.clientid;
-                            row.Cells[7].Value = session.duplicate;
+                            row.Cells[4].Value = sessionlist[index].hmac_cookie.value;
+                            row.Cells[5].Value = sessionlist[index].sitekey;
+                            row.Cells[6].Value = sessionlist[index].clientid;
+                            row.Cells[7].Value = sessionlist[index].duplicate;
                         }
-                        else if (session == null && proxy != null)
+                        else if (!session && proxy)
                         {
-                            proxy = DeserializeProxy(msg);
+                            proxylist[index] = DeserializeProxy(msg);
                             row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
-                            row.Cells[4].Value = proxy.hmac_cookie.value;
-                            row.Cells[5].Value = proxy.sitekey;
-                            row.Cells[6].Value = proxy.clientid;
-                            row.Cells[7].Value = proxy.duplicate;
+                            row.Cells[4].Value = proxylist[index].hmac_cookie.value;
+                            row.Cells[5].Value = proxylist[index].sitekey;
+                            row.Cells[6].Value = proxylist[index].clientid;
+                            row.Cells[7].Value = proxylist[index].duplicate;
                         }
                     }
                     break;
@@ -426,6 +445,43 @@ namespace _3s_atc
             }
 
             return cartNoSplash(profile, cell, proxy, session);
+        }
+
+        public void guestMode_Cart(Profile profile, DataGridViewRowCollection rows)
+        {
+            C_Proxy proxy = null;
+            C_Session session = null;
+
+            if (!proxy_running && profile.splashmode == 1)
+            {
+                Task.Run(() => runProxyList(profile, rows));
+
+                while (proxylist.FirstOrDefault(s => proxy.passed) == null)
+                    System.Threading.Thread.Sleep(1000);
+
+                proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_cookie.expiry > DateTime.Now);
+                MessageBox.Show("proxy_" + proxy.index.ToString() + " : on product page! Right click on the session and show the window in order to purchase the shoe!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if(!sessions_running && profile.splashmode == 2)
+            {
+                    for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
+                        sessionlist.Add(new C_Session { refresh = false });
+                    for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
+                        sessionlist.Add(new C_Session { refresh = true });
+
+                rows.Clear();
+
+                    foreach (C_Session s in sessionlist)
+                        rows.Add(new string[] { "session_" + s.index.ToString(), s.refresh.ToString(), "False", null, null, null, null, null, null });
+
+                Task.Run(() => runSessionList(profile, rows));
+
+                while (sessionlist.FirstOrDefault(x => x.passed == true) == null)
+                    System.Threading.Thread.Sleep(1000);
+
+                session = sessionlist.FirstOrDefault(s => s.passed == true);
+                MessageBox.Show("session_" + session.index.ToString() + " : on product page! Right click on the session and show the window in order to purchase the shoe!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
         
         public bool login(Profile profile, DataGridViewCell cell, C_Proxy proxy)

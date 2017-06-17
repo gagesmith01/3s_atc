@@ -19,6 +19,7 @@ namespace _3s_atc
         private int currentMouseOverRow;
         private int currentMouseOverRow2;
         private bool warningDisplayed;
+        private bool guestmode;
 
         public Form1()
         {
@@ -29,6 +30,7 @@ namespace _3s_atc
             helpers = new Helpers(this);
             Sizes = new List<double>();
             warningDisplayed = false;
+            guestmode = false;
 
             if (Properties.Settings.Default.profiles.Length > 0)
                 helpers.profiles = helpers.LoadProfiles();
@@ -103,12 +105,18 @@ namespace _3s_atc
                 return;
             }
 
-            if (comboBox_1_SplashMode.SelectedIndex > 1 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
+            if (comboBox_1_SplashMode.SelectedIndex == 1 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
+            {
+                MessageBox.Show("Proxy method needs at least 1 proxy, please update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (comboBox_1_SplashMode.SelectedIndex == 2 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
             {
                 MessageBox.Show("Multi-sessions method needs at least 1 session, please update your settings." , "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if(comboBox_1_SplashMode.SelectedIndex > 1 && !warningDisplayed)
+            if(comboBox_1_SplashMode.SelectedIndex == 2 && !warningDisplayed)
             {
                 MessageBox.Show("Please note that multi session method opens by definition multiple sessions with your IP and so can get you banned.That's why we recommend you to use this method only if you have a dynamic IP or are using a VPN.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 warningDisplayed = true;
@@ -254,8 +262,15 @@ namespace _3s_atc
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
             }
         }
+
         private void button_1_Run_Click(object sender, EventArgs e)
         {
+            if (helpers.profiles.FirstOrDefault(p => p.loggedin == true) == null)
+            {
+                MessageBox.Show("You must be logged-in to continue otherwise use the 'guest' mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             for (int i = 0; i < helpers.profiles.Count; i++)
             {
                 Profile profile = helpers.profiles[i];
@@ -382,16 +397,14 @@ namespace _3s_atc
                 {
                     ContextMenu m = new ContextMenu();
 
-                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString() != "session")
+                    if (!dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("session"))
                         m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
                     if (dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString() != "Setting up..." || !String.IsNullOrEmpty(dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString()))
                     {
-                        System.Drawing.Point pos = new System.Drawing.Point(-32000, -32000);
-
-                        /*if (helpers.sessionlist[currentMouseOverRow2].driver.Manage().Window.Position == pos)
-                            m.MenuItems.Add(new MenuItem("Show browser", showBrowser_Click));
+                        if (!helpers.sessionlist[currentMouseOverRow2].browser_visible)
+                            m.MenuItems.Add(new MenuItem("Show browser", showHideBrowser_Click));
                         else
-                            m.MenuItems.Add(new MenuItem("Hide browser", hideBrowser_Click));*/
+                            m.MenuItems.Add(new MenuItem("Hide browser", showHideBrowser_Click));
                     }
                     
                     m.Show(dataGridView2, new Point(e.X, e.Y));
@@ -414,30 +427,15 @@ namespace _3s_atc
             updateProxyRows(proxy, index);
         }
 
-        /*private void showBrowser_Click(Object sender, System.EventArgs e)
+        private void showHideBrowser_Click(Object sender, System.EventArgs e)
         {
             int index = currentMouseOverRow2;
-            OpenQA.Selenium.IWebDriver _driver = null;
 
             if (helpers.sessionlist.Count > 0)
-                _driver = helpers.sessionlist[index].driver;
+                helpers.sessionlist[index].hideShow();
             else
-                _driver = helpers.proxylist[index].driver;
-
-            string handle =_driver.CurrentWindowHandle;
-            _driver.Manage().Window.Position = new System.Drawing.Point(0, 0);
-            _driver.SwitchTo().Window(handle);
+                helpers.proxylist[index].hideShow();
         }
-
-        private void hideBrowser_Click(Object sender, System.EventArgs e)
-        {
-            int index = currentMouseOverRow2;
-
-            if (helpers.sessionlist.Count > 0)
-                helpers.sessionlist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
-            else
-                helpers.proxylist[index].driver.Manage().Window.Position = new System.Drawing.Point(-32000, -32000);
-        }*/
 
         private void updateProxyRows(C_Proxy proxy, int index)
         {
@@ -475,6 +473,66 @@ namespace _3s_atc
             });
 
             return browser;
+        }
+
+        public static void FireEvent(object onMe, string invokeMe, params object[] eventParams)
+        {
+            MulticastDelegate eventDelagate =
+                  (MulticastDelegate)onMe.GetType().GetField(invokeMe,
+                   System.Reflection.BindingFlags.Instance |
+                   System.Reflection.BindingFlags.NonPublic).GetValue(onMe);
+
+            Delegate[] delegates = eventDelagate.GetInvocationList();
+
+            foreach (Delegate dlg in delegates)
+            {
+                dlg.Method.Invoke(dlg.Target, eventParams);
+            }
+        }
+
+        private void guestMode_cart(Profile profile)
+        {
+            addLog("Guest mode started.", Color.Empty);
+
+            Task.Run(() => helpers.guestMode_Cart(profile, dataGridView2.Rows));
+        }
+
+        private void button_1_RunGuest_Click(object sender, EventArgs e)
+        {
+            if (guestmode)
+            {
+                MessageBox.Show("Guest mode already running!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (String.IsNullOrEmpty(textBox_1_Splashurl.Text))
+            {
+                MessageBox.Show("Please enter a splash url.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (comboBox_1_SplashMode.SelectedIndex == 0)
+            {
+                MessageBox.Show("Please select a splash mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (comboBox_1_SplashMode.SelectedIndex == 1 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
+            {
+                MessageBox.Show("Proxy method needs at least 1 proxy, please update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (comboBox_1_SplashMode.SelectedIndex == 2 && (Properties.Settings.Default.sessions_count + Properties.Settings.Default.r_sessions_count) == 0)
+            {
+                MessageBox.Show("Multi-sessions method needs at least 1 session, please update your settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Profile profile = new Profile { splashmode = comboBox_1_SplashMode.SelectedIndex, SplashUrl = textBox_1_Splashurl.Text };
+            guestmode = true;
+            guestMode_cart(profile);
+            panel_Home.Visible = false; panel_Tools.Visible = false; panel_Settings.Visible = true;
         }
     }
 }

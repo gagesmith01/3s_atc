@@ -37,9 +37,12 @@
             this.panel_Tools = new System.Windows.Forms.Panel();
             this.label_2_Inventory = new System.Windows.Forms.Label();
             this.button_2_Check = new System.Windows.Forms.Button();
+            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.label_2_PID = new System.Windows.Forms.Label();
             this.listBox_2_Inventory = new System.Windows.Forms.ListBox();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.textBox_3_ProductPageIdentifier = new System.Windows.Forms.TextBox();
+            this.label_3_ProductPageIdentifier = new System.Windows.Forms.Label();
             this.textBox_3_SplashIdentifier = new System.Windows.Forms.TextBox();
             this.label_3_SplashIdentifier = new System.Windows.Forms.Label();
             this.numericUpDown_3_RefreshInterval = new System.Windows.Forms.NumericUpDown();
@@ -112,11 +115,9 @@
             this.panel_Home = new System.Windows.Forms.Panel();
             this.comboBox_1_SplashMode = new System.Windows.Forms.ComboBox();
             this.button_1_Run = new System.Windows.Forms.Button();
+            this.button_1_RunGuest = new System.Windows.Forms.Button();
             this.label_1_SplashMode = new System.Windows.Forms.Label();
             this.button_1_Login = new System.Windows.Forms.Button();
-            this.textBox_3_ProductPageIdentifier = new System.Windows.Forms.TextBox();
-            this.label_3_ProductPageIdentifier = new System.Windows.Forms.Label();
-            this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.panel_Tools.SuspendLayout();
             this.panel_Settings.SuspendLayout();
@@ -194,6 +195,15 @@
             this.button_2_Check.UseVisualStyleBackColor = true;
             this.button_2_Check.Click += new System.EventHandler(this.button_2_Check_Click);
             // 
+            // textBox_2_PID
+            // 
+            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
+            this.textBox_2_PID.Name = "textBox_2_PID";
+            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
+            this.textBox_2_PID.TabIndex = 7;
+            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
+            // 
             // label_2_PID
             // 
             this.label_2_PID.AutoSize = true;
@@ -247,6 +257,22 @@
             this.panel_Settings.Size = new System.Drawing.Size(980, 457);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
+            // 
+            // textBox_3_ProductPageIdentifier
+            // 
+            this.textBox_3_ProductPageIdentifier.Location = new System.Drawing.Point(728, 57);
+            this.textBox_3_ProductPageIdentifier.Name = "textBox_3_ProductPageIdentifier";
+            this.textBox_3_ProductPageIdentifier.Size = new System.Drawing.Size(114, 20);
+            this.textBox_3_ProductPageIdentifier.TabIndex = 34;
+            // 
+            // label_3_ProductPageIdentifier
+            // 
+            this.label_3_ProductPageIdentifier.AutoSize = true;
+            this.label_3_ProductPageIdentifier.Location = new System.Drawing.Point(609, 59);
+            this.label_3_ProductPageIdentifier.Name = "label_3_ProductPageIdentifier";
+            this.label_3_ProductPageIdentifier.Size = new System.Drawing.Size(119, 13);
+            this.label_3_ProductPageIdentifier.TabIndex = 33;
+            this.label_3_ProductPageIdentifier.Text = "Product page identifier :";
             // 
             // textBox_3_SplashIdentifier
             // 
@@ -910,6 +936,7 @@
             // 
             this.panel_Home.Controls.Add(this.comboBox_1_SplashMode);
             this.panel_Home.Controls.Add(this.button_1_Run);
+            this.panel_Home.Controls.Add(this.button_1_RunGuest);
             this.panel_Home.Controls.Add(this.label_1_SplashMode);
             this.panel_Home.Controls.Add(this.button_1_Login);
             this.panel_Home.Controls.Add(this.label_1_Logs);
@@ -966,6 +993,16 @@
             this.button_1_Run.UseVisualStyleBackColor = true;
             this.button_1_Run.Click += new System.EventHandler(this.button_1_Run_Click);
             // 
+            // button_1_RunGuest
+            // 
+            this.button_1_RunGuest.Location = new System.Drawing.Point(730, 430);
+            this.button_1_RunGuest.Name = "button_1_RunGuest";
+            this.button_1_RunGuest.Size = new System.Drawing.Size(113, 23);
+            this.button_1_RunGuest.TabIndex = 30;
+            this.button_1_RunGuest.Text = "Run(Guest mode)";
+            this.button_1_RunGuest.UseVisualStyleBackColor = true;
+            this.button_1_RunGuest.Click += new System.EventHandler(this.button_1_RunGuest_Click);
+            // 
             // label_1_SplashMode
             // 
             this.label_1_SplashMode.AutoSize = true;
@@ -984,31 +1021,6 @@
             this.button_1_Login.Text = "Login ";
             this.button_1_Login.UseVisualStyleBackColor = true;
             this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
-            // 
-            // textBox_3_ProductPageIdentifier
-            // 
-            this.textBox_3_ProductPageIdentifier.Location = new System.Drawing.Point(728, 57);
-            this.textBox_3_ProductPageIdentifier.Name = "textBox_3_ProductPageIdentifier";
-            this.textBox_3_ProductPageIdentifier.Size = new System.Drawing.Size(114, 20);
-            this.textBox_3_ProductPageIdentifier.TabIndex = 34;
-            // 
-            // label_3_ProductPageIdentifier
-            // 
-            this.label_3_ProductPageIdentifier.AutoSize = true;
-            this.label_3_ProductPageIdentifier.Location = new System.Drawing.Point(609, 59);
-            this.label_3_ProductPageIdentifier.Name = "label_3_ProductPageIdentifier";
-            this.label_3_ProductPageIdentifier.Size = new System.Drawing.Size(119, 13);
-            this.label_3_ProductPageIdentifier.TabIndex = 33;
-            this.label_3_ProductPageIdentifier.Text = "Product page identifier :";
-            // 
-            // textBox_2_PID
-            // 
-            this.textBox_2_PID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::_3s_atc.Properties.Settings.Default, "pid", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.textBox_2_PID.Location = new System.Drawing.Point(732, 55);
-            this.textBox_2_PID.Name = "textBox_2_PID";
-            this.textBox_2_PID.Size = new System.Drawing.Size(110, 20);
-            this.textBox_2_PID.TabIndex = 7;
-            this.textBox_2_PID.Text = global::_3s_atc.Properties.Settings.Default.pid;
             // 
             // Form1
             // 
@@ -1130,6 +1142,7 @@
         private System.Windows.Forms.Label label_3_RefreshInterval;
         private System.Windows.Forms.TextBox textBox_3_ProductPageIdentifier;
         private System.Windows.Forms.Label label_3_ProductPageIdentifier;
+        private System.Windows.Forms.Button button_1_RunGuest;
     }
 }
 
