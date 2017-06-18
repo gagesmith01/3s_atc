@@ -339,6 +339,7 @@ namespace _3s_atc
             pipe.WaitForConnection();
 
             proxy.pid = process.Id;
+            proxy.hideShow();
 
             string proxyData = SerializeProxy(proxy);
 
@@ -490,7 +491,7 @@ namespace _3s_atc
             {
                 cell.Value = "Logging in...";
 
-                while (loggingin_emails.Count > 0 && loggingin_emails.Find(x => x == profile.Email) != null && profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) == null)
+                while (loggingin_emails.Find(x => x == profile.Email) != null && profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) == null)
                     System.Threading.Thread.Sleep(1000);
 
                 return Login(profile, cell, proxy);
@@ -513,65 +514,91 @@ namespace _3s_atc
 
             cell.Value = "Connecting to login page...";
 
-            Form_Browser browser = form1.newBrowser("https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account", "login", proxy);
-            
-            bool ready = browser.DocumentReady(TimeSpan.FromSeconds(60));
+            string url = "https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account";
 
-            if (ready && Convert.ToBoolean(browser.getElementById("username", null, null, false, true)) == true)
+            var pipe = new NamedPipeServerStream("login_" + profile.index.ToString(), PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = url + " login_" + profile.index.ToString() + " " + profile.Email + " " + profile.Password;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.Start();
+
+            pipe.WaitForConnection();
+
+            try
             {
-                cell.Value = "Logging in...";
+                StreamReader reader = new StreamReader(pipe);
 
-                browser.getElementById("username", null, profile.Email);
-                browser.getElementById("password", null, profile.Password);
-                browser.getElementById("rememberme", null, null, true);
-                browser.getElementById("signinSubmit", null, null, true);
-            }
-            else
-            {
-                cell.Value = "Error while connecting to login page";
-                cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-                browser.Dspose();
-                return false;
-            }
-
-            if (browser.LoggedIn())
-            {
-                cell.Value = "Logged in!";
-
-                profile.loggedin = true;
-
-                if (browser.DocumentReady(TimeSpan.FromSeconds(60)))
+                while (true)
                 {
-                    foreach (CefSharp.Cookie c in browser.getCookies())
-                        profile.Cookies.Add(new C_Cookie { name = c.Name, value = c.Value, domain = c.Domain, expiry = c.Expires });
+                    string str = reader.ReadLine();
+                    if (!String.IsNullOrEmpty(str))
+                    {
+                        switch(str)
+                        {
+                            case "loggingin":
+                                cell.Value = "Logging in...";
+                                break;
+                            case "loggedin":
+                                cell.Value = "Logged in!";
+                                profile.loggedin = true;
+                                loggingin_emails.Remove(profile.Email);
+                                break;
+                            case "error":
+                                cell.Value = "Error while connecting to login page";
+                                cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                return false;
+                            case "error_unknown":
+                                cell.Value = "Unknown error while logging in.";
+                                cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                break;
+                            default:
+                                if(str.Contains("xml"))
+                                {
+                                    List<C_Cookie> cookies = DeserializeCookies(str);
+                                    foreach (C_Cookie c in cookies)
+                                        profile.Cookies.Add(c);
+                                    return true;
+                                }
+                                else if(str.StartsWith("error:"))
+                                {
+                                    cell.Value = str.Split(new string[] { "error: " }, StringSplitOptions.None)[0];
+                                    cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                    return false;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (IOException exception)
+            {
+                MessageBox.Show(String.Format("NamedPipe error: {0}\n", exception.Message));
+            }
+
+            return false;
+        }
+
+        public List<C_Cookie> DeserializeCookies(string cookiesData)
+        {
+            try
+            {
+                List<C_Cookie> result;
+
+                System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(List<C_Cookie>));
+
+                using (TextReader reader = new StringReader(cookiesData))
+                {
+                    result = (List<C_Cookie>)xsSubmit.Deserialize(reader);
                 }
 
-                loggingin_emails.Remove(profile.Email);
-
-                CefSharp.Cef.GetGlobalCookieManager().DeleteCookies(null, null);
-
-                browser.Dspose();
-
-                return true;
+                return result;
             }
-            else
+            catch (Exception c)
             {
-                profile.loggedin = false;
-                loggingin_emails.Remove(profile.Email);
-
-                if (Convert.ToBoolean(browser.getElementByClassName("errorcommon errorcommonshow")) == true)
-                {
-                    cell.Value = browser.getElementByClassName("errorcommon errorcommonshow", true);
-                    cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-                }
-                else
-                {
-                    cell.Value = "Unknown error while logging in.";
-                    cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
-                }
-
-                browser.Dspose();
-                return false;
+                System.Windows.Forms.MessageBox.Show(c.Message);
+                return null;
             }
         }
 
@@ -651,7 +678,7 @@ namespace _3s_atc
             }
 
             if (!profile.loggedin)
-                login(profile, cell, proxy);
+                Task.Run(() => login(profile, cell, proxy));
 
             if (profile.loggedin)
             {

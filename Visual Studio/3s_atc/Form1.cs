@@ -457,37 +457,10 @@ namespace _3s_atc
                     DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
 
 
-                    helpers.login(profile, row.Cells[8], null);
-                    System.Threading.Thread.Sleep(500);
+                    Task.Run(() => helpers.login(profile, row.Cells[8], null));
+                    System.Threading.Thread.Sleep(1000);
                 }
             });
-        }
-
-        public Form_Browser newBrowser(string url, string title, C_Proxy proxy)
-        {
-            Form_Browser browser = null;
-
-            this.Invoke((MethodInvoker)delegate
-            {
-                browser = new Form_Browser(url, title, proxy);
-            });
-
-            return browser;
-        }
-
-        public static void FireEvent(object onMe, string invokeMe, params object[] eventParams)
-        {
-            MulticastDelegate eventDelagate =
-                  (MulticastDelegate)onMe.GetType().GetField(invokeMe,
-                   System.Reflection.BindingFlags.Instance |
-                   System.Reflection.BindingFlags.NonPublic).GetValue(onMe);
-
-            Delegate[] delegates = eventDelagate.GetInvocationList();
-
-            foreach (Delegate dlg in delegates)
-            {
-                dlg.Method.Invoke(dlg.Target, eventParams);
-            }
         }
 
         private void guestMode_cart(Profile profile)
