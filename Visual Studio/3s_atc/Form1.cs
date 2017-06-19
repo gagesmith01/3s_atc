@@ -507,5 +507,16 @@ namespace _3s_atc
             guestMode_cart(profile);
             panel_Home.Visible = false; panel_Tools.Visible = false; panel_Settings.Visible = true;
         }
+
+        private void button_1_LoginGmail_Click(object sender, EventArgs e)
+        {
+            if(helpers.gmail_loggedin)
+            {
+                MessageBox.Show("Already logged in!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Task.Run(() => helpers.LoginGmail());
+        }
     }
 }

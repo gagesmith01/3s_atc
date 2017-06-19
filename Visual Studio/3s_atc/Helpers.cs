@@ -19,8 +19,10 @@ namespace _3s_atc
         public List<Profile> profiles;
         public List<C_Captcha> captchas;
         public List<C_Proxy> proxylist;
+        public List<CefSharp.Cookie> gmail_cookies;
         private Dictionary<string, string> marketsList;
         private bool proxy_running, sessions_running;
+        public bool gmail_loggedin;
         public List<string> loggingin_emails;
         public List<C_Session> sessionlist;
         private Form1 form1;
@@ -34,6 +36,7 @@ namespace _3s_atc
             proxylist = new List<C_Proxy>();
             loggingin_emails = new List<string>();
             sessionlist = new List<C_Session>();
+            gmail_loggedin = false;
 
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
         }
@@ -249,7 +252,7 @@ namespace _3s_atc
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
+            process.StartInfo.Arguments = profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString() + " " + gmail_loggedin.ToString();
             process.Start();
 
             session.pid = process.Id;
@@ -258,11 +261,19 @@ namespace _3s_atc
 
             session.hideShow();
 
-            string sessionData = SerializeSession(session);
-
             try
             {
                 StreamWriter writer = new StreamWriter(pipe);
+
+                if (gmail_loggedin)
+                {
+                    string gmailCookiesData = SerializeCefCookies(gmail_cookies);
+                    writer.WriteLine(gmailCookiesData);
+                    writer.Flush();
+                }
+
+                string sessionData = SerializeSession(session);
+
                 writer.WriteLine(sessionData);
                 writer.Flush();
 
@@ -341,11 +352,18 @@ namespace _3s_atc
             proxy.pid = process.Id;
             proxy.hideShow();
 
-            string proxyData = SerializeProxy(proxy);
-
             try
             {
                 StreamWriter writer = new StreamWriter(pipe);
+
+                if (gmail_loggedin)
+                {
+                    string gmailCookiesData = SerializeCefCookies(gmail_cookies);
+                    writer.WriteLine(gmailCookiesData);
+                    writer.Flush();
+                }
+
+                string proxyData = SerializeProxy(proxy);
                 writer.WriteLine(proxyData);
                 writer.Flush();
 
@@ -548,10 +566,12 @@ namespace _3s_atc
                             case "error":
                                 cell.Value = "Error while connecting to login page";
                                 cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                process.Kill();
                                 return false;
                             case "error_unknown":
                                 cell.Value = "Unknown error while logging in.";
                                 cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                process.Kill();
                                 break;
                             default:
                                 if(str.Contains("xml"))
@@ -559,12 +579,14 @@ namespace _3s_atc
                                     List<C_Cookie> cookies = DeserializeCookies(str);
                                     foreach (C_Cookie c in cookies)
                                         profile.Cookies.Add(c);
+                                    process.Kill();
                                     return true;
                                 }
                                 else if(str.StartsWith("error:"))
                                 {
                                     cell.Value = str.Split(new string[] { "error: " }, StringSplitOptions.None)[0];
                                     cell.Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                                    process.Kill();
                                     return false;
                                 }
                                 break;
@@ -600,6 +622,66 @@ namespace _3s_atc
                 System.Windows.Forms.MessageBox.Show(c.Message);
                 return null;
             }
+        }
+
+        private string SerializeCefCookies(List<CefSharp.Cookie> data)
+        {
+            System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(List<CefSharp.Cookie>));
+            var xml = "";
+
+            using (var sww = new StringWriter())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, data);
+                    xml = sww.ToString();
+                }
+            }
+
+            return xml;
+        }
+
+        public List<CefSharp.Cookie> DeserializeCefCookies(string cookiesData)
+        {
+            try
+            {
+                List<CefSharp.Cookie> result;
+                System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(List<CefSharp.Cookie>));
+                using (TextReader reader = new StringReader(cookiesData))
+                {
+                    result = (List<CefSharp.Cookie>)xsSubmit.Deserialize(reader);
+                }
+
+                return result;
+            }
+            catch (Exception c)
+            {
+                System.Windows.Forms.MessageBox.Show(c.Message);
+                return null;
+            }
+        }
+
+        public void LoginGmail()
+        {
+            var pipe = new NamedPipeServerStream("login_gmail", PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = "https://www.google.com/gmail" + " login_gmail";
+            process.Start();
+
+            pipe.WaitForConnection();
+
+            StreamReader reader = new StreamReader(pipe);
+
+            string str = reader.ReadLine();
+            if (!String.IsNullOrEmpty(str))
+            {
+                gmail_cookies = DeserializeCefCookies(str);
+                gmail_loggedin = true;
+            }
+
+            process.Kill();
         }
 
         private string getEUSize(double size)

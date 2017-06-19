@@ -118,6 +118,7 @@
             this.button_1_RunGuest = new System.Windows.Forms.Button();
             this.label_1_SplashMode = new System.Windows.Forms.Label();
             this.button_1_Login = new System.Windows.Forms.Button();
+            this.button_1_LoginGmail = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.panel_Tools.SuspendLayout();
             this.panel_Settings.SuspendLayout();
@@ -939,6 +940,7 @@
             this.panel_Home.Controls.Add(this.button_1_RunGuest);
             this.panel_Home.Controls.Add(this.label_1_SplashMode);
             this.panel_Home.Controls.Add(this.button_1_Login);
+            this.panel_Home.Controls.Add(this.button_1_LoginGmail);
             this.panel_Home.Controls.Add(this.label_1_Logs);
             this.panel_Home.Controls.Add(this.richTextBox_1_Logs);
             this.panel_Home.Controls.Add(this.button_1_AddProfile);
@@ -1021,6 +1023,17 @@
             this.button_1_Login.Text = "Login ";
             this.button_1_Login.UseVisualStyleBackColor = true;
             this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
+            // 
+            // button_1_LoginGmail
+            // 
+            this.button_1_LoginGmail.Location = new System.Drawing.Point(350, 430);
+            this.button_1_LoginGmail.Name = "button_1_LoginGmail";
+            this.button_1_LoginGmail.Size = new System.Drawing.Size(98, 23);
+            this.button_1_LoginGmail.TabIndex = 31;
+            this.button_1_LoginGmail.Text = "Login to Gmail";
+            this.button_1_LoginGmail.UseVisualStyleBackColor = true;
+            this.button_1_LoginGmail.Click += new System.EventHandler(this.button_1_LoginGmail_Click);
+
             // 
             // Form1
             // 
@@ -1143,6 +1156,7 @@
         private System.Windows.Forms.TextBox textBox_3_ProductPageIdentifier;
         private System.Windows.Forms.Label label_3_ProductPageIdentifier;
         private System.Windows.Forms.Button button_1_RunGuest;
+        private System.Windows.Forms.Button button_1_LoginGmail;
     }
 }
 
