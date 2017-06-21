@@ -675,7 +675,7 @@ namespace _3s_atc
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = "https://www.google.com/gmail " + pipename;
+            process.StartInfo.Arguments = "https://www.google.com/gmail" + " " + pipename;
             process.Start();
 
             pipe.WaitForConnection();
@@ -687,6 +687,7 @@ namespace _3s_atc
             {
                 gmail_cookies = DeserializeCefCookies(str);
                 gmail_loggedin = true;
+                MessageBox.Show("Logged in!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             process.Kill();
