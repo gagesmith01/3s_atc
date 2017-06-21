@@ -36,7 +36,7 @@ namespace _3s_atc
             {
                 if (!this.browser_visible)
                 {
-                    IntPtr HWND = FindWindow(null, "3s_atc browser - session_" + index);
+                    IntPtr HWND = FindWindow(null, "3s_atc browser - " + System.Diagnostics.Process.GetCurrentProcess().Id.ToString() + "_session_" + index);
                     this.browser_visible = true;
                     ShowWindow(HWND, 5);
                 }

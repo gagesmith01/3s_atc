@@ -176,6 +176,7 @@ namespace _3s_atc
                     ContextMenu m = new ContextMenu();
                     m.MenuItems.Add(new MenuItem("Show", show_Click));
                     m.MenuItems.Add(new MenuItem("Edit profile", edit_Click));
+                    m.MenuItems.Add(new MenuItem("Duplicate profile", duplicate_Click));
 
                     if (!String.IsNullOrWhiteSpace(helpers.profiles[currentMouseOverRow].Sitekey) && helpers.profiles[currentMouseOverRow].captcha)
                         m.MenuItems.Add(new MenuItem("Solve captcha", captcha_Click));
@@ -228,6 +229,27 @@ namespace _3s_atc
 
             updateRows(profile);
         }
+
+        private void duplicate_Click(Object sender, System.EventArgs e)
+        {
+            Profile profile = helpers.profiles[currentMouseOverRow];
+            textBox_1_PID.Text = profile.ProductID;
+            textBox_1_Sitekey.Text = profile.Sitekey;
+            checkBox_1_Captcha.Checked = profile.captcha;
+            textBox_1_ClientID.Text = profile.ClientID;
+            checkBox_1_ClientID.Checked = profile.clientid;
+            textBox_1_Duplicate.Text = profile.Duplicate;
+            checkBox_1_Duplicate.Checked = profile.duplicate;
+            this.Sizes = profile.Sizes;
+            textBox_1_Splashurl.Text = profile.SplashUrl;
+            comboBox_1_SplashMode.SelectedIndex = profile.splashmode;
+
+            string cookies = null;
+            foreach (KeyValuePair<string, string> p in profile.ExtraCookies)
+                cookies = cookies + p.Key + "=" + p.Value + ";";
+            richTextBox_1_Cookies.Text = cookies;
+        }
+
         private void captcha_Click(Object sender, System.EventArgs e)
         {
             Task.Run(() => helpers.getCaptcha(helpers.profiles[currentMouseOverRow]));

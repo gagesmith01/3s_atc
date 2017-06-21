@@ -248,11 +248,13 @@ namespace _3s_atc
 
             row.Cells[8].Value = "Setting up...";
 
-            var pipe = new NamedPipeServerStream("session_" + index.ToString(), PipeDirection.InOut, 1);
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_session_" + index.ToString();
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = profile.SplashUrl + " session_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString() + " " + gmail_loggedin.ToString();
+            process.StartInfo.Arguments = profile.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString() + " " + gmail_loggedin.ToString();
             process.Start();
 
             session.pid = process.Id;
@@ -340,11 +342,13 @@ namespace _3s_atc
 
             row.Cells[8].Value = "Setting up...";
 
-            var pipe = new NamedPipeServerStream("proxy_" + index.ToString(), PipeDirection.InOut, 1);
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_proxy_" + index.ToString();
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = profile.SplashUrl + " proxy_" + index.ToString() + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
+            process.StartInfo.Arguments = profile.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
             process.Start();
 
             pipe.WaitForConnection();
@@ -534,11 +538,13 @@ namespace _3s_atc
 
             string url = "https://cp." + Properties.Settings.Default.locale + "/web/eCom/" + marketsList[Properties.Settings.Default.code] + "/loadsignin?target=account";
 
-            var pipe = new NamedPipeServerStream("login_" + profile.index.ToString(), PipeDirection.InOut, 1);
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_login_" + profile.index.ToString();
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = url + " login_" + profile.index.ToString() + " " + profile.Email + " " + profile.Password;
+            process.StartInfo.Arguments = url + " " + pipename + " " + profile.Email + " " + profile.Password;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.Start();
 
@@ -663,11 +669,13 @@ namespace _3s_atc
 
         public void LoginGmail()
         {
-            var pipe = new NamedPipeServerStream("login_gmail", PipeDirection.InOut, 1);
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_login_gmail";
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = "https://www.google.com/gmail" + " login_gmail";
+            process.StartInfo.Arguments = "https://www.google.com/gmail " + pipename;
             process.Start();
 
             pipe.WaitForConnection();
