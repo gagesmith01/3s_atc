@@ -240,7 +240,7 @@ namespace _3s_atc
             checkBox_1_ClientID.Checked = profile.clientid;
             textBox_1_Duplicate.Text = profile.Duplicate;
             checkBox_1_Duplicate.Checked = profile.duplicate;
-            this.Sizes = profile.Sizes;
+            this.Sizes = new List<double>(profile.Sizes);
             textBox_1_Splashurl.Text = profile.SplashUrl;
             comboBox_1_SplashMode.SelectedIndex = profile.splashmode;
 
