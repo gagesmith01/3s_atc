@@ -12,25 +12,26 @@ namespace _3s_atc
 {
     public partial class Form1 : Form
     {
-        private static Form1 mainForm;
-
         public Helpers helpers;
         private List<double> Sizes;
         private int currentMouseOverRow;
         private int currentMouseOverRow2;
         private bool warningDisplayed;
-        private bool guestmode;
+        public bool guestmode;
+        public int splashmode;
+        public string SplashUrl;
 
         public Form1()
         {
             InitializeComponent();
 
-            addLog("Welcome to 3s_atc!", Color.Empty);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 
             helpers = new Helpers(this);
             Sizes = new List<double>();
             warningDisplayed = false;
             guestmode = false;
+            splashmode = 0;
 
             if (Properties.Settings.Default.profiles.Length > 0)
                 helpers.profiles = helpers.LoadProfiles();
@@ -40,12 +41,17 @@ namespace _3s_atc
 
             foreach (Profile profile in helpers.profiles)
             {
-                dataGridView1.Rows.Add(new string[] { profile.Email, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), profile.Sitekey, profile.ClientID, profile.Duplicate, string.Join(";", profile.ExtraCookies.Select(kv => kv.Key + "=" + kv.Value).ToArray()), profile.SplashUrl, "" });
+                dataGridView1.Rows.Add(new string[] { profile.Email, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), "" });
                 profile.loggedin = false;
             }
 
             foreach (C_Proxy proxy in helpers.proxylist)
-                dataGridView2.Rows.Add(new string[] { proxy.address, proxy.refresh.ToString(), proxy.auth.ToString(), proxy.username, null, null, null, null });
+            {
+                if(!String.IsNullOrEmpty(proxy.username))
+                    dataGridView2.Rows.Add(new string[] { proxy.address + "@" + proxy.username, proxy.refresh.ToString(), "" });
+                else
+                    dataGridView2.Rows.Add(new string[] { proxy.address, proxy.refresh.ToString(), "" });
+            }
 
             for (int i = 0; i < comboBox_3_Website.Items.Count; i++)
             {
@@ -57,24 +63,14 @@ namespace _3s_atc
 
             comboBox_1_SplashMode.SelectedIndex = 0;
             numericUpDown_Sessions.Value = Properties.Settings.Default.sessions_count; numericUpDown_RSessions.Value = Properties.Settings.Default.r_sessions_count; numericUpDown_3_RefreshInterval.Value = Properties.Settings.Default.refresh_interval; textBox_3_SplashIdentifier.Text = Properties.Settings.Default.splashidentifier; textBox_3_ProductPageIdentifier.Text = Properties.Settings.Default.productpageidentifier;
-        }
-
-        public void addLog(string text, Color color)
-        {
-            RichTextBox box = this.richTextBox_1_Logs;
-
-            box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;
-
-            box.SelectionColor = color;
-            box.AppendText("- " + text + Environment.NewLine);
-            box.SelectionColor = box.ForeColor;
+            label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
+            numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
+            label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
+            textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
         }
 
         private void button_1_AddProfile_Click(object sender, EventArgs e)
         {
-            string sitekey, clientid, duplicate, splash_url;
-
             if (String.IsNullOrWhiteSpace(Properties.Settings.Default.locale) || String.IsNullOrWhiteSpace(Properties.Settings.Default.code))
             {
                 MessageBox.Show("Please choose a locale in the 'Settings' tab.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -84,12 +80,6 @@ namespace _3s_atc
             if (String.IsNullOrWhiteSpace(textBox_1_Email.Text) || String.IsNullOrWhiteSpace(textBox_1_Password.Text) || String.IsNullOrWhiteSpace(textBox_1_PID.Text))
             {
                 MessageBox.Show("Email, password or product ID empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (String.IsNullOrWhiteSpace(textBox_1_Sitekey.Text) && checkBox_1_Captcha.Checked || String.IsNullOrWhiteSpace(textBox_1_ClientID.Text) && checkBox_1_ClientID.Checked || String.IsNullOrWhiteSpace(textBox_1_Duplicate.Text) && checkBox_1_Duplicate.Checked || String.IsNullOrWhiteSpace(textBox_1_Splashurl.Text) && comboBox_1_SplashMode.SelectedIndex > 0)
-            {
-                MessageBox.Show("Captcha/Duplicate/Splash page checked but fields are empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -122,15 +112,13 @@ namespace _3s_atc
                 warningDisplayed = true;
             }
 
-            sitekey = (checkBox_1_Captcha.Checked) ? textBox_1_Sitekey.Text : null;
-            clientid = (checkBox_1_ClientID.Checked) ? textBox_1_ClientID.Text : null;
-            duplicate = (checkBox_1_Duplicate.Checked) ? textBox_1_Duplicate.Text : null;
-            if (comboBox_1_SplashMode.SelectedIndex > 0) splash_url = textBox_1_Splashurl.Text; else splash_url = null;
+            bool sitekey = (!String.IsNullOrEmpty(textBox_1_Sitekey.Text)) ? true : false;
+            bool clientid = (!String.IsNullOrEmpty(textBox_1_ClientID.Text)) ? true : false;
+            bool duplicate = (!String.IsNullOrEmpty(textBox_1_Duplicate.Text)) ? true : false;
 
-
-            string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), sitekey, clientid, duplicate, richTextBox_1_Cookies.Text, splash_url, "" };
+            string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), "" };
             int rowindex = dataGridView1.Rows.Add(row);
-            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = sitekey, ClientID = clientid, Duplicate = duplicate, ExtraCookies = helpers.splitCookies(richTextBox_1_Cookies.Text), SplashUrl = splash_url, captcha = checkBox_1_Captcha.Checked, clientid = checkBox_1_ClientID.Checked, duplicate = checkBox_1_Duplicate.Checked, splashmode = comboBox_1_SplashMode.SelectedIndex, loggedin = false, running = false, index = rowindex });
+            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = textBox_1_Sitekey.Text, ClientID = textBox_1_ClientID.Text, Duplicate = textBox_1_Duplicate.Text , captcha = sitekey, clientid = clientid, duplicate = duplicate, loggedin = false, running = false, index = rowindex, issplash = checkBox_1_isSplash.Checked });
 
             helpers.SaveProfiles();
 
@@ -143,12 +131,8 @@ namespace _3s_atc
             row.Cells[0].Value = profile.Email;
             row.Cells[1].Value = profile.ProductID;
             row.Cells[2].Value = string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray());
-            row.Cells[3].Value = profile.Sitekey;
-            row.Cells[4].Value = profile.ClientID;
-            row.Cells[5].Value = profile.Duplicate;
-            row.Cells[6].Value = string.Join(";", profile.ExtraCookies.Select(m => m.Key + "=" + m.Value).ToArray());
-            row.Cells[7].Value = profile.SplashUrl;
         }
+
         private void button_1_SelectSizes_Click(object sender, EventArgs e)
         {
             Form_Sizes form_sizes = new Form_Sizes(Sizes);
@@ -235,19 +219,10 @@ namespace _3s_atc
             Profile profile = helpers.profiles[currentMouseOverRow];
             textBox_1_PID.Text = profile.ProductID;
             textBox_1_Sitekey.Text = profile.Sitekey;
-            checkBox_1_Captcha.Checked = profile.captcha;
             textBox_1_ClientID.Text = profile.ClientID;
-            checkBox_1_ClientID.Checked = profile.clientid;
             textBox_1_Duplicate.Text = profile.Duplicate;
-            checkBox_1_Duplicate.Checked = profile.duplicate;
             this.Sizes = new List<double>(profile.Sizes);
-            textBox_1_Splashurl.Text = profile.SplashUrl;
-            comboBox_1_SplashMode.SelectedIndex = profile.splashmode;
-
-            string cookies = null;
-            foreach (KeyValuePair<string, string> p in profile.ExtraCookies)
-                cookies = cookies + p.Key + "=" + p.Value + ";";
-            richTextBox_1_Cookies.Text = cookies;
+            checkBox_1_isSplash.Checked = profile.issplash;
         }
 
         private void captcha_Click(Object sender, System.EventArgs e)
@@ -259,12 +234,9 @@ namespace _3s_atc
         {
             DataGridViewRowCollection rows = null;
 
-            addLog(String.Format("{0} : started process for product '{1}'", profile.Email, profile.ProductID), Color.Empty);
-            addLog(String.Format("{0} : logging in...", profile.Email, profile.ProductID), Color.Empty);
-
             cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-            if (profile.splashmode > 0)
+            if (splashmode > 0)
                 rows = dataGridView2.Rows;
 
             string result = null;
@@ -273,14 +245,13 @@ namespace _3s_atc
 
             if (result.Contains("SUCCESS"))
             {
-                addLog(String.Format("{0} : product '{1}' in your cart!", profile.Email, profile.ProductID), Color.Green);
                 cell.Value = "In cart!";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Green };
             }
             else
             {
-                addLog(String.Format("{0} - {1} : {2}", profile.Email, profile.ProductID, result.Replace("\n", String.Empty)), Color.Red);
-                cell.Value = "Error! Check logs";
+                MessageBox.Show(profile.Email + "@" + profile.ProductID + ": " + result, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                cell.Value = "Error!";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
             }
         }
@@ -293,33 +264,43 @@ namespace _3s_atc
                 return;
             }
 
+            if (splashmode == 0 && helpers.profiles.FirstOrDefault(p => p.issplash) != null)
+            {
+                MessageBox.Show("Please select a splash mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (splashmode > 0 && String.IsNullOrEmpty(textBox_1_Splashurl.Text) && helpers.profiles.FirstOrDefault(p => p.issplash) != null)
+            {
+                MessageBox.Show("Please enter a valid splash url.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             for (int i = 0; i < helpers.profiles.Count; i++)
             {
                 Profile profile = helpers.profiles[i];
                 DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
-                if (String.IsNullOrWhiteSpace(row.Cells[8].Value.ToString()) || row.Cells[8].Value.ToString().Contains("Error") || row.Cells[8].Style.ForeColor == Color.Red || row.Cells[8].Value == "Logged in!" && profile.loggedin)
+                if (String.IsNullOrWhiteSpace(row.Cells[3].Value.ToString()) || row.Cells[3].Value.ToString().Contains("Error") || row.Cells[3].Style.ForeColor == Color.Red || row.Cells[3].Value == "Logged in!" && profile.loggedin)
                 {
                     if (!profile.running)
-                        cart(profile, row.Cells[8]);
+                    {
+                        this.SplashUrl = textBox_1_Splashurl.Text;
+                        cart(profile, row.Cells[3]);
+                    }
                 }
 
-                System.Threading.Thread.Sleep(250);
+                System.Threading.Thread.Sleep(1000);
             }
         }
 
         private void homeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            panel_Home.Visible = true; panel_Tools.Visible = false; panel_Settings.Visible = false;
-        }
-
-        private void inventoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            panel_Home.Visible = false; panel_Tools.Visible = true; panel_Settings.Visible = false;
+            panel_Home.Visible = true; panel_Settings.Visible = false;
         }
 
         private void proxyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            panel_Home.Visible = false; panel_Tools.Visible = false; panel_Settings.Visible = true;
+            panel_Home.Visible = false; panel_Settings.Visible = true;
         }
 
         private async Task getInventory()
@@ -332,17 +313,16 @@ namespace _3s_atc
                 listBox_2_Inventory.Items.Add(String.Format("{0} - Size: {1} - Quantity: {2}", entry.Key, products[entry.Key]["size"], products[entry.Key]["stockcount"]));
 
             if (listBox_2_Inventory.Items.Count > 0 && listBox_2_Inventory.Items[1].ToString().Contains("Quantity"))
-                addLog("Inventory checker : Done!", Color.Green);
+                MessageBox.Show("Done!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
                 listBox_2_Inventory.Items.Add("Error!");
-                addLog("Inventory checker : Error!", Color.Red);
+                MessageBox.Show("Error while getting inventory!", "Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void button_2_Check_Click(object sender, EventArgs e)
         {
-            addLog(String.Format("Getting inventory for product: {0}", textBox_2_PID.Text), Color.Empty);
             Properties.Settings.Default.pid = textBox_2_PID.Text; Properties.Settings.Default.Save();
             listBox_2_Inventory.Items.Clear();
             getInventory();
@@ -365,30 +345,41 @@ namespace _3s_atc
             Properties.Settings.Default.Save();
         }
 
-        private void button_3_Add_Click(object sender, EventArgs e)
+        private void button_1_AddProxy_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrWhiteSpace(textBox_3_Address.Text))
+            if (String.IsNullOrWhiteSpace(textBox_1_Address.Text))
             {
                 MessageBox.Show("Proxy address is empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (helpers.proxylist.FindIndex(x => x.address == textBox_3_Address.Text && x.auth == checkBox_3_Auth.Checked) != -1)
+            if (helpers.proxylist.FindIndex(x => x.address == textBox_1_Address.Text) != -1)
             {
                 MessageBox.Show("Proxy already in list.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            helpers.proxylist.Add(new C_Proxy { address = textBox_3_Address.Text, username = textBox_3_Username.Text, password = textBox_3_Password.Text, sitekey = null, auth = checkBox_3_Auth.Checked, refresh = checkBox_3_Bypass.Checked });
+            bool auth = (!String.IsNullOrEmpty(textBox_1_Username.Text) && !String.IsNullOrEmpty(textBox_1_ProxyPw.Text)) ? true : false;
 
-            dataGridView2.Rows.Add(new string[] { textBox_3_Address.Text, checkBox_3_Bypass.Checked.ToString(), checkBox_3_Auth.Checked.ToString(), textBox_3_Username.Text, null, null, null, null });
+            helpers.proxylist.Add(new C_Proxy { address = textBox_1_Address.Text, username = textBox_1_Username.Text, password = textBox_1_ProxyPw.Text, auth = auth, refresh = checkBox_1_Refresh.Checked });
+
+            if(auth)
+                dataGridView2.Rows.Add(new string[] { textBox_1_Address.Text + "@" + textBox_1_Username.Text, checkBox_1_Refresh.Checked.ToString(), "" });
+            else
+                dataGridView2.Rows.Add(new string[] { textBox_1_Address.Text, checkBox_1_Refresh.Checked.ToString(), "" });
 
             helpers.SaveProxyList();
         }
 
         private void dataGridView2_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
         {
-            int index = helpers.proxylist.FindIndex(x => x.address.Contains(e.Row.Cells[0].Value.ToString()) && x.auth.ToString().Contains(e.Row.Cells[2].Value.ToString()));
+            int index = 0;
+
+            if(e.Row.Cells[0].Value.ToString().Contains("@"))
+                index = helpers.proxylist.FindIndex(x => x.address.Contains(e.Row.Cells[0].Value.ToString().Split('@')[0]) && x.username.ToString().Contains(e.Row.Cells[0].Value.ToString().Split('@')[1]));
+            else
+                index = helpers.proxylist.FindIndex(x => x.address.Contains(e.Row.Cells[0].Value.ToString()) && String.IsNullOrEmpty(x.username));
+            
             helpers.proxylist.RemoveAt(index);
             helpers.SaveProxyList();
         }
@@ -421,13 +412,16 @@ namespace _3s_atc
 
                     if (!dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("session"))
                         m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
-                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString() != "Setting up..." || !String.IsNullOrEmpty(dataGridView2.Rows[currentMouseOverRow2].Cells[8].Value.ToString()))
+                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString() == "PRODUCT PAGE - EXTRACTED SESSION")
+                        m.MenuItems.Add(new MenuItem("Session info", sessionInfo_Click));
+                    if (dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString() != "Setting up..." || !String.IsNullOrEmpty(dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString()))
                     {
                         if (!helpers.sessionlist[currentMouseOverRow2].browser_visible)
                             m.MenuItems.Add(new MenuItem("Show browser", showHideBrowser_Click));
                         else
                             m.MenuItems.Add(new MenuItem("Hide browser", showHideBrowser_Click));
                     }
+
                     
                     m.Show(dataGridView2, new Point(e.X, e.Y));
                 }
@@ -459,6 +453,15 @@ namespace _3s_atc
                 helpers.proxylist[index].hideShow();
         }
 
+        private void sessionInfo_Click(Object sender, System.EventArgs e)
+        {
+            int index = currentMouseOverRow2;
+
+            C_Session session = helpers.sessionlist[index];
+            string infos = "Press CTRL+C to copy :\n\nHMAC Cookie : Name=" + session.hmac_cookie.name + "       Value=" + session.hmac_cookie.value + "\nSitekey: " + session.sitekey + "\nClient ID: " + session.clientid + "\nDuplicate: " + session.duplicate;
+            MessageBox.Show(infos, "Session info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
         private void updateProxyRows(C_Proxy proxy, int index)
         {
             DataGridViewRow row = dataGridView2.Rows[index];
@@ -479,7 +482,7 @@ namespace _3s_atc
                     DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
 
 
-                    Task.Run(() => helpers.login(profile, row.Cells[8], null));
+                    Task.Run(() => helpers.login(profile, row.Cells[3], null));
                     System.Threading.Thread.Sleep(1000);
                 }
             });
@@ -487,8 +490,7 @@ namespace _3s_atc
 
         private void guestMode_cart(Profile profile)
         {
-            addLog("Guest mode started.", Color.Empty);
-
+            this.SplashUrl = textBox_1_Splashurl.Text;
             Task.Run(() => helpers.guestMode_Cart(profile, dataGridView2.Rows));
         }
 
@@ -524,10 +526,9 @@ namespace _3s_atc
                 return;
             }
 
-            Profile profile = new Profile { splashmode = comboBox_1_SplashMode.SelectedIndex, SplashUrl = textBox_1_Splashurl.Text };
+            Profile profile = new Profile();
             guestmode = true;
             guestMode_cart(profile);
-            panel_Home.Visible = false; panel_Tools.Visible = false; panel_Settings.Visible = true;
         }
 
         private void button_1_LoginGmail_Click(object sender, EventArgs e)
@@ -539,6 +540,44 @@ namespace _3s_atc
             }
 
             Task.Run(() => helpers.LoginGmail());
+        }
+
+        private void comboBox_1_SplashMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.splashmode = comboBox_1_SplashMode.SelectedIndex;
+            switch (splashmode)
+            {
+                case 0:
+                    label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
+                    numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
+                    label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
+                    textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+                    break;
+                case 1:
+                    label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
+                    numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
+                    label_1_ProxyAddress.Visible = true; label_1_Username.Visible = true; label_1_ProxyPw.Visible = true;
+                    textBox_1_Address.Visible = true; textBox_1_Username.Visible = true; textBox_1_ProxyPw.Visible = true; checkBox_1_Refresh.Visible = true; button_1_AddProxy.Visible = true;
+                    break;
+                case 2:
+                    label_3_SCount.Visible = true; label_3_SRCount.Visible = true;
+                    numericUpDown_Sessions.Visible = true; numericUpDown_RSessions.Visible = true;
+                    label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
+                    textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+                    break;
+            }
+        }
+
+        private void numericUpDown_RSessions_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.r_sessions_count = Convert.ToInt32(numericUpDown_RSessions.Value);
+            Properties.Settings.Default.Save();
+        }
+
+        private void numericUpDown_Sessions_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.sessions_count = Convert.ToInt32(numericUpDown_Sessions.Value);
+            Properties.Settings.Default.Save();
         }
     }
 }

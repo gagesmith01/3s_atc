@@ -16,21 +16,18 @@ namespace _3s_atc
         public string Sitekey { set; get; }
         public string ClientID { set; get; }
         public string Duplicate { set; get; }
-        public Dictionary<string, string> ExtraCookies { set; get; }
         public List<C_Cookie> Cookies { set; get; }
-        public string SplashUrl { set; get; }
         public bool captcha { set; get; }
         public bool clientid { set; get; }
         public bool duplicate { set; get; }
-        public int splashmode { set; get; }
         public bool loggedin { set; get; }
         public int index { set; get; }
         public bool running { set; get; }
+        public bool issplash { get; set; }
 
         public Profile()
         {
             Sizes = new List<double>();
-            ExtraCookies = new Dictionary<string, string>();
             Cookies = new List<C_Cookie>();
         }
     }

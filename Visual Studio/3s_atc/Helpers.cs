@@ -99,8 +99,8 @@ namespace _3s_atc
             webRequest.Method = "POST";
             webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
-            if (profile.splashmode > 0)
-                webRequest.Referer = profile.SplashUrl;
+            if (form1.splashmode > 0)
+                webRequest.Referer = form1.SplashUrl;
             else
                 webRequest.Referer = String.Format("http://www.{0}/", Properties.Settings.Default.locale);
 
@@ -124,9 +124,9 @@ namespace _3s_atc
             List<C_Cookie> c_cookies;
 
             if (profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) != null)
-                c_cookies = profiles.FirstOrDefault(x => x.Email == profile.Email).Cookies;
+                c_cookies = new List<C_Cookie>(profiles.FirstOrDefault(x => x.Email == profile.Email).Cookies);
             else
-                c_cookies = profile.Cookies;
+                c_cookies = new List<C_Cookie>(profile.Cookies);
 
             foreach (C_Cookie cookie in c_cookies)
                 cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
@@ -194,11 +194,18 @@ namespace _3s_atc
             for (int i = 0; i < sessionlist.Count; i++)
             {
                 int index = i;
+
+                form1.Invoke((MethodInvoker)delegate
+                {
+                    rows.Add(new string[] { "session_" + index.ToString(), sessionlist[index].refresh.ToString(), "" });
+                });
+
                 Task.Run(() =>
                 {
                     runSession(profile, index, rows[index]);
                 });
-                System.Threading.Thread.Sleep(1000);
+
+                System.Threading.Thread.Sleep(2000);
             }
         }
 
@@ -246,7 +253,7 @@ namespace _3s_atc
             C_Session session = sessionlist[index];
             session.index = index;
 
-            row.Cells[8].Value = "Setting up...";
+            row.Cells[2].Value = "Setting up...";
 
             string pipename = Process.GetCurrentProcess().Id.ToString() + "_session_" + index.ToString();
 
@@ -254,7 +261,7 @@ namespace _3s_atc
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = profile.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString() + " " + gmail_loggedin.ToString();
+            process.StartInfo.Arguments = form1.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString() + " " + gmail_loggedin.ToString();
             process.Start();
 
             session.pid = process.Id;
@@ -340,7 +347,7 @@ namespace _3s_atc
             C_Proxy proxy = proxylist[index];
             proxy.index = index;
 
-            row.Cells[8].Value = "Setting up...";
+            row.Cells[2].Value = "Setting up...";
 
             string pipename = Process.GetCurrentProcess().Id.ToString() + "_proxy_" + index.ToString();
 
@@ -348,7 +355,7 @@ namespace _3s_atc
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             process.StartInfo = new ProcessStartInfo();
             process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = profile.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
+            process.StartInfo.Arguments = form1.SplashUrl + " " + pipename + " " + Properties.Settings.Default.splashidentifier + " " + Properties.Settings.Default.productpageidentifier + " " + Properties.Settings.Default.refresh_interval.ToString();
             process.Start();
 
             pipe.WaitForConnection();
@@ -393,14 +400,16 @@ namespace _3s_atc
             switch(msg)
             {
                 case "splash":
-                    row.Cells[8].Value = "On splash page...";
+                    row.Cells[2].Value = "On splash page...";
                     break;
                 case "product":
-                    row.Cells[8].Value = "ON PRODUCT PAGE!";
+                    row.Cells[2].Value = "ON PRODUCT PAGE!";
+                    if (form1.guestmode)
+                        MessageBox.Show("session_" + index.ToString() + " : on product page! Right click on the session and show the window in order to purchase the shoe!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
                 case "error":
-                    row.Cells[8].Value = "ERROR COULD NOT REACH SPLASH PAGE!";
-                    row.Cells[8].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
+                    row.Cells[2].Value = "ERROR COULD NOT REACH SPLASH PAGE!";
+                    row.Cells[2].Style = new DataGridViewCellStyle { ForeColor = System.Drawing.Color.Red };
                     break;
                 default:
                     if (msg.Contains("xml"))
@@ -408,20 +417,12 @@ namespace _3s_atc
                         if (session)
                         {
                             sessionlist[index] = DeserializeSession(msg);
-                            row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
-                            row.Cells[4].Value = sessionlist[index].hmac_cookie.value;
-                            row.Cells[5].Value = sessionlist[index].sitekey;
-                            row.Cells[6].Value = sessionlist[index].clientid;
-                            row.Cells[7].Value = sessionlist[index].duplicate;
+                            row.Cells[2].Value = "PRODUCT PAGE - EXTRACTED SESSION";
                         }
                         else if (!session && proxy)
                         {
                             proxylist[index] = DeserializeProxy(msg);
-                            row.Cells[8].Value = "PRODUCT PAGE - EXTRACTED SESSION";
-                            row.Cells[4].Value = proxylist[index].hmac_cookie.value;
-                            row.Cells[5].Value = proxylist[index].sitekey;
-                            row.Cells[6].Value = proxylist[index].clientid;
-                            row.Cells[7].Value = proxylist[index].duplicate;
+                            row.Cells[2].Value = "PRODUCT PAGE - EXTRACTED SESSION";
                         }
                     }
                     break;
@@ -434,7 +435,7 @@ namespace _3s_atc
             C_Proxy proxy = null;
             C_Session session = null;
 
-            if (!proxy_running && profile.splashmode == 1)
+            if (!proxy_running && form1.splashmode == 1)
             {
                 Task.Run(() => runProxyList(profile, rows));
 
@@ -445,17 +446,17 @@ namespace _3s_atc
 
                 proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_cookie.expiry > DateTime.Now);
             }
-            else if(!sessions_running && profile.splashmode == 2)
+            else if(!sessions_running && form1.splashmode == 2)
             {
                     for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
                         sessionlist.Add(new C_Session { refresh = false });
                     for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
                         sessionlist.Add(new C_Session { refresh = true });
 
-                rows.Clear();
-
-                    foreach (C_Session s in sessionlist)
-                        rows.Add(new string[] { "session", s.refresh.ToString(), "False", null, null, null, null, null, null });
+                    form1.Invoke((MethodInvoker)delegate
+                    {
+                        rows.Clear();
+                    });
 
                 Task.Run(() => runSessionList(profile, rows));
 
@@ -464,7 +465,7 @@ namespace _3s_atc
 
                 cell.Value = "GOT HMAC!";
 
-                session = sessionlist.FirstOrDefault(s => s.passed && s.hmac_cookie.expiry > DateTime.Now);
+                session = sessionlist.FirstOrDefault(s => s.passed);
             }
 
             return cartNoSplash(profile, cell, proxy, session);
@@ -475,7 +476,7 @@ namespace _3s_atc
             C_Proxy proxy = null;
             C_Session session = null;
 
-            if (!proxy_running && profile.splashmode == 1)
+            if (!proxy_running && form1.splashmode == 1)
             {
                 Task.Run(() => runProxyList(profile, rows));
 
@@ -485,25 +486,19 @@ namespace _3s_atc
                 proxy = proxylist.FirstOrDefault(s => proxy.passed && s.hmac_cookie.expiry > DateTime.Now);
                 MessageBox.Show("proxy_" + proxy.index.ToString() + " : on product page! Right click on the session and show the window in order to purchase the shoe!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else if(!sessions_running && profile.splashmode == 2)
+            else if(!sessions_running && form1.splashmode == 2)
             {
                     for (int i = 0; i < Properties.Settings.Default.sessions_count; i++)
                         sessionlist.Add(new C_Session { refresh = false });
                     for (int i = 0; i < Properties.Settings.Default.r_sessions_count; i++)
                         sessionlist.Add(new C_Session { refresh = true });
 
-                rows.Clear();
-
-                    foreach (C_Session s in sessionlist)
-                        rows.Add(new string[] { "session_" + s.index.ToString(), s.refresh.ToString(), "False", null, null, null, null, null, null });
+                    form1.Invoke((MethodInvoker)delegate
+                    {
+                        rows.Clear();
+                    });
 
                 Task.Run(() => runSessionList(profile, rows));
-
-                while (sessionlist.FirstOrDefault(x => x.passed == true) == null)
-                    System.Threading.Thread.Sleep(1000);
-
-                session = sessionlist.FirstOrDefault(s => s.passed == true);
-                MessageBox.Show("session_" + session.index.ToString() + " : on product page! Right click on the session and show the window in order to purchase the shoe!", "Success!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         
@@ -745,6 +740,19 @@ namespace _3s_atc
 
         private string cartNoSplash(Profile profile, DataGridViewCell cell, C_Proxy proxy=null, C_Session session=null)
         {
+            if (proxy != null)
+            {
+                profile.Sitekey = proxy.sitekey; profile.captcha = true;
+                profile.ClientID = proxy.clientid; profile.clientid = true;
+                profile.Duplicate = proxy.duplicate; profile.duplicate = true;
+            }
+            else if (session != null)
+            {
+                profile.Sitekey = session.sitekey; profile.captcha = true;
+                profile.ClientID = session.clientid; profile.clientid = true;
+                profile.Duplicate = session.duplicate; profile.duplicate = true;
+            }
+
             Dictionary<string, string> post = new Dictionary<string, string>();
 
             string atcURL;
@@ -754,19 +762,6 @@ namespace _3s_atc
                 atcURL = "http://www." + Properties.Settings.Default.locale + "/on/demandware.store/Sites-adidas-" + Properties.Settings.Default.code + "-Site/" + marketsList[Properties.Settings.Default.code] + "/Cart-MiniAddProduct";
 
             string result = null;
-
-            if (proxy != null)
-            {
-                profile.Sitekey = proxy.sitekey; profile.captcha = true;
-                profile.ClientID = proxy.clientid; profile.clientid = true;
-                profile.Duplicate = proxy.duplicate; profile.duplicate = true;
-            }
-            else if(session != null)
-            {
-                profile.Sitekey = session.sitekey; profile.captcha = true;
-                profile.ClientID = session.clientid; profile.clientid = true;
-                profile.Duplicate = session.duplicate; profile.duplicate = true;
-            }
 
             if (!profile.loggedin)
                 Task.Run(() => login(profile, cell, proxy));
@@ -793,7 +788,7 @@ namespace _3s_atc
                 cell.Value = "Checking sizes...";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, profile.splashmode);
+                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, form1.splashmode);
 
                 if (size == null)
                     return "No sizes available";
@@ -808,7 +803,7 @@ namespace _3s_atc
 
         public string cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
         {
-            if (profile.splashmode > 0 && !String.IsNullOrWhiteSpace(profile.SplashUrl))
+            if (form1.splashmode > 0 && profile.issplash)
                 return cartSplash(profile, cell, rows);
             else
                 return cartNoSplash(profile, cell);
@@ -835,10 +830,14 @@ namespace _3s_atc
                 url = String.Format("http://production-store-adidasgroup.demandware.net/s/adidas-MLT/dw/shop/v15_6/products/({0})?client_id={1}&expand=availability,variations,prices", pid, clientID);
             else
                 url = String.Format("http://production.store.adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, pid, clientID);
-            
+
+
             using(var client = new TimedWebClient())
             {
-                client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+                client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale); 
+                
                 responseString = client.DownloadString(url);
             }
 
@@ -852,18 +851,21 @@ namespace _3s_atc
 
                 using (var client = new TimedWebClient())
                 {
-                    client.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36");
+                    client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+                    client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale); 
                     responseString = client.DownloadString(url.Replace(pid, id));
                 }
 
                 json = json_decode(responseString);
 
-                products[id]["size"] = json["data"][0]["c_sizeSearchValue"];
+                products[id]["size"] = json["data"][0]["variation_attributes"][0]["values"][index]["name"];
                 products[id]["stockcount"] = Convert.ToInt32(json["data"][0]["inventory"]["ats"]).ToString();
             }
 
             return products;
         }
+
         public Dictionary<string, Dictionary<string, string>> getInventory(string pid, string clientID, string splash_url=null)
         {
             string url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, marketsList[Properties.Settings.Default.code], pid);
