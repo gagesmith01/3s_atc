@@ -67,6 +67,7 @@ namespace _3s_atc
             numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
             label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
             textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+            comboBox_1_YSSize.Visible = false; button_1_YSTask.Visible = false;
         }
 
         private void button_1_AddProfile_Click(object sender, EventArgs e)
@@ -410,25 +411,23 @@ namespace _3s_atc
                 {
                     ContextMenu m = new ContextMenu();
 
-                    if (!dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("session"))
+                    if (!dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("session") && !dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("YS"))
                         m.MenuItems.Add(new MenuItem("Edit proxy", editProxy_Click));
                     if (dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString() == "PRODUCT PAGE - EXTRACTED SESSION")
                         m.MenuItems.Add(new MenuItem("Session info", sessionInfo_Click));
                     if (dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString() != "Setting up..." || !String.IsNullOrEmpty(dataGridView2.Rows[currentMouseOverRow2].Cells[2].Value.ToString()))
                     {
-                        if (!helpers.sessionlist[currentMouseOverRow2].browser_visible)
+                        if ((helpers.sessionlist.Count > 0 && !helpers.sessionlist[currentMouseOverRow2].browser_visible) || (dataGridView2.Rows[currentMouseOverRow2].Cells[0].Value.ToString().Contains("YS") && !helpers.ys_tasks[currentMouseOverRow2].browser_visible))
                             m.MenuItems.Add(new MenuItem("Show browser", showHideBrowser_Click));
                         else
                             m.MenuItems.Add(new MenuItem("Hide browser", showHideBrowser_Click));
                     }
 
-                    
                     m.Show(dataGridView2, new Point(e.X, e.Y));
                 }
             }
             catch (Exception ex)
             {
-
             }
         }
 
@@ -447,10 +446,18 @@ namespace _3s_atc
         {
             int index = currentMouseOverRow2;
 
-            if (helpers.sessionlist.Count > 0)
-                helpers.sessionlist[index].hideShow();
+            if (dataGridView2.Rows[index].Cells[0].Value.ToString().Contains("YS"))
+            {
+                if (helpers.ys_tasks.Count > 0)
+                    helpers.ys_tasks[index].hideShow();
+            }
             else
-                helpers.proxylist[index].hideShow();
+            {
+                if (helpers.sessionlist.Count > 0)
+                    helpers.sessionlist[index].hideShow();
+                else
+                    helpers.proxylist[index].hideShow();
+            }
         }
 
         private void sessionInfo_Click(Object sender, System.EventArgs e)
@@ -502,7 +509,7 @@ namespace _3s_atc
                 return;
             }
 
-            if (String.IsNullOrEmpty(textBox_1_Splashurl.Text))
+            if (String.IsNullOrEmpty(textBox_1_Splashurl.Text) && comboBox_1_SplashMode.SelectedIndex < 3)
             {
                 MessageBox.Show("Please enter a splash url.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -526,9 +533,25 @@ namespace _3s_atc
                 return;
             }
 
-            Profile profile = new Profile();
+            if (comboBox_1_SplashMode.SelectedIndex == 3 && helpers.ys_tasks.Count == 0)
+            {
+                MessageBox.Show("Add at leat 1 size to conitnue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
+
             guestmode = true;
-            guestMode_cart(profile);
+
+            if (comboBox_1_SplashMode.SelectedIndex == 3)
+            {
+                foreach(C_YS ys in helpers.ys_tasks)
+                    Task.Run(() => helpers.yeezySupply_Cart(ys, dataGridView2.Rows[ys.index]));
+            }
+            else
+            {
+                Profile profile = new Profile();
+                guestMode_cart(profile);
+            }
         }
 
         private void button_1_LoginGmail_Click(object sender, EventArgs e)
@@ -552,18 +575,28 @@ namespace _3s_atc
                     numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
                     label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
                     textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+                    comboBox_1_YSSize.Visible = false; button_1_YSTask.Visible = false; label_1_size.Visible = false;
                     break;
                 case 1:
                     label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
                     numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
                     label_1_ProxyAddress.Visible = true; label_1_Username.Visible = true; label_1_ProxyPw.Visible = true;
                     textBox_1_Address.Visible = true; textBox_1_Username.Visible = true; textBox_1_ProxyPw.Visible = true; checkBox_1_Refresh.Visible = true; button_1_AddProxy.Visible = true;
+                    comboBox_1_YSSize.Visible = false; button_1_YSTask.Visible = false; label_1_size.Visible = false;                
                     break;
                 case 2:
                     label_3_SCount.Visible = true; label_3_SRCount.Visible = true;
                     numericUpDown_Sessions.Visible = true; numericUpDown_RSessions.Visible = true;
                     label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
                     textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+                    comboBox_1_YSSize.Visible = false; button_1_YSTask.Visible = false; label_1_size.Visible = false;
+                    break;
+                case 3:
+                    label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
+                    numericUpDown_Sessions.Visible = false; numericUpDown_RSessions.Visible = false;
+                    label_1_ProxyAddress.Visible = false; label_1_Username.Visible = false; label_1_ProxyPw.Visible = false;
+                    textBox_1_Address.Visible = false; textBox_1_Username.Visible = false; textBox_1_ProxyPw.Visible = false; checkBox_1_Refresh.Visible = false; button_1_AddProxy.Visible = false;
+                    comboBox_1_YSSize.Visible = true; button_1_YSTask.Visible = true; label_1_size.Visible = true;
                     break;
             }
         }
@@ -578,6 +611,19 @@ namespace _3s_atc
         {
             Properties.Settings.Default.sessions_count = Convert.ToInt32(numericUpDown_Sessions.Value);
             Properties.Settings.Default.Save();
+        }
+
+        private void button_1_YSTask_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(comboBox_1_YSSize.SelectedItem.ToString()))
+            {
+                MessageBox.Show("Select a size to continue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string[] row = new string[] { "YS - " + comboBox_1_YSSize.SelectedItem.ToString(), null, null };
+            int rowindex = dataGridView2.Rows.Add(row);
+            helpers.ys_tasks.Add(new C_YS { index = rowindex, size = comboBox_1_YSSize.SelectedItem.ToString().Split(null)[1] });
         }
     }
 }

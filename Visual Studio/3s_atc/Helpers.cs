@@ -25,6 +25,8 @@ namespace _3s_atc
         public bool gmail_loggedin;
         public List<string> loggingin_emails;
         public List<C_Session> sessionlist;
+        public List<C_YS> ys_tasks;
+
         private Form1 form1;
 
         public Helpers(Form1 form)
@@ -36,9 +38,70 @@ namespace _3s_atc
             proxylist = new List<C_Proxy>();
             loggingin_emails = new List<string>();
             sessionlist = new List<C_Session>();
+            ys_tasks = new List<C_YS>();
+
             gmail_loggedin = false;
 
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
+        }
+
+        public void yeezySupply_Cart(C_YS ys, DataGridViewRow row)
+        {
+            row.Cells[2].Value = "Setting up...";
+
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_ys_" + ys.index.ToString();
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = "https://yeezysupply.com/collections/footwear " + pipename + " " + ys.size;
+            process.Start();
+
+            ys.pid = process.Id;
+
+            pipe.WaitForConnection();
+
+            ys.hideShow();
+
+            try
+            {
+                StreamReader reader = new StreamReader(pipe);
+
+                while (true)
+                {
+                    string str = reader.ReadLine();
+                    if (!String.IsNullOrEmpty(str))
+                        parseYSMessage(str, row);
+                }
+
+            }
+            catch (IOException exception)
+            {
+                MessageBox.Show(String.Format("YEEZYSUPPLY {0} error: {1}\n", ys.index.ToString(), exception.Message));
+            }
+        }
+
+        private void parseYSMessage(string msg, DataGridViewRow row)
+        {
+            switch(msg)
+            {
+                case "ready":
+                    row.Cells[2].Value = "Waiting for the release";
+                    break;
+                case "processing":
+                    row.Cells[2].Value = "Processing...";
+                    break;
+                case "size":
+                    row.Cells[2].Value = "Selecting size...";
+                    break;
+                case "checkout":
+                    row.Cells[2].Value = "Checking out...";
+                    break;
+                case "success":
+                    row.Cells[2].Value = "Done!";
+                    break;
+            }
         }
 
         private bool ReadCookie(string hostName, string cookieName, ref string value)

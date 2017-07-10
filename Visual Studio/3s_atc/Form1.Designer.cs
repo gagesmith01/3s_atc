@@ -80,6 +80,9 @@
             this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_1_AddProfile = new System.Windows.Forms.Button();
             this.panel_Home = new System.Windows.Forms.Panel();
+            this.button_1_YSTask = new System.Windows.Forms.Button();
+            this.label_1_size = new System.Windows.Forms.Label();
+            this.comboBox_1_YSSize = new System.Windows.Forms.ComboBox();
             this.button_1_AddProxy = new System.Windows.Forms.Button();
             this.checkBox_1_Refresh = new System.Windows.Forms.CheckBox();
             this.label_1_ProxyPw = new System.Windows.Forms.Label();
@@ -607,6 +610,9 @@
             // 
             // panel_Home
             // 
+            this.panel_Home.Controls.Add(this.button_1_YSTask);
+            this.panel_Home.Controls.Add(this.label_1_size);
+            this.panel_Home.Controls.Add(this.comboBox_1_YSSize);
             this.panel_Home.Controls.Add(this.numericUpDown_RSessions);
             this.panel_Home.Controls.Add(this.numericUpDown_Sessions);
             this.panel_Home.Controls.Add(this.button_1_AddProxy);
@@ -650,6 +656,57 @@
             this.panel_Home.Name = "panel_Home";
             this.panel_Home.Size = new System.Drawing.Size(814, 342);
             this.panel_Home.TabIndex = 6;
+            // 
+            // button_1_YSTask
+            // 
+            this.button_1_YSTask.Location = new System.Drawing.Point(641, 58);
+            this.button_1_YSTask.Name = "button_1_YSTask";
+            this.button_1_YSTask.Size = new System.Drawing.Size(75, 23);
+            this.button_1_YSTask.TabIndex = 43;
+            this.button_1_YSTask.Text = "Add task";
+            this.button_1_YSTask.UseVisualStyleBackColor = true;
+            this.button_1_YSTask.Click += new System.EventHandler(this.button_1_YSTask_Click);
+            // 
+            // label_1_size
+            // 
+            this.label_1_size.AutoSize = true;
+            this.label_1_size.Location = new System.Drawing.Point(560, 43);
+            this.label_1_size.Name = "label_1_size";
+            this.label_1_size.Size = new System.Drawing.Size(33, 13);
+            this.label_1_size.TabIndex = 42;
+            this.label_1_size.Text = "Size :";
+            // 
+            // comboBox_1_YSSize
+            // 
+            this.comboBox_1_YSSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_1_YSSize.FormattingEnabled = true;
+            this.comboBox_1_YSSize.Items.AddRange(new object[] {
+            "US 4 ",
+            "US 4.5",
+            "US 5",
+            "US 5.5",
+            "US 6",
+            "US 6.5",
+            "US 7",
+            "US 7.5",
+            "US 8",
+            "US 8.5",
+            "US 9",
+            "US 9.5",
+            "US 10",
+            "US 10.5",
+            "US 11",
+            "US 11.5",
+            "US 12",
+            "US 12.5",
+            "US 13",
+            "US 13.5",
+            "US 14",
+            "US 14.5"});
+            this.comboBox_1_YSSize.Location = new System.Drawing.Point(533, 59);
+            this.comboBox_1_YSSize.Name = "comboBox_1_YSSize";
+            this.comboBox_1_YSSize.Size = new System.Drawing.Size(83, 21);
+            this.comboBox_1_YSSize.TabIndex = 41;
             // 
             // button_1_AddProxy
             // 
@@ -736,7 +793,8 @@
             this.comboBox_1_SplashMode.Items.AddRange(new object[] {
             "Off",
             "Proxies",
-            "Multi sessions"});
+            "Multi sessions",
+            "YEEZYSUPPLY"});
             this.comboBox_1_SplashMode.Location = new System.Drawing.Point(517, 16);
             this.comboBox_1_SplashMode.Name = "comboBox_1_SplashMode";
             this.comboBox_1_SplashMode.Size = new System.Drawing.Size(89, 21);
@@ -797,8 +855,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(814, 366);
-            this.Controls.Add(this.panel_Settings);
             this.Controls.Add(this.panel_Home);
+            this.Controls.Add(this.panel_Settings);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -887,6 +945,9 @@
         private System.Windows.Forms.Label label_1_Username;
         private System.Windows.Forms.CheckBox checkBox_1_Refresh;
         private System.Windows.Forms.Button button_1_AddProxy;
+        private System.Windows.Forms.ComboBox comboBox_1_YSSize;
+        private System.Windows.Forms.Button button_1_YSTask;
+        private System.Windows.Forms.Label label_1_size;
     }
 }
 
