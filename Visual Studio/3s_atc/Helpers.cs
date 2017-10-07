@@ -160,7 +160,7 @@ namespace _3s_atc
 
             HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
             webRequest.Method = "POST";
-            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
+            webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
 
             if (form1.splashmode > 0)
                 webRequest.Referer = form1.SplashUrl;
@@ -757,7 +757,24 @@ namespace _3s_atc
             eu_sizes[4] = "36"; eu_sizes[4.5] = "36 2/3"; eu_sizes[5] = "37 1/3"; eu_sizes[5.5] = "38"; eu_sizes[6] = "38 2/3"; eu_sizes[6.5] = "39 1/3"; eu_sizes[7] = "40"; eu_sizes[7.5] = "40 2/3"; eu_sizes[8] = "41 1/3"; eu_sizes[8.5] = "42"; eu_sizes[9] = "42 2/3"; eu_sizes[9.5] = "43 1/3"; eu_sizes[10] = "44"; eu_sizes[10.5] = "44 2/3"; eu_sizes[11] = "45 1/3"; eu_sizes[11.5] = "46"; eu_sizes[12] = "46 2/3"; eu_sizes[12.5] = "47 1/3"; eu_sizes[13] = "48"; eu_sizes[13.5] = "48 2/3"; eu_sizes[14] = "49 1/3"; eu_sizes[14.5] = "50";
             return eu_sizes[size];
         }
+        
+        private string getClothingSize(double size)
+        {
+            if (size == 1)
+                return "XS";
+            else if (size == 2)
+                return "S";
+            else if (size == 3)
+                return "M";
+            else if (size == 4)
+                return "L";
+            else if (size == 5)
+                return "XL";
+            else if (size == 6)
+                return "XXL";
 
+            return null;
+        } 
         private string getUKSize(double size)
         {
             return (size - 0.5).ToString("0.#").Replace(',', '.');
@@ -777,7 +794,14 @@ namespace _3s_atc
             for (int i = 0; i < sizes.Count; i++)
             {
                 int index = i;
-                    
+
+                if(sizes[index] <= 6)
+                {
+                    KeyValuePair<string, Dictionary<string, string>> entry = inventory.FirstOrDefault(s => inventory[s.Key]["size"] == getClothingSize(sizes[index]) && Convert.ToInt32(inventory[s.Key]["stockcount"]) > 0);
+                    if(entry.Key != null)
+                        return entry.Key;
+                }
+
                 if(Properties.Settings.Default.code == "GB")
                 {
                     KeyValuePair<string, Dictionary<string, string>> entry_uk = inventory.FirstOrDefault(s => inventory[s.Key]["size"] == getUKSize(sizes[index]) && Convert.ToInt32(inventory[s.Key]["stockcount"]) > 0);
@@ -898,7 +922,7 @@ namespace _3s_atc
             using(var client = new TimedWebClient())
             {
                 client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+                client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
                 client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale); 
                 
                 responseString = client.DownloadString(url);
@@ -915,7 +939,7 @@ namespace _3s_atc
                 using (var client = new TimedWebClient())
                 {
                     client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
                     client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale); 
                     responseString = client.DownloadString(url.Replace(pid, id));
                 }
@@ -940,7 +964,7 @@ namespace _3s_atc
                 try
                 {
                     client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
 
                     if (!String.IsNullOrEmpty(splash_url))
                         client.Headers[HttpRequestHeader.Referer] = splash_url;

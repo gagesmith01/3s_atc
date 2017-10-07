@@ -37,6 +37,25 @@ namespace _3s_atc
 
         public double getUSSize(string size)
         {
+            if(size.Length <= 3)
+            {
+                switch (size)
+                {
+                    case "XS":
+                        return 1;
+                    case "S":
+                        return 2;
+                    case "M":
+                        return 3;
+                    case "L":
+                        return 4;
+                    case "XL":
+                        return 5;
+                    case "XXL":
+                        return 6;
+                }
+            }
+
             string[] tokens = size.Split(null);
             double US_Size = double.Parse(tokens[1], System.Globalization.CultureInfo.InvariantCulture);
 

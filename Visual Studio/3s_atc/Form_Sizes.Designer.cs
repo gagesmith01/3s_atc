@@ -64,7 +64,13 @@
             "US 13 - UK 12.5 - EU 48",
             "US 13.5 - UK 13 - EU 48 2/3",
             "US 14 - UK 13.5 - EU 49 1/3",
-            "US 14.5 - UK 14 - EU 50"});
+            "US 14.5 - UK 14 - EU 50",
+            "XS",
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"});
             this.comboBox1.Location = new System.Drawing.Point(4, 75);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(215, 21);

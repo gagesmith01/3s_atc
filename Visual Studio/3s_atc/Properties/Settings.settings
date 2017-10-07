@@ -33,7 +33,7 @@
       <Value Profile="(Default)">sk-fading-circle</Value>
     </Setting>
     <Setting Name="productpageidentifier" Type="System.String" Scope="User">
-      <Value Profile="(Default)">sizeChart</Value>
+      <Value Profile="(Default)">not-confirmed</Value>
     </Setting>
   </Settings>
 </SettingsFile>

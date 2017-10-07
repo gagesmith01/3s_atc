@@ -145,7 +145,7 @@ namespace _3s_atc.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("sizeChart")]
+        [global::System.Configuration.DefaultSettingValueAttribute("not-confirmed")]
         public string productpageidentifier {
             get {
                 return ((string)(this["productpageidentifier"]));
