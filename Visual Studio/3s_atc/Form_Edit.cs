@@ -26,7 +26,7 @@ namespace _3s_atc
             sizes = profile.Sizes;
 
             textBox_ProductID.Text = profile.ProductID; textBox_Sitekey.Text = profile.Sitekey; textBox_ClientID.Text = profile.ClientID; textBox_Duplicate.Text = profile.Duplicate;
-            textBox_Email.Text = profile.Email; textBox_Password.Text = profile.Password;
+            textBox_ProfileName.Text = profile.name;
             checkBox_isSplash.Checked = profile.issplash;
         }
 
@@ -46,7 +46,7 @@ namespace _3s_atc
             bool duplicate = (!String.IsNullOrEmpty(textBox_Duplicate.Text)) ? true : false;
 
             profile.ProductID = textBox_ProductID.Text; profile.Sitekey = textBox_Sitekey.Text; profile.ClientID = textBox_ClientID.Text; profile.Duplicate = textBox_Duplicate.Text;
-            profile.Email = textBox_Email.Text; profile.Password = textBox_Password.Text; profile.Sizes = sizes;
+            profile.name = textBox_ProfileName.Text; profile.Sizes = sizes;
             profile.captcha = sitekey; profile.clientid = clientid; profile.duplicate = duplicate; profile.issplash = checkBox_isSplash.Checked;
             
             helpers.SaveProfiles();

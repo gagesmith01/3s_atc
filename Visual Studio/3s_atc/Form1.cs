@@ -41,8 +41,8 @@ namespace _3s_atc
 
             foreach (Profile profile in helpers.profiles)
             {
-                dataGridView1.Rows.Add(new string[] { profile.Email, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), "" });
-                profile.loggedin = false;
+                dataGridView1.Rows.Add(new string[] { profile.name, profile.ProductID, string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray()), "" });
+                //profile.loggedin = false;
             }
 
             foreach (C_Proxy proxy in helpers.proxylist)
@@ -78,21 +78,15 @@ namespace _3s_atc
                 return;
             }
 
-            if (String.IsNullOrWhiteSpace(textBox_1_Email.Text) || String.IsNullOrWhiteSpace(textBox_1_Password.Text) || String.IsNullOrWhiteSpace(textBox_1_PID.Text))
+            if (String.IsNullOrWhiteSpace(textBox_1_PID.Text))
             {
-                MessageBox.Show("Email, password or product ID empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Product ID is empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (Sizes.Count <= 0)
             {
                 MessageBox.Show("Select at least one size to continue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (helpers.profiles.FindIndex(x => x.Email == textBox_1_Email.Text && x.ProductID == textBox_1_PID.Text) != -1)
-            {
-                MessageBox.Show(String.Format("E-mail already in use for product ID '{0}'.", textBox_1_PID.Text), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -117,9 +111,9 @@ namespace _3s_atc
             bool clientid = (!String.IsNullOrEmpty(textBox_1_ClientID.Text)) ? true : false;
             bool duplicate = (!String.IsNullOrEmpty(textBox_1_Duplicate.Text)) ? true : false;
 
-            string[] row = new string[] { textBox_1_Email.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), "" };
+            string[] row = new string[] { textBox_1_ProfileName.Text, textBox_1_PID.Text, string.Join("/ ", Sizes.Select(x => x.ToString()).ToArray()), "" };
             int rowindex = dataGridView1.Rows.Add(row);
-            helpers.profiles.Add(new Profile { Email = textBox_1_Email.Text, Password = textBox_1_Password.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = textBox_1_Sitekey.Text, ClientID = textBox_1_ClientID.Text, Duplicate = textBox_1_Duplicate.Text , captcha = sitekey, clientid = clientid, duplicate = duplicate, loggedin = false, running = false, index = rowindex, issplash = checkBox_1_isSplash.Checked });
+            helpers.profiles.Add(new Profile { name = textBox_1_ProfileName.Text, ProductID = textBox_1_PID.Text, Sizes = new List<double>(this.Sizes), Sitekey = textBox_1_Sitekey.Text, ClientID = textBox_1_ClientID.Text, Duplicate = textBox_1_Duplicate.Text , captcha = sitekey, clientid = clientid, duplicate = duplicate, /*loggedin = false,*/ running = false, index = rowindex, issplash = checkBox_1_isSplash.Checked });
 
             helpers.SaveProfiles();
 
@@ -129,7 +123,7 @@ namespace _3s_atc
         private void updateRows(Profile profile)
         {
             DataGridViewRow row = dataGridView1.Rows[profile.index];
-            row.Cells[0].Value = profile.Email;
+            row.Cells[0].Value = profile.name;
             row.Cells[1].Value = profile.ProductID;
             row.Cells[2].Value = string.Join("/ ", profile.Sizes.Select(x => x.ToString()).ToArray());
         }
@@ -145,7 +139,7 @@ namespace _3s_atc
 
         private void dataGridView1_UserDeletedRow(object sender, DataGridViewRowEventArgs e)
         {
-            int index = helpers.profiles.FindIndex(x => x.Email == e.Row.Cells[0].Value.ToString() && x.ProductID == e.Row.Cells[1].Value.ToString());
+            int index = helpers.profiles.FindIndex(x => x.name == e.Row.Cells[0].Value.ToString() && x.ProductID == e.Row.Cells[1].Value.ToString());
             helpers.profiles.RemoveAt(index);
             helpers.SaveProfiles();
         }
@@ -242,6 +236,7 @@ namespace _3s_atc
 
             string result = null;
 
+            helpers.startSizeChecking(profile);
             result = await Task.Run(() => helpers.cart(profile, cell, rows));
 
             if (result.Contains("SUCCESS"))
@@ -251,7 +246,7 @@ namespace _3s_atc
             }
             else
             {
-                MessageBox.Show(profile.Email + "@" + profile.ProductID + ": " + result, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(profile.ProductID + ": " + result, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cell.Value = "Error!";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Red };
             }
@@ -259,11 +254,11 @@ namespace _3s_atc
 
         private void button_1_Run_Click(object sender, EventArgs e)
         {
-            if (helpers.profiles.FirstOrDefault(p => p.loggedin == true) == null)
+            /*if (helpers.profiles.FirstOrDefault(p => p.loggedin == true) == null)
             {
                 MessageBox.Show("You must be logged-in to continue otherwise use the 'guest' mode.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }
+            }*/
 
             if (splashmode == 0 && helpers.profiles.FirstOrDefault(p => p.issplash) != null)
             {
@@ -280,8 +275,8 @@ namespace _3s_atc
             for (int i = 0; i < helpers.profiles.Count; i++)
             {
                 Profile profile = helpers.profiles[i];
-                DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.Email && r.Cells[1].Value.ToString() == profile.ProductID).First();
-                if (String.IsNullOrWhiteSpace(row.Cells[3].Value.ToString()) || row.Cells[3].Value.ToString().Contains("Error") || row.Cells[3].Style.ForeColor == Color.Red || row.Cells[3].Value == "Logged in!" && profile.loggedin)
+                DataGridViewRow row = dataGridView1.Rows.Cast<DataGridViewRow>().Where(r => r.Cells[0].Value.ToString() == profile.name && r.Cells[1].Value.ToString() == profile.ProductID).First();
+                if (String.IsNullOrWhiteSpace(row.Cells[3].Value.ToString()) || row.Cells[3].Value.ToString().Contains("Error") || row.Cells[3].Style.ForeColor == Color.Red /*|| row.Cells[3].Value == "Logged in!" && profile.loggedin*/)
                 {
                     if (!profile.running)
                     {
@@ -307,7 +302,18 @@ namespace _3s_atc
         private async Task getInventory()
         {
             listBox_2_Inventory.Items.Add(String.Format("Getting inventory for product '{0}' ...", Properties.Settings.Default.pid));
-            Dictionary<string, Dictionary<string, string>> products = await Task.Run(() => helpers.getInventory(Properties.Settings.Default.pid, null));
+
+            string url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, helpers.marketsList[Properties.Settings.Default.code], Properties.Settings.Default.pid);
+            string pipename = System.Diagnostics.Process.GetCurrentProcess().Id.ToString() + "_sizechecking_1337";
+
+            var pipe = new System.IO.Pipes.NamedPipeServerStream(pipename, System.IO.Pipes.PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new System.Diagnostics.ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = url + " " + pipename;
+            process.Start();
+
+            Dictionary<string, Dictionary<string, string>> products = await Task.Run(() => helpers.getInventory(pipe));
             listBox_2_Inventory.Items.Clear();
 
             foreach (KeyValuePair<string, Dictionary<string, string>> entry in products)
@@ -478,7 +484,7 @@ namespace _3s_atc
             row.Cells[3].Value = proxy.username;
         }
 
-        private void button_1_Login_Click(object sender, EventArgs e)
+        /*private void button_1_Login_Click(object sender, EventArgs e)
         {
             Task.Run(() =>
             {
@@ -493,7 +499,7 @@ namespace _3s_atc
                     System.Threading.Thread.Sleep(1000);
                 }
             });
-        }
+        }*/
 
         private void guestMode_cart(Profile profile)
         {

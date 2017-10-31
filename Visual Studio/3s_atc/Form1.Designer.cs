@@ -63,10 +63,6 @@
             this.textBox_1_ClientID = new System.Windows.Forms.TextBox();
             this.label_1_Duplicate = new System.Windows.Forms.Label();
             this.textBox_1_Duplicate = new System.Windows.Forms.TextBox();
-            this.label_1_Email = new System.Windows.Forms.Label();
-            this.textBox_1_Email = new System.Windows.Forms.TextBox();
-            this.label_1_Password = new System.Windows.Forms.Label();
-            this.textBox_1_Password = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.textBox_1_PID = new System.Windows.Forms.TextBox();
             this.label_1_Sizes = new System.Windows.Forms.Label();
@@ -74,10 +70,6 @@
             this.label_1_Splashurl = new System.Windows.Forms.Label();
             this.textBox_1_Splashurl = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.email = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_1_AddProfile = new System.Windows.Forms.Button();
             this.panel_Home = new System.Windows.Forms.Panel();
             this.button_1_YSTask = new System.Windows.Forms.Button();
@@ -96,8 +88,12 @@
             this.button_1_Run = new System.Windows.Forms.Button();
             this.button_1_RunGuest = new System.Windows.Forms.Button();
             this.label_1_SplashMode = new System.Windows.Forms.Label();
-            this.button_1_Login = new System.Windows.Forms.Button();
-            this.button_1_LoginGmail = new System.Windows.Forms.Button();
+            this.textBox_1_ProfileName = new System.Windows.Forms.TextBox();
+            this.label_1_ProfileName = new System.Windows.Forms.Label();
+            this.profilename = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.panel_Settings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_3_RefreshInterval)).BeginInit();
@@ -459,39 +455,6 @@
             this.textBox_1_Duplicate.Size = new System.Drawing.Size(73, 20);
             this.textBox_1_Duplicate.TabIndex = 5;
             // 
-            // label_1_Email
-            // 
-            this.label_1_Email.AutoSize = true;
-            this.label_1_Email.Location = new System.Drawing.Point(25, 43);
-            this.label_1_Email.Name = "label_1_Email";
-            this.label_1_Email.Size = new System.Drawing.Size(41, 13);
-            this.label_1_Email.TabIndex = 6;
-            this.label_1_Email.Text = "E-mail :";
-            // 
-            // textBox_1_Email
-            // 
-            this.textBox_1_Email.Location = new System.Drawing.Point(4, 59);
-            this.textBox_1_Email.Name = "textBox_1_Email";
-            this.textBox_1_Email.Size = new System.Drawing.Size(94, 20);
-            this.textBox_1_Email.TabIndex = 7;
-            // 
-            // label_1_Password
-            // 
-            this.label_1_Password.AutoSize = true;
-            this.label_1_Password.Location = new System.Drawing.Point(137, 43);
-            this.label_1_Password.Name = "label_1_Password";
-            this.label_1_Password.Size = new System.Drawing.Size(59, 13);
-            this.label_1_Password.TabIndex = 8;
-            this.label_1_Password.Text = "Password :";
-            // 
-            // textBox_1_Password
-            // 
-            this.textBox_1_Password.Location = new System.Drawing.Point(107, 59);
-            this.textBox_1_Password.Name = "textBox_1_Password";
-            this.textBox_1_Password.Size = new System.Drawing.Size(111, 20);
-            this.textBox_1_Password.TabIndex = 9;
-            this.textBox_1_Password.UseSystemPasswordChar = true;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -511,7 +474,7 @@
             // label_1_Sizes
             // 
             this.label_1_Sizes.AutoSize = true;
-            this.label_1_Sizes.Location = new System.Drawing.Point(249, 40);
+            this.label_1_Sizes.Location = new System.Drawing.Point(189, 44);
             this.label_1_Sizes.Name = "label_1_Sizes";
             this.label_1_Sizes.Size = new System.Drawing.Size(47, 13);
             this.label_1_Sizes.TabIndex = 19;
@@ -519,7 +482,7 @@
             // 
             // button_1_SelectSizes
             // 
-            this.button_1_SelectSizes.Location = new System.Drawing.Point(229, 57);
+            this.button_1_SelectSizes.Location = new System.Drawing.Point(172, 55);
             this.button_1_SelectSizes.Name = "button_1_SelectSizes";
             this.button_1_SelectSizes.Size = new System.Drawing.Size(75, 23);
             this.button_1_SelectSizes.TabIndex = 20;
@@ -549,7 +512,7 @@
             this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.email,
+            this.profilename,
             this.pid,
             this.us_sizes,
             this.status});
@@ -570,39 +533,11 @@
             this.dataGridView1.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_UserDeletedRow);
             this.dataGridView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseClick);
             // 
-            // email
-            // 
-            this.email.FillWeight = 127.9188F;
-            this.email.HeaderText = "E-mail";
-            this.email.Name = "email";
-            this.email.ReadOnly = true;
-            // 
-            // pid
-            // 
-            this.pid.FillWeight = 63.59026F;
-            this.pid.HeaderText = "Product ID";
-            this.pid.Name = "pid";
-            this.pid.ReadOnly = true;
-            // 
-            // us_sizes
-            // 
-            this.us_sizes.FillWeight = 103.9019F;
-            this.us_sizes.HeaderText = "US Size(s)";
-            this.us_sizes.Name = "us_sizes";
-            this.us_sizes.ReadOnly = true;
-            // 
-            // status
-            // 
-            this.status.FillWeight = 120.6505F;
-            this.status.HeaderText = "Status";
-            this.status.Name = "status";
-            this.status.ReadOnly = true;
-            // 
             // button_1_AddProfile
             // 
-            this.button_1_AddProfile.Location = new System.Drawing.Point(374, 56);
+            this.button_1_AddProfile.Location = new System.Drawing.Point(365, 56);
             this.button_1_AddProfile.Name = "button_1_AddProfile";
-            this.button_1_AddProfile.Size = new System.Drawing.Size(64, 23);
+            this.button_1_AddProfile.Size = new System.Drawing.Size(72, 23);
             this.button_1_AddProfile.TabIndex = 26;
             this.button_1_AddProfile.Text = "Add";
             this.button_1_AddProfile.UseVisualStyleBackColor = true;
@@ -610,6 +545,8 @@
             // 
             // panel_Home
             // 
+            this.panel_Home.Controls.Add(this.label_1_ProfileName);
+            this.panel_Home.Controls.Add(this.textBox_1_ProfileName);
             this.panel_Home.Controls.Add(this.button_1_YSTask);
             this.panel_Home.Controls.Add(this.label_1_size);
             this.panel_Home.Controls.Add(this.comboBox_1_YSSize);
@@ -631,8 +568,6 @@
             this.panel_Home.Controls.Add(this.button_1_Run);
             this.panel_Home.Controls.Add(this.button_1_RunGuest);
             this.panel_Home.Controls.Add(this.label_1_SplashMode);
-            this.panel_Home.Controls.Add(this.button_1_Login);
-            this.panel_Home.Controls.Add(this.button_1_LoginGmail);
             this.panel_Home.Controls.Add(this.button_1_AddProfile);
             this.panel_Home.Controls.Add(this.dataGridView1);
             this.panel_Home.Controls.Add(this.textBox_1_Splashurl);
@@ -641,10 +576,6 @@
             this.panel_Home.Controls.Add(this.label_1_Sizes);
             this.panel_Home.Controls.Add(this.textBox_1_PID);
             this.panel_Home.Controls.Add(this.label5);
-            this.panel_Home.Controls.Add(this.textBox_1_Password);
-            this.panel_Home.Controls.Add(this.label_1_Password);
-            this.panel_Home.Controls.Add(this.textBox_1_Email);
-            this.panel_Home.Controls.Add(this.label_1_Email);
             this.panel_Home.Controls.Add(this.textBox_1_Duplicate);
             this.panel_Home.Controls.Add(this.label_1_Duplicate);
             this.panel_Home.Controls.Add(this.textBox_1_ClientID);
@@ -779,7 +710,7 @@
             // checkBox_1_isSplash
             // 
             this.checkBox_1_isSplash.AutoSize = true;
-            this.checkBox_1_isSplash.Location = new System.Drawing.Point(312, 60);
+            this.checkBox_1_isSplash.Location = new System.Drawing.Point(280, 59);
             this.checkBox_1_isSplash.Name = "checkBox_1_isSplash";
             this.checkBox_1_isSplash.Size = new System.Drawing.Size(58, 17);
             this.checkBox_1_isSplash.TabIndex = 32;
@@ -803,9 +734,9 @@
             // 
             // button_1_Run
             // 
-            this.button_1_Run.Location = new System.Drawing.Point(500, 317);
+            this.button_1_Run.Location = new System.Drawing.Point(45, 316);
             this.button_1_Run.Name = "button_1_Run";
-            this.button_1_Run.Size = new System.Drawing.Size(75, 23);
+            this.button_1_Run.Size = new System.Drawing.Size(357, 23);
             this.button_1_Run.TabIndex = 27;
             this.button_1_Run.Text = "Run";
             this.button_1_Run.UseVisualStyleBackColor = true;
@@ -813,9 +744,9 @@
             // 
             // button_1_RunGuest
             // 
-            this.button_1_RunGuest.Location = new System.Drawing.Point(614, 317);
+            this.button_1_RunGuest.Location = new System.Drawing.Point(476, 316);
             this.button_1_RunGuest.Name = "button_1_RunGuest";
-            this.button_1_RunGuest.Size = new System.Drawing.Size(113, 23);
+            this.button_1_RunGuest.Size = new System.Drawing.Size(311, 23);
             this.button_1_RunGuest.TabIndex = 30;
             this.button_1_RunGuest.Text = "Run(Guest mode)";
             this.button_1_RunGuest.UseVisualStyleBackColor = true;
@@ -830,25 +761,48 @@
             this.label_1_SplashMode.TabIndex = 25;
             this.label_1_SplashMode.Text = "Splash mode : ";
             // 
-            // button_1_Login
+            // textBox_1_ProfileName
             // 
-            this.button_1_Login.Location = new System.Drawing.Point(385, 317);
-            this.button_1_Login.Name = "button_1_Login";
-            this.button_1_Login.Size = new System.Drawing.Size(75, 23);
-            this.button_1_Login.TabIndex = 24;
-            this.button_1_Login.Text = "Login ";
-            this.button_1_Login.UseVisualStyleBackColor = true;
-            this.button_1_Login.Click += new System.EventHandler(this.button_1_Login_Click);
+            this.textBox_1_ProfileName.Location = new System.Drawing.Point(22, 57);
+            this.textBox_1_ProfileName.Name = "textBox_1_ProfileName";
+            this.textBox_1_ProfileName.Size = new System.Drawing.Size(108, 20);
+            this.textBox_1_ProfileName.TabIndex = 44;
             // 
-            // button_1_LoginGmail
+            // label_1_ProfileName
             // 
-            this.button_1_LoginGmail.Location = new System.Drawing.Point(234, 317);
-            this.button_1_LoginGmail.Name = "button_1_LoginGmail";
-            this.button_1_LoginGmail.Size = new System.Drawing.Size(98, 23);
-            this.button_1_LoginGmail.TabIndex = 31;
-            this.button_1_LoginGmail.Text = "Login to Gmail";
-            this.button_1_LoginGmail.UseVisualStyleBackColor = true;
-            this.button_1_LoginGmail.Click += new System.EventHandler(this.button_1_LoginGmail_Click);
+            this.label_1_ProfileName.AutoSize = true;
+            this.label_1_ProfileName.Location = new System.Drawing.Point(43, 44);
+            this.label_1_ProfileName.Name = "label_1_ProfileName";
+            this.label_1_ProfileName.Size = new System.Drawing.Size(68, 13);
+            this.label_1_ProfileName.TabIndex = 45;
+            this.label_1_ProfileName.Text = "Profile name:";
+            // 
+            // profilename
+            // 
+            this.profilename.HeaderText = "Profile name";
+            this.profilename.Name = "profilename";
+            this.profilename.ReadOnly = true;
+            // 
+            // pid
+            // 
+            this.pid.FillWeight = 63.59026F;
+            this.pid.HeaderText = "Product ID";
+            this.pid.Name = "pid";
+            this.pid.ReadOnly = true;
+            // 
+            // us_sizes
+            // 
+            this.us_sizes.FillWeight = 103.9019F;
+            this.us_sizes.HeaderText = "US Size(s)";
+            this.us_sizes.Name = "us_sizes";
+            this.us_sizes.ReadOnly = true;
+            // 
+            // status
+            // 
+            this.status.FillWeight = 120.6505F;
+            this.status.HeaderText = "Status";
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
             // 
             // Form1
             // 
@@ -896,10 +850,6 @@
         private System.Windows.Forms.TextBox textBox_1_ClientID;
         private System.Windows.Forms.Label label_1_Duplicate;
         private System.Windows.Forms.TextBox textBox_1_Duplicate;
-        private System.Windows.Forms.Label label_1_Email;
-        private System.Windows.Forms.TextBox textBox_1_Email;
-        private System.Windows.Forms.Label label_1_Password;
-        private System.Windows.Forms.TextBox textBox_1_Password;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox_1_PID;
         private System.Windows.Forms.Label label_1_Sizes;
@@ -910,7 +860,6 @@
         private System.Windows.Forms.Button button_1_AddProfile;
         private System.Windows.Forms.Panel panel_Home;
         private System.Windows.Forms.Button button_1_Run;
-        private System.Windows.Forms.Button button_1_Login;
         private System.Windows.Forms.Label label_1_SplashMode;
         private System.Windows.Forms.ComboBox comboBox_1_SplashMode;
         private System.Windows.Forms.NumericUpDown numericUpDown_RSessions;
@@ -924,11 +873,6 @@
         private System.Windows.Forms.TextBox textBox_3_ProductPageIdentifier;
         private System.Windows.Forms.Label label_3_ProductPageIdentifier;
         private System.Windows.Forms.Button button_1_RunGuest;
-        private System.Windows.Forms.Button button_1_LoginGmail;
-        private System.Windows.Forms.DataGridViewTextBoxColumn email;
-        private System.Windows.Forms.DataGridViewTextBoxColumn pid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn us_sizes;
-        private System.Windows.Forms.DataGridViewTextBoxColumn status;
         private System.Windows.Forms.DataGridViewTextBoxColumn Address;
         private System.Windows.Forms.DataGridViewTextBoxColumn Refresh;
         private System.Windows.Forms.DataGridViewTextBoxColumn Statuss;
@@ -948,6 +892,12 @@
         private System.Windows.Forms.ComboBox comboBox_1_YSSize;
         private System.Windows.Forms.Button button_1_YSTask;
         private System.Windows.Forms.Label label_1_size;
+        private System.Windows.Forms.Label label_1_ProfileName;
+        private System.Windows.Forms.TextBox textBox_1_ProfileName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn profilename;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn us_sizes;
+        private System.Windows.Forms.DataGridViewTextBoxColumn status;
     }
 }
 

@@ -38,9 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBox_Duplicate = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox_Email = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox_Password = new System.Windows.Forms.TextBox();
+            this.textBox_ProfileName = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button_Update = new System.Windows.Forms.Button();
             this.checkBox_isSplash = new System.Windows.Forms.CheckBox();
@@ -113,38 +111,22 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(38, 46);
+            this.label5.Location = new System.Drawing.Point(46, 46);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 13);
+            this.label5.Size = new System.Drawing.Size(71, 13);
             this.label5.TabIndex = 8;
-            this.label5.Text = "E-mail :";
+            this.label5.Text = "Profile name :";
             // 
-            // textBox_Email
+            // textBox_ProfileName
             // 
-            this.textBox_Email.Location = new System.Drawing.Point(6, 60);
-            this.textBox_Email.Name = "textBox_Email";
-            this.textBox_Email.Size = new System.Drawing.Size(106, 20);
-            this.textBox_Email.TabIndex = 9;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(150, 46);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Password :";
-            // 
-            // textBox_Password
-            // 
-            this.textBox_Password.Location = new System.Drawing.Point(125, 60);
-            this.textBox_Password.Name = "textBox_Password";
-            this.textBox_Password.Size = new System.Drawing.Size(107, 20);
-            this.textBox_Password.TabIndex = 11;
+            this.textBox_ProfileName.Location = new System.Drawing.Point(28, 60);
+            this.textBox_ProfileName.Name = "textBox_ProfileName";
+            this.textBox_ProfileName.Size = new System.Drawing.Size(106, 20);
+            this.textBox_ProfileName.TabIndex = 9;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(247, 58);
+            this.button1.Location = new System.Drawing.Point(188, 58);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 12;
@@ -165,7 +147,7 @@
             // checkBox_isSplash
             // 
             this.checkBox_isSplash.AutoSize = true;
-            this.checkBox_isSplash.Location = new System.Drawing.Point(332, 62);
+            this.checkBox_isSplash.Location = new System.Drawing.Point(306, 62);
             this.checkBox_isSplash.Name = "checkBox_isSplash";
             this.checkBox_isSplash.Size = new System.Drawing.Size(58, 17);
             this.checkBox_isSplash.TabIndex = 22;
@@ -180,9 +162,7 @@
             this.Controls.Add(this.checkBox_isSplash);
             this.Controls.Add(this.button_Update);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox_Password);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox_Email);
+            this.Controls.Add(this.textBox_ProfileName);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.textBox_Duplicate);
             this.Controls.Add(this.label4);
@@ -211,9 +191,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox_Duplicate;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox_Email;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox_Password;
+        private System.Windows.Forms.TextBox textBox_ProfileName;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button_Update;
         private System.Windows.Forms.CheckBox checkBox_isSplash;

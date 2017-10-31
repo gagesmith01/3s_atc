@@ -9,8 +9,7 @@ namespace _3s_atc
     [Serializable()]
     public class Profile
     {
-        public string Email { set; get; }
-        public string Password { set; get; }
+        public string name { set; get; }
         public string ProductID { set; get; }
         public List<double> Sizes { set; get; }
         public string Sitekey { set; get; }
@@ -20,7 +19,6 @@ namespace _3s_atc
         public bool captcha { set; get; }
         public bool clientid { set; get; }
         public bool duplicate { set; get; }
-        public bool loggedin { set; get; }
         public int index { set; get; }
         public bool running { set; get; }
         public bool issplash { get; set; }

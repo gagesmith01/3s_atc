@@ -20,12 +20,13 @@ namespace _3s_atc
         public List<C_Captcha> captchas;
         public List<C_Proxy> proxylist;
         public List<CefSharp.Cookie> gmail_cookies;
-        private Dictionary<string, string> marketsList;
+        public Dictionary<string, string> marketsList;
         private bool proxy_running, sessions_running;
         public bool gmail_loggedin;
         public List<string> loggingin_emails;
         public List<C_Session> sessionlist;
         public List<C_YS> ys_tasks;
+        public List<NamedPipeServerStream> pipes;
 
         private Form1 form1;
 
@@ -39,12 +40,41 @@ namespace _3s_atc
             loggingin_emails = new List<string>();
             sessionlist = new List<C_Session>();
             ys_tasks = new List<C_YS>();
-
+            pipes = new List<NamedPipeServerStream>();
             gmail_loggedin = false;
 
             marketsList = new Dictionary<string, string>(); marketsList["AE"] = "en_AE"; marketsList["AR"] = "es_AR"; marketsList["AT"] = "de_AT"; marketsList["AU"] = "en_AU"; marketsList["BE"] = "fr_BE"; marketsList["BH"] = "en_BH"; marketsList["BR"] = "pt_BR"; marketsList["CA"] = "en_CA"; marketsList["CF"] = "fr_CA"; marketsList["CH"] = "de_CH"; marketsList["CL"] = "es_CL"; marketsList["CN"] = "zh_CN"; marketsList["CO"] = "es_CO"; marketsList["CZ"] = "cz_CZ"; marketsList["DE"] = "de_DE"; marketsList["DK"] = "da_DK"; marketsList["EE"] = "et_EE"; marketsList["ES"] = "es_ES"; marketsList["FI"] = "fi_FI"; marketsList["FR"] = "fr_FR"; marketsList["GB"] = "en_GB"; marketsList["GR"] = "en_GR"; marketsList["HK"] = "zh_HK"; marketsList["HU"] = "hu_HU"; marketsList["ID"] = "id_ID"; marketsList["IE"] = "en_IE"; marketsList["IN"] = "en_IN"; marketsList["IT"] = "it_IT"; marketsList["JP"] = "ja_JP"; marketsList["KR"] = "ko_KR"; marketsList["KW"] = "ar_KW"; marketsList["MX"] = "es_MX"; marketsList["MY"] = "en_MY"; marketsList["NG"] = "en_NG"; marketsList["NL"] = "nl_NL"; marketsList["NO"] = "no_NO"; marketsList["NZ"] = "en_NZ"; marketsList["OM"] = "en_OM"; marketsList["PE"] = "es_PE"; marketsList["PH"] = "en_PH"; marketsList["PL"] = "pl_PL"; marketsList["PT"] = "en_PT"; marketsList["QA"] = "en_QA"; marketsList["RU"] = "ru_RU"; marketsList["SA"] = "en_SA"; marketsList["SE"] = "sv_SE"; marketsList["SG"] = "en_SG"; marketsList["SK"] = "sk_SK"; marketsList["TH"] = "th_TH"; marketsList["TR"] = "tr_TR"; marketsList["TW"] = "zh_TW"; marketsList["US"] = "en_US"; marketsList["VE"] = "es_VE"; marketsList["VN"] = "vi_VN"; marketsList["ZA"] = "en_ZA";
         }
 
+        public void startSizeChecking(Profile profile)
+        {
+            string url = string.Empty;
+            string locale = Properties.Settings.Default.locale;
+
+            if (!String.IsNullOrEmpty(profile.ClientID))
+            {
+                if (locale == "US" || locale == "CA" || locale == "MX")
+                    url = String.Format("http://production-us-adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, profile.ProductID, profile.ClientID);
+                else if (locale == "PT")
+                    url = String.Format("http://production-store-adidasgroup.demandware.net/s/adidas-MLT/dw/shop/v15_6/products/({0})?client_id={1}&expand=availability,variations,prices", profile.ProductID, profile.ClientID);
+                else
+                    url = String.Format("http://production.store.adidasgroup.demandware.net/s/adidas-{0}/dw/shop/v15_6/products/({1})?client_id={2}&expand=availability,variations,prices", locale, profile.ProductID, profile.ClientID);
+            }
+            else
+                url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, marketsList[Properties.Settings.Default.code], profile.ProductID);
+
+
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_sizechecking_" + profile.index;
+
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = url + " " + pipename;
+            process.Start();
+
+            pipes.Insert(profile.index, pipe);
+        }
         public void yeezySupply_Cart(C_YS ys, DataGridViewRow row)
         {
             row.Cells[2].Value = "Setting up...";
@@ -161,6 +191,7 @@ namespace _3s_atc
             HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
             webRequest.Method = "POST";
             webRequest.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
+            webRequest.Host = "www.adidas.fr";
 
             if (form1.splashmode > 0)
                 webRequest.Referer = form1.SplashUrl;
@@ -186,10 +217,7 @@ namespace _3s_atc
 
             List<C_Cookie> c_cookies;
 
-            if (profiles.FirstOrDefault(x => x.Email == profile.Email && x.loggedin) != null)
-                c_cookies = new List<C_Cookie>(profiles.FirstOrDefault(x => x.Email == profile.Email).Cookies);
-            else
-                c_cookies = new List<C_Cookie>(profile.Cookies);
+            c_cookies = new List<C_Cookie>(profile.Cookies);
 
             foreach (C_Cookie cookie in c_cookies)
                 cookies.Add(new System.Net.Cookie(cookie.name, cookie.value) { Domain = cookie.domain });
@@ -227,7 +255,7 @@ namespace _3s_atc
         private void runProxyList(Profile profile,DataGridViewRowCollection rows)
         {
             if (proxylist.Count == 0){
-                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one proxy.", profile.Email, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one proxy.", profile.name, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;}
 
             proxy_running = true;
@@ -248,7 +276,7 @@ namespace _3s_atc
         {
             if (sessionlist.Count == 0)
             {
-                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one session.", profile.Email, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(String.Format("{0} - {1} : splash page mode needs at least one session.", profile.name, profile.ProductID), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -565,7 +593,7 @@ namespace _3s_atc
             }
         }
         
-        public bool login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
+        /*public bool login(Profile profile, DataGridViewCell cell, C_Proxy proxy)
         {
             if (!cell.Value.ToString().ToLower().Contains("login") && !profile.loggedin)
             {
@@ -664,7 +692,7 @@ namespace _3s_atc
             }
 
             return false;
-        }
+        }*/
 
         public List<C_Cookie> DeserializeCookies(string cookiesData)
         {
@@ -691,6 +719,23 @@ namespace _3s_atc
         private string SerializeCefCookies(List<CefSharp.Cookie> data)
         {
             System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(List<CefSharp.Cookie>));
+            var xml = "";
+
+            using (var sww = new StringWriter())
+            {
+                using (System.Xml.XmlWriter writer = System.Xml.XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, data);
+                    xml = sww.ToString();
+                }
+            }
+
+            return xml;
+        }
+
+        private string SerializeCookies(List<C_Cookie> data)
+        {
+            System.Xml.Serialization.XmlSerializer xsSubmit = new System.Xml.Serialization.XmlSerializer(typeof(List<C_Cookie>));
             var xml = "";
 
             using (var sww = new StringWriter())
@@ -779,14 +824,11 @@ namespace _3s_atc
         {
             return (size - 0.5).ToString("0.#").Replace(',', '.');
         }
-        private string getFirstAvailableSize(List<double> sizes, string pid, string cid, int forceCID)
+        private string getFirstAvailableSize(List<double> sizes, NamedPipeServerStream pipe)
         {
             Dictionary<string, Dictionary<string, string>> inventory;
 
-            if(forceCID > 0)
-                inventory = getClientInventory(pid, cid);
-            else
-                inventory = getInventory(pid, cid);
+            inventory = getInventory(pipe);
 
 
             if (inventory == null) return null;
@@ -850,11 +892,11 @@ namespace _3s_atc
 
             string result = null;
 
-            if (!profile.loggedin)
-                Task.Run(() => login(profile, cell, proxy));
+            //if (!profile.loggedin)
+            //    Task.Run(() => login(profile, cell, proxy));
 
-            if (profile.loggedin)
-            {
+            //if (profile.loggedin)
+            //{
                 if (profile.captcha && !String.IsNullOrWhiteSpace(profile.Sitekey))
                 {
                     cell.Value = "SOLVE CAPTCHA!";
@@ -875,17 +917,40 @@ namespace _3s_atc
                 cell.Value = "Checking sizes...";
                 cell.Style = new DataGridViewCellStyle { ForeColor = Color.Empty };
 
-                string size = getFirstAvailableSize(profile.Sizes, profile.ProductID, profile.ClientID, form1.splashmode);
+                string size = getFirstAvailableSize(profile.Sizes, pipes[profile.index]);
 
                 if (size == null)
                     return "No sizes available";
 
                 cell.Value = "Adding to cart...";
-                post.Add("pid", size); post.Add("masterPid", profile.ProductID); post.Add("Quantity", "1"); post.Add("request", "ajax"); post.Add("responseformat", "json"); post.Add("sessionSelectedStoreID", "null"); post.Add("layer", "Add To Bag overlay");
-                result = webRequestPost(profile, atcURL, post, proxy, session);
-            }
+                string atcCompleteUrl = atcURL + "?pid=" + size + "&masterPid=" + profile.ProductID + "&Quantity=1&request=ajax&responseformat=json&sessionSelectedStoreID=null&layer=Add%20To%20Bag%20overlay";
+                result = addProductToCart(atcCompleteUrl, profile);
+                //post.Add("pid", size); post.Add("masterPid", profile.ProductID); post.Add("Quantity", "1"); post.Add("request", "ajax"); post.Add("responseformat", "json"); post.Add("sessionSelectedStoreID", "null"); post.Add("layer", "Add To Bag overlay");
+                //result = webRequestPost(profile, atcURL, post, proxy, session);
+            //}
 
             return result;
+        }
+
+        private string addProductToCart(string url, Profile profile)
+        {
+            string pipename = Process.GetCurrentProcess().Id.ToString() + "_cartproduct_" + profile.index;
+            string cartShowUrl = "https://www." + Properties.Settings.Default.locale + "/on/demandware.store/Sites-adidas-" + Properties.Settings.Default.code + "-Site/" +  marketsList[Properties.Settings.Default.code] + "/Cart-Show";
+            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = new ProcessStartInfo();
+            process.StartInfo.FileName = "3s_atc - browser.exe";
+            process.StartInfo.Arguments = url + " " + pipename + " " + cartShowUrl;
+            process.Start();
+
+            pipes.Insert(profile.index, pipe);
+
+            pipe.WaitForConnection();
+            
+            StreamReader reader = new StreamReader(pipe);
+            string str = reader.ReadLine();
+
+            return str;
         }
 
         public string cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
@@ -953,51 +1018,19 @@ namespace _3s_atc
             return products;
         }
 
-        public Dictionary<string, Dictionary<string, string>> getInventory(string pid, string clientID, string splash_url=null)
+        public Dictionary<string, Dictionary<string, string>> getInventory(NamedPipeServerStream pipe)
         {
-            string url = String.Format("http://www.{0}/on/demandware.store/Sites-adidas-{1}-Site/{2}/Product-GetVariants?pid={3}", Properties.Settings.Default.locale, Properties.Settings.Default.code, marketsList[Properties.Settings.Default.code], pid);
+            pipe.WaitForConnection();
 
-            string responseString = string.Empty;
+            StreamReader reader = new StreamReader(pipe);
+            string responseString = reader.ReadLine();
 
-            using (var client = new TimedWebClient())
-            {
-                try
-                {
-                    client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
-                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
-
-                    if (!String.IsNullOrEmpty(splash_url))
-                        client.Headers[HttpRequestHeader.Referer] = splash_url;
-                    else
-                        client.Headers[HttpRequestHeader.Referer] = String.Format("http://www.{0}/", Properties.Settings.Default.locale);
-
-                    responseString = client.DownloadString(url);
-                }
-                catch (WebException ex)
-                {
-                    if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null || ex.Status == WebExceptionStatus.Timeout)
-                    {
-                        var resp = (HttpWebResponse)ex.Response;
-                        if (String.IsNullOrEmpty(clientID))
-                        {
-                            MessageBox.Show(String.Format("WebRequest error({0}): Could not get variant stock for product {1}, please specify a valid client ID to get client stock and try again.", resp.StatusCode, pid), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return null;
-                        }
-                        else
-                            return getClientInventory(pid, clientID);
-                    }
-                }
-            }
+            pipe.Close();
 
             if(responseString.Contains("<html"))
             {
-                if (String.IsNullOrEmpty(clientID))
-                {
-                    MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return null;
-                }
-                else
-                    return getClientInventory(pid, clientID);
+                MessageBox.Show("Could not get product variant stock, please specify a valid client ID to get client stock and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
             }
 
             Dictionary<string, Dictionary<string, string>> products = new Dictionary<string, Dictionary<string, string>>();
