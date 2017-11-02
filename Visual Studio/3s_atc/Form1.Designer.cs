@@ -34,6 +34,8 @@
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_Settings = new System.Windows.Forms.Panel();
+            this.comboBox_2_CartBrowser = new System.Windows.Forms.ComboBox();
+            this.label_2_Browser = new System.Windows.Forms.Label();
             this.label_2_PID = new System.Windows.Forms.Label();
             this.textBox_2_PID = new System.Windows.Forms.TextBox();
             this.button_2_Check = new System.Windows.Forms.Button();
@@ -70,8 +72,14 @@
             this.label_1_Splashurl = new System.Windows.Forms.Label();
             this.textBox_1_Splashurl = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.profilename = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button_1_AddProfile = new System.Windows.Forms.Button();
             this.panel_Home = new System.Windows.Forms.Panel();
+            this.label_1_ProfileName = new System.Windows.Forms.Label();
+            this.textBox_1_ProfileName = new System.Windows.Forms.TextBox();
             this.button_1_YSTask = new System.Windows.Forms.Button();
             this.label_1_size = new System.Windows.Forms.Label();
             this.comboBox_1_YSSize = new System.Windows.Forms.ComboBox();
@@ -88,12 +96,6 @@
             this.button_1_Run = new System.Windows.Forms.Button();
             this.button_1_RunGuest = new System.Windows.Forms.Button();
             this.label_1_SplashMode = new System.Windows.Forms.Label();
-            this.textBox_1_ProfileName = new System.Windows.Forms.TextBox();
-            this.label_1_ProfileName = new System.Windows.Forms.Label();
-            this.profilename = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.pid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.us_sizes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1.SuspendLayout();
             this.panel_Settings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_3_RefreshInterval)).BeginInit();
@@ -131,6 +133,8 @@
             // 
             // panel_Settings
             // 
+            this.panel_Settings.Controls.Add(this.comboBox_2_CartBrowser);
+            this.panel_Settings.Controls.Add(this.label_2_Browser);
             this.panel_Settings.Controls.Add(this.label_2_PID);
             this.panel_Settings.Controls.Add(this.textBox_2_PID);
             this.panel_Settings.Controls.Add(this.button_2_Check);
@@ -152,6 +156,27 @@
             this.panel_Settings.Size = new System.Drawing.Size(814, 342);
             this.panel_Settings.TabIndex = 10;
             this.panel_Settings.Visible = false;
+            // 
+            // comboBox_2_CartBrowser
+            // 
+            this.comboBox_2_CartBrowser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_2_CartBrowser.FormattingEnabled = true;
+            this.comboBox_2_CartBrowser.Items.AddRange(new object[] {
+            "3s_atc",
+            "Chrome"});
+            this.comboBox_2_CartBrowser.Location = new System.Drawing.Point(126, 87);
+            this.comboBox_2_CartBrowser.Name = "comboBox_2_CartBrowser";
+            this.comboBox_2_CartBrowser.Size = new System.Drawing.Size(120, 21);
+            this.comboBox_2_CartBrowser.TabIndex = 40;
+            // 
+            // label_2_Browser
+            // 
+            this.label_2_Browser.AutoSize = true;
+            this.label_2_Browser.Location = new System.Drawing.Point(14, 91);
+            this.label_2_Browser.Name = "label_2_Browser";
+            this.label_2_Browser.Size = new System.Drawing.Size(94, 13);
+            this.label_2_Browser.TabIndex = 39;
+            this.label_2_Browser.Text = "Cart with browser :";
             // 
             // label_2_PID
             // 
@@ -189,7 +214,7 @@
             // 
             // textBox_3_ProductPageIdentifier
             // 
-            this.textBox_3_ProductPageIdentifier.Location = new System.Drawing.Point(126, 187);
+            this.textBox_3_ProductPageIdentifier.Location = new System.Drawing.Point(126, 201);
             this.textBox_3_ProductPageIdentifier.Name = "textBox_3_ProductPageIdentifier";
             this.textBox_3_ProductPageIdentifier.Size = new System.Drawing.Size(114, 20);
             this.textBox_3_ProductPageIdentifier.TabIndex = 34;
@@ -197,7 +222,7 @@
             // label_3_ProductPageIdentifier
             // 
             this.label_3_ProductPageIdentifier.AutoSize = true;
-            this.label_3_ProductPageIdentifier.Location = new System.Drawing.Point(7, 189);
+            this.label_3_ProductPageIdentifier.Location = new System.Drawing.Point(7, 203);
             this.label_3_ProductPageIdentifier.Name = "label_3_ProductPageIdentifier";
             this.label_3_ProductPageIdentifier.Size = new System.Drawing.Size(119, 13);
             this.label_3_ProductPageIdentifier.TabIndex = 33;
@@ -205,7 +230,7 @@
             // 
             // textBox_3_SplashIdentifier
             // 
-            this.textBox_3_SplashIdentifier.Location = new System.Drawing.Point(126, 161);
+            this.textBox_3_SplashIdentifier.Location = new System.Drawing.Point(126, 175);
             this.textBox_3_SplashIdentifier.Name = "textBox_3_SplashIdentifier";
             this.textBox_3_SplashIdentifier.Size = new System.Drawing.Size(114, 20);
             this.textBox_3_SplashIdentifier.TabIndex = 32;
@@ -213,7 +238,7 @@
             // label_3_SplashIdentifier
             // 
             this.label_3_SplashIdentifier.AutoSize = true;
-            this.label_3_SplashIdentifier.Location = new System.Drawing.Point(36, 165);
+            this.label_3_SplashIdentifier.Location = new System.Drawing.Point(36, 179);
             this.label_3_SplashIdentifier.Name = "label_3_SplashIdentifier";
             this.label_3_SplashIdentifier.Size = new System.Drawing.Size(87, 13);
             this.label_3_SplashIdentifier.TabIndex = 31;
@@ -222,7 +247,7 @@
             // label_3_RefreshInterval
             // 
             this.label_3_RefreshInterval.AutoSize = true;
-            this.label_3_RefreshInterval.Location = new System.Drawing.Point(42, 103);
+            this.label_3_RefreshInterval.Location = new System.Drawing.Point(42, 127);
             this.label_3_RefreshInterval.Name = "label_3_RefreshInterval";
             this.label_3_RefreshInterval.Size = new System.Drawing.Size(141, 26);
             this.label_3_RefreshInterval.TabIndex = 29;
@@ -230,7 +255,7 @@
             // 
             // numericUpDown_3_RefreshInterval
             // 
-            this.numericUpDown_3_RefreshInterval.Location = new System.Drawing.Point(189, 104);
+            this.numericUpDown_3_RefreshInterval.Location = new System.Drawing.Point(189, 128);
             this.numericUpDown_3_RefreshInterval.Name = "numericUpDown_3_RefreshInterval";
             this.numericUpDown_3_RefreshInterval.Size = new System.Drawing.Size(49, 20);
             this.numericUpDown_3_RefreshInterval.TabIndex = 30;
@@ -256,7 +281,7 @@
             // 
             // button_3_Update
             // 
-            this.button_3_Update.Location = new System.Drawing.Point(10, 236);
+            this.button_3_Update.Location = new System.Drawing.Point(10, 244);
             this.button_3_Update.Name = "button_3_Update";
             this.button_3_Update.Size = new System.Drawing.Size(236, 23);
             this.button_3_Update.TabIndex = 5;
@@ -533,6 +558,33 @@
             this.dataGridView1.UserDeletedRow += new System.Windows.Forms.DataGridViewRowEventHandler(this.dataGridView1_UserDeletedRow);
             this.dataGridView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseClick);
             // 
+            // profilename
+            // 
+            this.profilename.HeaderText = "Profile name";
+            this.profilename.Name = "profilename";
+            this.profilename.ReadOnly = true;
+            // 
+            // pid
+            // 
+            this.pid.FillWeight = 63.59026F;
+            this.pid.HeaderText = "Product ID";
+            this.pid.Name = "pid";
+            this.pid.ReadOnly = true;
+            // 
+            // us_sizes
+            // 
+            this.us_sizes.FillWeight = 103.9019F;
+            this.us_sizes.HeaderText = "US Size(s)";
+            this.us_sizes.Name = "us_sizes";
+            this.us_sizes.ReadOnly = true;
+            // 
+            // status
+            // 
+            this.status.FillWeight = 120.6505F;
+            this.status.HeaderText = "Status";
+            this.status.Name = "status";
+            this.status.ReadOnly = true;
+            // 
             // button_1_AddProfile
             // 
             this.button_1_AddProfile.Location = new System.Drawing.Point(365, 56);
@@ -587,6 +639,22 @@
             this.panel_Home.Name = "panel_Home";
             this.panel_Home.Size = new System.Drawing.Size(814, 342);
             this.panel_Home.TabIndex = 6;
+            // 
+            // label_1_ProfileName
+            // 
+            this.label_1_ProfileName.AutoSize = true;
+            this.label_1_ProfileName.Location = new System.Drawing.Point(43, 44);
+            this.label_1_ProfileName.Name = "label_1_ProfileName";
+            this.label_1_ProfileName.Size = new System.Drawing.Size(68, 13);
+            this.label_1_ProfileName.TabIndex = 45;
+            this.label_1_ProfileName.Text = "Profile name:";
+            // 
+            // textBox_1_ProfileName
+            // 
+            this.textBox_1_ProfileName.Location = new System.Drawing.Point(22, 57);
+            this.textBox_1_ProfileName.Name = "textBox_1_ProfileName";
+            this.textBox_1_ProfileName.Size = new System.Drawing.Size(108, 20);
+            this.textBox_1_ProfileName.TabIndex = 44;
             // 
             // button_1_YSTask
             // 
@@ -761,49 +829,6 @@
             this.label_1_SplashMode.TabIndex = 25;
             this.label_1_SplashMode.Text = "Splash mode : ";
             // 
-            // textBox_1_ProfileName
-            // 
-            this.textBox_1_ProfileName.Location = new System.Drawing.Point(22, 57);
-            this.textBox_1_ProfileName.Name = "textBox_1_ProfileName";
-            this.textBox_1_ProfileName.Size = new System.Drawing.Size(108, 20);
-            this.textBox_1_ProfileName.TabIndex = 44;
-            // 
-            // label_1_ProfileName
-            // 
-            this.label_1_ProfileName.AutoSize = true;
-            this.label_1_ProfileName.Location = new System.Drawing.Point(43, 44);
-            this.label_1_ProfileName.Name = "label_1_ProfileName";
-            this.label_1_ProfileName.Size = new System.Drawing.Size(68, 13);
-            this.label_1_ProfileName.TabIndex = 45;
-            this.label_1_ProfileName.Text = "Profile name:";
-            // 
-            // profilename
-            // 
-            this.profilename.HeaderText = "Profile name";
-            this.profilename.Name = "profilename";
-            this.profilename.ReadOnly = true;
-            // 
-            // pid
-            // 
-            this.pid.FillWeight = 63.59026F;
-            this.pid.HeaderText = "Product ID";
-            this.pid.Name = "pid";
-            this.pid.ReadOnly = true;
-            // 
-            // us_sizes
-            // 
-            this.us_sizes.FillWeight = 103.9019F;
-            this.us_sizes.HeaderText = "US Size(s)";
-            this.us_sizes.Name = "us_sizes";
-            this.us_sizes.ReadOnly = true;
-            // 
-            // status
-            // 
-            this.status.FillWeight = 120.6505F;
-            this.status.HeaderText = "Status";
-            this.status.Name = "status";
-            this.status.ReadOnly = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -898,6 +923,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn pid;
         private System.Windows.Forms.DataGridViewTextBoxColumn us_sizes;
         private System.Windows.Forms.DataGridViewTextBoxColumn status;
+        private System.Windows.Forms.ComboBox comboBox_2_CartBrowser;
+        private System.Windows.Forms.Label label_2_Browser;
     }
 }
 

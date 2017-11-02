@@ -949,53 +949,94 @@ namespace _3s_atc
         {
             string cartShowUrl = "https://www." + Properties.Settings.Default.locale + "/on/demandware.store/Sites-adidas-" + Properties.Settings.Default.code + "-Site/" +  marketsList[Properties.Settings.Default.code] + "/Cart-Show";
 
-            var driverService = ChromeDriverService.CreateDefaultService();
-            driverService.HideCommandPromptWindow = true;
-
-            ChromeOptions driverOptions = new ChromeOptions();
-            driverOptions.AddArgument("--window-size=300,310");
-
-            IWebDriver _driver = new ChromeDriver(driverService, driverOptions);
-
-            if(session != null)
+            if (Properties.Settings.Default.cartbrowser == "3s_atc")
             {
-                _driver.Navigate().GoToUrl("https://www." + Properties.Settings.Default.locale + "/");
-                bool loaded = WaitForPageLoad(_driver);
+                string type;
 
-                if(loaded)
+                if (session != null)
+                    type = "session";
+                else if (proxy != null)
+                    type = "proxy";
+                else
+                    type = "null";
+
+                string pipename = Process.GetCurrentProcess().Id.ToString() + "_cartproduct_" + profile.index;
+                var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                process.StartInfo = new ProcessStartInfo();
+                process.StartInfo.FileName = "3s_atc - browser.exe";
+                process.StartInfo.Arguments = url + " " + pipename + " " + cartShowUrl + " " + type + " " + Properties.Settings.Default.locale + " " + Properties.Settings.Default.code;
+                process.Start();
+
+                pipes.Insert(profile.index, pipe);
+
+                pipe.WaitForConnection();
+
+                StreamReader reader = new StreamReader(pipe);
+                StreamWriter writer = new StreamWriter(pipe);
+
+                if(type == "session")
                 {
-                    _driver.Manage().Cookies.DeleteAllCookies();
+                    string cookiesData = SerializeCookies(session.cookies);
+                    writer.WriteLine(cookiesData);
+                    writer.Flush();
+                }
 
-                    foreach(C_Cookie c in session.cookies)
+                string result = reader.ReadLine();
+                return result;
+            }
+            else if (Properties.Settings.Default.cartbrowser == "Chrome")
+            {
+                var driverService = ChromeDriverService.CreateDefaultService();
+                driverService.HideCommandPromptWindow = true;
+
+                ChromeOptions driverOptions = new ChromeOptions();
+                driverOptions.AddArgument("--window-size=300,310");
+
+                IWebDriver _driver = new ChromeDriver(driverService, driverOptions);
+
+                if (session != null)
+                {
+                    _driver.Navigate().GoToUrl("https://www." + Properties.Settings.Default.locale + "/");
+                    bool loaded = WaitForPageLoad(_driver);
+
+                    if (loaded)
                     {
-                        if (c.domain.Contains("adidas"))
+                        _driver.Manage().Cookies.DeleteAllCookies();
+
+                        foreach (C_Cookie c in session.cookies)
                         {
-                            string domain;
-                            string code = Properties.Settings.Default.code;
+                            if (c.domain.Contains("adidas"))
+                            {
+                                string domain;
+                                string code = Properties.Settings.Default.code;
 
-                            if (c.domain.Contains("adidas.com") && Properties.Settings.Default.locale != "adidas.com" && code != "EE" && code != "JP" && code != "KW" && code != "NG" && code != "VE")
-                                domain = c.domain.Replace("adidas.com", Properties.Settings.Default.locale);
-                            else
-                                domain = c.domain;
+                                if (c.domain.Contains("adidas.com") && Properties.Settings.Default.locale != "adidas.com" && code != "EE" && code != "JP" && code != "KW" && code != "NG" && code != "VE")
+                                    domain = c.domain.Replace("adidas.com", Properties.Settings.Default.locale);
+                                else
+                                    domain = c.domain;
 
-                             _driver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie(c.name, c.value, domain, "/", c.expiry));
+                                _driver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie(c.name, c.value, domain, "/", c.expiry));
+                            }
                         }
                     }
                 }
+
+                _driver.Navigate().GoToUrl(url);
+
+                while (String.IsNullOrEmpty(_driver.PageSource))
+                    System.Threading.Thread.Sleep(500);
+
+                string result = _driver.PageSource;
+                if (!result.ToLower().Contains("success"))
+                    _driver.Quit();
+
+                Task.Run(() => _driver.Navigate().GoToUrl(cartShowUrl));
+
+                return result;
             }
 
-            _driver.Navigate().GoToUrl(url);
-
-            while (String.IsNullOrEmpty(_driver.PageSource))
-                System.Threading.Thread.Sleep(500);
-
-            string result = _driver.PageSource;
-            if (!result.ToLower().Contains("success"))
-                _driver.Quit();
-
-            Task.Run(() => _driver.Navigate().GoToUrl(cartShowUrl));
-
-            return result;
+            return null;
         }
 
         private bool WaitForPageLoad(IWebDriver driver)

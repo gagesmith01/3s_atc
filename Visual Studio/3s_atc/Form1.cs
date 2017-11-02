@@ -61,6 +61,15 @@ namespace _3s_atc
                 }
             }
 
+            for (int i = 0; i < comboBox_2_CartBrowser.Items.Count; i++)
+            {
+                if (comboBox_2_CartBrowser.GetItemText(comboBox_2_CartBrowser.Items[i]) == Properties.Settings.Default.cartbrowser)
+                {
+                    comboBox_2_CartBrowser.SelectedItem = comboBox_2_CartBrowser.Items[i]; 
+                    break;
+                }
+            }
+
             comboBox_1_SplashMode.SelectedIndex = 0;
             numericUpDown_Sessions.Value = Properties.Settings.Default.sessions_count; numericUpDown_RSessions.Value = Properties.Settings.Default.r_sessions_count; numericUpDown_3_RefreshInterval.Value = Properties.Settings.Default.refresh_interval; textBox_3_SplashIdentifier.Text = Properties.Settings.Default.splashidentifier; textBox_3_ProductPageIdentifier.Text = Properties.Settings.Default.productpageidentifier;
             label_3_SCount.Visible = false; label_3_SRCount.Visible = false;
@@ -348,7 +357,7 @@ namespace _3s_atc
             Properties.Settings.Default.refresh_interval = Convert.ToInt32(numericUpDown_3_RefreshInterval.Value);
             Properties.Settings.Default.splashidentifier = textBox_3_SplashIdentifier.Text;
             Properties.Settings.Default.productpageidentifier = textBox_3_ProductPageIdentifier.Text;
-
+            Properties.Settings.Default.cartbrowser = comboBox_2_CartBrowser.Text;
             Properties.Settings.Default.Save();
         }
 

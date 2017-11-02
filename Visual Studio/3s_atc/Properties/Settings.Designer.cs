@@ -154,5 +154,17 @@ namespace _3s_atc.Properties {
                 this["productpageidentifier"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3s_atc")]
+        public string cartbrowser {
+            get {
+                return ((string)(this["cartbrowser"]));
+            }
+            set {
+                this["cartbrowser"] = value;
+            }
+        }
     }
 }

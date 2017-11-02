@@ -35,5 +35,8 @@
     <Setting Name="productpageidentifier" Type="System.String" Scope="User">
       <Value Profile="(Default)">not-confirmed</Value>
     </Setting>
+    <Setting Name="cartbrowser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3s_atc</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
