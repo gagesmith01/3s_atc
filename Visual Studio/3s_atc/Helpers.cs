@@ -11,6 +11,10 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Diagnostics;
 using System.IO.Pipes;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
 namespace _3s_atc
 {
@@ -491,7 +495,8 @@ namespace _3s_atc
             switch(msg)
             {
                 case "splash":
-                    row.Cells[2].Value = "On splash page...";
+                    row.Cells[2].Value = "Waiting for product page...";
+                    //row.Cells[2].Value = "On splash page...";
                     break;
                 case "product":
                     row.Cells[2].Value = "ON PRODUCT PAGE!";
@@ -522,7 +527,7 @@ namespace _3s_atc
 
         private string cartSplash(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows)
         {
-            cell.Value = "Waiting for HMAC...(check settings page)";
+            cell.Value = "Waiting for HMAC...";
             C_Proxy proxy = null;
             C_Session session = null;
 
@@ -891,6 +896,7 @@ namespace _3s_atc
                 atcURL = "http://www." + Properties.Settings.Default.locale + "/on/demandware.store/Sites-adidas-" + Properties.Settings.Default.code + "-Site/" + marketsList[Properties.Settings.Default.code] + "/Cart-MiniAddProduct";
 
             string result = null;
+            string captcha_response = null;
 
             //if (!profile.loggedin)
             //    Task.Run(() => login(profile, cell, proxy));
@@ -906,7 +912,7 @@ namespace _3s_atc
                             System.Threading.Thread.Sleep(1000);
 
                     C_Captcha captcha = captchas.FirstOrDefault(s => s.sitekey.Contains(profile.Sitekey) && s.expiration > DateTime.Now && s.profileID == profile.index && !String.IsNullOrEmpty(s.response));
-                    post.Add("g-recaptcha-response", captcha.response);
+                    captcha_response = captcha.response;
 
                     if (profile.duplicate && !String.IsNullOrWhiteSpace(profile.Duplicate))
                         post.Add(profile.Duplicate, captcha.response);
@@ -923,8 +929,15 @@ namespace _3s_atc
                     return "No sizes available";
 
                 cell.Value = "Adding to cart...";
-                string atcCompleteUrl = atcURL + "?pid=" + size + "&masterPid=" + profile.ProductID + "&Quantity=1&request=ajax&responseformat=json&sessionSelectedStoreID=null&layer=Add%20To%20Bag%20overlay";
-                result = addProductToCart(atcCompleteUrl, profile);
+
+                string atcCompleteUrl;
+
+                if (captcha_response == null)
+                    atcCompleteUrl = atcURL + "?pid=" + size + "&masterPid=" + profile.ProductID + "&Quantity=1&request=ajax&responseformat=json&sessionSelectedStoreID=null&layer=Add%20To%20Bag%20overlay";
+                else
+                    atcCompleteUrl = atcURL + "?pid=" + size + "&masterPid=" + profile.ProductID + "&Quantity=1&request=ajax&responseformat=json&sessionSelectedStoreID=null&layer=Add%20To%20Bag%20overlay&g-recaptcha-response=" + captcha_response;
+
+                result = addProductToCart(atcCompleteUrl, profile, session, proxy);
                 //post.Add("pid", size); post.Add("masterPid", profile.ProductID); post.Add("Quantity", "1"); post.Add("request", "ajax"); post.Add("responseformat", "json"); post.Add("sessionSelectedStoreID", "null"); post.Add("layer", "Add To Bag overlay");
                 //result = webRequestPost(profile, atcURL, post, proxy, session);
             //}
@@ -932,25 +945,71 @@ namespace _3s_atc
             return result;
         }
 
-        private string addProductToCart(string url, Profile profile)
+        private string addProductToCart(string url, Profile profile, C_Session session=null, C_Proxy proxy=null)
         {
-            string pipename = Process.GetCurrentProcess().Id.ToString() + "_cartproduct_" + profile.index;
             string cartShowUrl = "https://www." + Properties.Settings.Default.locale + "/on/demandware.store/Sites-adidas-" + Properties.Settings.Default.code + "-Site/" +  marketsList[Properties.Settings.Default.code] + "/Cart-Show";
-            var pipe = new NamedPipeServerStream(pipename, PipeDirection.InOut, 1);
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo = new ProcessStartInfo();
-            process.StartInfo.FileName = "3s_atc - browser.exe";
-            process.StartInfo.Arguments = url + " " + pipename + " " + cartShowUrl;
-            process.Start();
 
-            pipes.Insert(profile.index, pipe);
+            var driverService = ChromeDriverService.CreateDefaultService();
+            driverService.HideCommandPromptWindow = true;
 
-            pipe.WaitForConnection();
-            
-            StreamReader reader = new StreamReader(pipe);
-            string str = reader.ReadLine();
+            ChromeOptions driverOptions = new ChromeOptions();
+            driverOptions.AddArgument("--window-size=300,310");
 
-            return str;
+            IWebDriver _driver = new ChromeDriver(driverService, driverOptions);
+
+            if(session != null)
+            {
+                _driver.Navigate().GoToUrl("https://www." + Properties.Settings.Default.locale + "/");
+                bool loaded = WaitForPageLoad(_driver);
+
+                if(loaded)
+                {
+                    _driver.Manage().Cookies.DeleteAllCookies();
+
+                    foreach(C_Cookie c in session.cookies)
+                    {
+                        if (c.domain.Contains("adidas"))
+                        {
+                            string domain;
+                            string code = Properties.Settings.Default.code;
+
+                            if (c.domain.Contains("adidas.com") && Properties.Settings.Default.locale != "adidas.com" && code != "EE" && code != "JP" && code != "KW" && code != "NG" && code != "VE")
+                                domain = c.domain.Replace("adidas.com", Properties.Settings.Default.locale);
+                            else
+                                domain = c.domain;
+
+                             _driver.Manage().Cookies.AddCookie(new OpenQA.Selenium.Cookie(c.name, c.value, domain, "/", c.expiry));
+                        }
+                    }
+                }
+            }
+
+            _driver.Navigate().GoToUrl(url);
+
+            while (String.IsNullOrEmpty(_driver.PageSource))
+                System.Threading.Thread.Sleep(500);
+
+            string result = _driver.PageSource;
+            if (!result.ToLower().Contains("success"))
+                _driver.Quit();
+
+            Task.Run(() => _driver.Navigate().GoToUrl(cartShowUrl));
+
+            return result;
+        }
+
+        private bool WaitForPageLoad(IWebDriver driver)
+        {
+            try
+            {
+                var waitForDocumentReady = new WebDriverWait(driver, TimeSpan.FromSeconds(120));
+                waitForDocumentReady.Until((wdriver) => (driver as IJavaScriptExecutor).ExecuteScript("return document.readyState").Equals("complete"));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public string cart(Profile profile, DataGridViewCell cell, DataGridViewRowCollection rows = null)
