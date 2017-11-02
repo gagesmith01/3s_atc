@@ -93,6 +93,12 @@ namespace _3s_atc
                 return;
             }
 
+            if(helpers.profiles.FirstOrDefault(x => x.name == textBox_1_ProfileName.Text) != null)
+            {
+                MessageBox.Show("Profile name is already in use.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (Sizes.Count <= 0)
             {
                 MessageBox.Show("Select at least one size to continue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
